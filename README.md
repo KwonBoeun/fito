@@ -19,7 +19,11 @@
 ```text
 fito/
 ├── app.py           # 서버 실행 파일
+├── src/             # py 코드
 ├── static/          # CSS, JS, 이미지 파일
+    ├── css/         # CSS 파일
+    ├── img/         # IMG 파일
+    ├── js/          # JS 파일
 ├── templates/       # HTML 파일 (Flask 전용)
 └── README.md        # 프로젝트 설명서
 
@@ -28,6 +32,7 @@ fito/
 1.  **app.py**: 메인 서버 코드
 2.  **templates 폴더**: HTML 파일들을 넣는 곳
 3.  **static 폴더**: 사진이나 CSS 디자인 파일을 넣는 곳
+4.  **src 폴더**: py 코드 넣는 곳
 
 
 ---
