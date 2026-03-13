@@ -16,6 +16,7 @@
 - **Version Control:** Git, SourceTree
 
 ## 📂 프로젝트 구조
+```text
 fito/
 ├── app.py           # 서버 실행 파일
 ├── static/          # CSS, JS, 이미지 파일
