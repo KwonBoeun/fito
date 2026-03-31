@@ -1,0 +1,319 @@
+/* ===========================
+   FITO - 그룹 공통 CSS
+   =========================== */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
+
+:root {
+  --black:#000; --white:#fff;
+  --gray-50:#f9f9f9; --gray-100:#f2f2f2; --gray-200:#e5e5e5;
+  --gray-300:#ccc; --gray-400:#999; --gray-500:#666; --gray-700:#333;
+  --green:#2d9e5e; --red:#e05c4b; --orange:#f5a623;
+  --blue:#3b82f6; --purple:#8b5cf6; --live-red:#e8161c;
+  --r-sm:6px; --r-md:12px; --r-lg:18px; --r-full:999px;
+  --nav-h:60px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{font-family:'Noto Sans KR',sans-serif;background:var(--white);color:var(--black);font-size:14px;line-height:1.5;max-width:390px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ── 공통 헤더 ── */
+.gp-header{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid var(--gray-200);height:52px;display:flex;align-items:center;padding:0 16px;gap:12px}
+.gp-back{display:flex;align-items:center;cursor:pointer;padding:4px;text-decoration:none;color:var(--black)}
+.gp-back svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
+.gp-header-title{font-size:16px;font-weight:700;letter-spacing:-.2px}
+.gp-header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+
+/* ── 콘텐츠 ── */
+.gp-content{padding-bottom:calc(var(--nav-h) + 20px)}
+
+/* ── 검색바 ── */
+.gp-search-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--gray-100);position:sticky;top:52px;z-index:90;background:var(--white)}
+.gp-search-wrap{flex:1;display:flex;align-items:center;background:var(--gray-100);border-radius:var(--r-full);padding:9px 14px;gap:8px}
+.gp-search-wrap svg{width:16px;height:16px;stroke:var(--gray-400);fill:none;stroke-width:2;flex-shrink:0}
+.gp-search-wrap input{border:none;background:none;outline:none;width:100%;font-size:14px;font-family:inherit;color:var(--black)}
+.gp-search-wrap input::placeholder{color:var(--gray-400)}
+
+/* ── 그룹 리스트 ── */
+.gp-list{padding:0}
+.gp-list-section-title{font-size:13px;font-weight:700;color:var(--gray-500);padding:14px 16px 8px}
+.gp-card{display:flex;gap:12px;padding:12px 16px;cursor:pointer;transition:background .15s;border-bottom:1px solid var(--gray-100)}
+.gp-card:active{background:var(--gray-50)}
+.gp-card.inactive{opacity:.45}
+.gp-card-img{width:64px;height:64px;border-radius:var(--r-md);background:var(--gray-200);flex-shrink:0;overflow:hidden;position:relative}
+.gp-card-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.gp-card-name{font-size:14px;font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.gp-card-meta{font-size:11px;color:var(--gray-400);display:flex;align-items:center;gap:6px}
+.gp-card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.gp-card-tag{font-size:10px;color:var(--blue);font-weight:500}
+.gp-card-live-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:var(--live-red)}
+.gp-card-live-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--live-red);animation:livePulse 1.2s ease infinite}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── 그룹 만들기 FAB ── */
+.gp-fab{position:fixed;bottom:calc(var(--nav-h) + 20px);right:calc(50% - 195px + 20px);width:56px;height:56px;border-radius:50%;background:var(--black);color:var(--white);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:90;transition:transform .15s}
+.gp-fab:active{transform:scale(.92)}
+.gp-fab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* ── 추천 그룹 배너 ── */
+.gp-recommend-banner{margin:12px 16px;padding:14px 16px;background:linear-gradient(135deg,#1a1a1a,#333);border-radius:var(--r-md);color:var(--white)}
+.gp-recommend-banner-title{font-size:13px;font-weight:600}
+.gp-recommend-banner-sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px}
+
+/* ── 빈 상태 ── */
+.gp-empty{text-align:center;padding:40px 20px;color:var(--gray-400);font-size:13px;line-height:1.7}
+
+/* ═══════════════════════════
+   그룹 메인 화면
+   ═══════════════════════════ */
+
+/* 그룹 배너 이미지 */
+.gm-banner{position:relative;width:100%;height:180px;background:linear-gradient(135deg,#e0e0e0,#c0c0c0);overflow:hidden}
+.gm-banner-overlay{position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(0,0,0,.4))}
+.gm-profile-img{position:absolute;bottom:-28px;left:20px;width:64px;height:64px;border-radius:50%;background:var(--gray-300);border:3px solid var(--white);z-index:10}
+.gm-join-btn{position:absolute;bottom:12px;right:16px;padding:7px 18px;border-radius:var(--r-full);font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit;z-index:10}
+.gm-join-btn.join{background:var(--black);color:var(--white)}
+.gm-join-btn.leave{background:var(--gray-100);color:var(--red)}
+
+/* 그룹 설명 */
+.gm-desc{padding:36px 20px 16px;border-bottom:8px solid var(--gray-100)}
+.gm-name{font-size:18px;font-weight:900;margin-bottom:2px}
+.gm-creator{font-size:11px;color:var(--gray-400);margin-bottom:8px}
+.gm-text{font-size:13px;color:var(--gray-700);line-height:1.7;margin-bottom:10px}
+.gm-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.gm-tag{font-size:11px;color:var(--blue);font-weight:500}
+.gm-members-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--gray-50);border-radius:var(--r-md);cursor:pointer;transition:background .15s}
+.gm-members-btn:active{background:var(--gray-100)}
+.gm-members-avatars{display:flex}
+.gm-members-avatars .gm-avatar{width:24px;height:24px;border-radius:50%;background:var(--gray-300);border:2px solid var(--white);margin-left:-6px}
+.gm-members-avatars .gm-avatar:first-child{margin-left:0}
+.gm-members-count{font-size:12px;font-weight:600;color:var(--gray-500);margin-left:4px}
+.gm-members-arrow{margin-left:auto}
+.gm-members-arrow svg{width:16px;height:16px;stroke:var(--gray-400);fill:none;stroke-width:2}
+
+/* 그룹 섹션 공통 */
+.gm-section{padding:16px 20px;border-bottom:8px solid var(--gray-100)}
+.gm-section:last-of-type{border-bottom:none}
+.gm-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.gm-section-title{font-size:15px;font-weight:700}
+.gm-section-link{font-size:12px;color:var(--gray-400);cursor:pointer;display:flex;align-items:center;gap:2px;text-decoration:none}
+.gm-section-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* 그룹 이슈 (핏츠 + 오늘의 chat) */
+.gm-issue-row{display:flex;gap:10px}
+.gm-issue-card{flex:1;background:var(--gray-50);border-radius:var(--r-md);padding:12px;cursor:pointer;transition:background .15s;min-height:100px}
+.gm-issue-card:active{background:var(--gray-100)}
+.gm-issue-label{font-size:11px;font-weight:700;color:var(--gray-500);margin-bottom:6px}
+.gm-story-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0}
+.gm-story-scroll::-webkit-scrollbar{display:none}
+.gm-story-item{width:52px;height:52px;border-radius:50%;background:var(--gray-200);flex-shrink:0;border:2px solid var(--orange);cursor:pointer}
+.gm-today-chat{font-size:12px;color:var(--gray-700);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.gm-today-chat-author{font-size:10px;color:var(--gray-400);margin-top:4px}
+
+/* 그룹 채팅 섹션 */
+.gm-chat-list{display:flex;flex-direction:column;gap:6px}
+.gm-chat-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray-50);border-radius:var(--r-md);cursor:pointer;transition:background .15s}
+.gm-chat-item:active{background:var(--gray-100)}
+.gm-chat-icon{width:36px;height:36px;border-radius:50%;background:var(--gray-200);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gm-chat-icon svg{width:18px;height:18px;stroke:var(--gray-500);fill:none;stroke-width:2}
+.gm-chat-info{flex:1;min-width:0}
+.gm-chat-name{font-size:13px;font-weight:600}
+.gm-chat-preview{font-size:11px;color:var(--gray-400);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.gm-chat-badge{min-width:18px;height:18px;background:var(--live-red);color:var(--white);border-radius:var(--r-full);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.gm-chat-add{display:flex;align-items:center;justify-content:center;padding:10px;border:2px dashed var(--gray-200);border-radius:var(--r-md);cursor:pointer;font-size:13px;color:var(--gray-400);font-weight:500;gap:6px;transition:border-color .15s}
+.gm-chat-add:active{border-color:var(--gray-400)}
+
+/* 라이브 다시보기 저장소 링크 */
+.gm-storage-link{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--gray-50);border-radius:var(--r-md);cursor:pointer;transition:background .15s}
+.gm-storage-link:active{background:var(--gray-100)}
+.gm-storage-icon{width:36px;height:36px;border-radius:var(--r-sm);background:var(--gray-200);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gm-storage-icon svg{width:18px;height:18px;stroke:var(--gray-500);fill:none;stroke-width:2}
+.gm-storage-text{flex:1;font-size:13px;font-weight:600}
+.gm-storage-count{font-size:11px;color:var(--gray-400)}
+
+/* 라이브 목록 */
+.gm-live-list{display:flex;flex-direction:column;gap:8px}
+.gm-live-card{display:flex;gap:12px;padding:12px;background:var(--gray-50);border-radius:var(--r-md);cursor:pointer;transition:background .15s}
+.gm-live-card:active{background:var(--gray-100)}
+.gm-live-thumb{width:80px;height:56px;border-radius:var(--r-sm);background:var(--gray-200);flex-shrink:0;position:relative;overflow:hidden}
+.gm-live-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.gm-live-title{font-size:13px;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.gm-live-meta{font-size:11px;color:var(--gray-400)}
+.gm-live-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--r-full)}
+.gm-live-status.live{background:rgba(232,22,28,.1);color:var(--live-red)}
+.gm-live-status.soon{background:rgba(245,166,35,.1);color:var(--orange)}
+.gm-live-status.scheduled{background:var(--gray-100);color:var(--gray-500)}
+
+/* 새 라이브 버튼 */
+.gm-new-live-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:var(--black);color:var(--white);border-radius:var(--r-md);font-size:14px;font-weight:700;cursor:pointer;border:none;width:100%;font-family:inherit;transition:opacity .15s}
+.gm-new-live-btn:active{opacity:.8}
+.gm-new-live-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* ═══════════════════════════
+   그룹 생성 화면
+   ═══════════════════════════ */
+.gc-form{padding:20px}
+.gc-field{margin-bottom:20px}
+.gc-label{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.gc-label-count{font-size:11px;color:var(--gray-400);font-weight:400}
+.gc-input{width:100%;padding:11px 14px;border:1.5px solid var(--gray-200);border-radius:var(--r-md);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
+.gc-input:focus{border-color:var(--black)}
+.gc-textarea{width:100%;padding:11px 14px;border:1.5px solid var(--gray-200);border-radius:var(--r-md);font-size:14px;font-family:inherit;outline:none;resize:none;min-height:100px;transition:border-color .15s}
+.gc-textarea:focus{border-color:var(--black)}
+.gc-toggle-row{display:flex;gap:8px}
+.gc-toggle-btn{flex:1;padding:10px;border:2px solid var(--gray-200);border-radius:var(--r-md);font-size:13px;font-weight:500;cursor:pointer;background:var(--white);color:var(--gray-500);text-align:center;transition:all .15s;font-family:inherit}
+.gc-toggle-btn.selected{border-color:var(--black);background:var(--black);color:var(--white);font-weight:700}
+.gc-tags-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.gc-tag-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--gray-100);border-radius:var(--r-full);font-size:12px;font-weight:500}
+.gc-tag-chip-x{cursor:pointer;display:flex;align-items:center}
+.gc-tag-chip-x svg{width:12px;height:12px;stroke:var(--gray-400);fill:none;stroke-width:2}
+.gc-tag-input-row{display:flex;gap:6px}
+.gc-tag-input{flex:1;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:var(--r-full);font-size:13px;font-family:inherit;outline:none}
+.gc-tag-input:focus{border-color:var(--black)}
+.gc-tag-add-btn{padding:8px 14px;background:var(--black);color:var(--white);border:none;border-radius:var(--r-full);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.gc-submit-wrap{padding:0 20px 20px}
+.gc-submit-btn{width:100%;padding:15px;background:var(--black);color:var(--white);border:none;border-radius:var(--r-md);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.gc-submit-btn:active{opacity:.8}
+.gc-submit-btn:disabled{background:var(--gray-300);cursor:not-allowed}
+
+/* ═══════════════════════════
+   그룹 라이브 만들기
+   ═══════════════════════════ */
+.gl-create-form{padding:20px}
+.gl-time-picker{display:flex;align-items:center;gap:12px;justify-content:center;padding:16px 0}
+.gl-time-col{display:flex;flex-direction:column;align-items:center;gap:4px}
+.gl-time-scroll{width:60px;height:120px;overflow-y:auto;scrollbar-width:none;border:1.5px solid var(--gray-200);border-radius:var(--r-md);scroll-snap-type:y mandatory}
+.gl-time-scroll::-webkit-scrollbar{display:none}
+.gl-time-item{height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--gray-300);scroll-snap-align:center;cursor:pointer;transition:all .15s}
+.gl-time-item.active{color:var(--black);font-size:22px}
+.gl-time-sep{font-size:24px;font-weight:900;color:var(--gray-400)}
+.gl-time-label{font-size:10px;color:var(--gray-400)}
+.gl-people-row{display:flex;align-items:center;justify-content:center;gap:12px;padding:16px 0}
+.gl-people-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--gray-200);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;font-weight:700;transition:all .15s}
+.gl-people-btn:active{background:var(--gray-100)}
+.gl-people-btn.disabled{opacity:.3;cursor:not-allowed}
+.gl-people-count{font-size:28px;font-weight:900;min-width:40px;text-align:center}
+.gl-people-label{font-size:11px;color:var(--gray-400);text-align:center;margin-top:-4px}
+.gl-confirm-wrap{padding:0 20px 20px}
+
+/* ═══════════════════════════
+   그룹 라이브 저장소
+   ═══════════════════════════ */
+.gs-sort-bar{display:flex;gap:6px;padding:12px 16px;border-bottom:1px solid var(--gray-100)}
+.gs-sort-btn{padding:5px 12px;border-radius:var(--r-full);font-size:12px;border:1.5px solid var(--gray-200);background:var(--white);cursor:pointer;font-family:inherit;transition:all .15s}
+.gs-sort-btn.active{background:var(--black);color:var(--white);border-color:var(--black)}
+.gs-video-list{padding:12px 16px;display:flex;flex-direction:column;gap:12px}
+.gs-video-card{display:flex;gap:12px;cursor:pointer;transition:opacity .15s}
+.gs-video-card:active{opacity:.7}
+.gs-video-thumb{width:130px;height:80px;background:var(--gray-200);border-radius:var(--r-sm);flex-shrink:0;position:relative;overflow:hidden}
+.gs-video-duration{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.7);color:var(--white);font-size:10px;font-weight:600;padding:1px 6px;border-radius:var(--r-sm)}
+.gs-video-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px}
+.gs-video-title{font-size:13px;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.gs-video-meta{font-size:11px;color:var(--gray-400)}
+.gs-video-actions{display:flex;gap:6px;margin-top:2px}
+.gs-video-action-btn{font-size:10px;font-weight:600;padding:3px 8px;border-radius:var(--r-full);border:1px solid var(--gray-200);background:var(--white);cursor:pointer;font-family:inherit}
+
+/* ═══════════════════════════
+   그룹 채팅
+   ═══════════════════════════ */
+.gc-chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 52px - var(--nav-h))}
+.gc-messages{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.gc-msg{display:flex;gap:8px;max-width:85%}
+.gc-msg.mine{margin-left:auto;flex-direction:row-reverse}
+.gc-msg-avatar{width:32px;height:32px;border-radius:50%;background:var(--gray-200);flex-shrink:0}
+.gc-msg.mine .gc-msg-avatar{display:none}
+.gc-msg-body{}
+.gc-msg-name{font-size:10px;color:var(--gray-400);margin-bottom:2px}
+.gc-msg.mine .gc-msg-name{display:none}
+.gc-msg-bubble{padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.5;position:relative}
+.gc-msg-bubble.other{background:var(--gray-100);border-top-left-radius:4px}
+.gc-msg-bubble.mine{background:var(--black);color:var(--white);border-top-right-radius:4px}
+.gc-msg-time{font-size:9px;color:var(--gray-400);margin-top:2px}
+.gc-msg.mine .gc-msg-time{text-align:right}
+.gc-msg-like{position:absolute;bottom:-8px;right:-4px;background:var(--white);border-radius:var(--r-full);padding:1px 5px;font-size:9px;color:var(--red);box-shadow:0 1px 4px rgba(0,0,0,.1);display:none;align-items:center;gap:2px}
+.gc-msg-like.show{display:flex}
+.gc-msg-date-divider{text-align:center;font-size:11px;color:var(--gray-400);padding:8px 0;position:relative}
+.gc-msg-date-divider::before,.gc-msg-date-divider::after{content:'';position:absolute;top:50%;width:calc(50% - 50px);height:1px;background:var(--gray-100)}
+.gc-msg-date-divider::before{left:0}
+.gc-msg-date-divider::after{right:0}
+
+/* 채팅 입력바 */
+.gc-input-bar{display:flex;align-items:flex-end;gap:8px;padding:10px 16px;border-top:1px solid var(--gray-200);background:var(--white)}
+.gc-attach-btn{width:36px;height:36px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:none}
+.gc-attach-btn svg{width:18px;height:18px;stroke:var(--gray-500);fill:none;stroke-width:2}
+.gc-text-input{flex:1;padding:9px 14px;border:1.5px solid var(--gray-200);border-radius:20px;font-size:14px;font-family:inherit;outline:none;max-height:80px;resize:none;line-height:1.4}
+.gc-text-input:focus{border-color:var(--black)}
+.gc-send-btn{width:36px;height:36px;border-radius:50%;background:var(--black);color:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:none;transition:opacity .15s}
+.gc-send-btn:active{opacity:.7}
+.gc-send-btn.disabled{background:var(--gray-300);cursor:not-allowed}
+.gc-send-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.gc-char-count{font-size:9px;color:var(--gray-400);text-align:right;padding:0 16px 2px}
+
+/* ═══════════════════════════
+   그룹 라이브 화면
+   ═══════════════════════════ */
+.gl-wrap{background:#111;min-height:100vh;position:relative;color:var(--white)}
+.gl-top-bar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(rgba(0,0,0,.6),transparent)}
+.gl-top-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.gl-top-btn svg{width:18px;height:18px;stroke:var(--white);fill:none;stroke-width:2}
+.gl-top-title{font-size:14px;font-weight:700}
+.gl-main-video{width:100%;aspect-ratio:16/9;background:#222;position:relative;margin-top:52px}
+.gl-main-video-label{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.6);padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600}
+.gl-rec-icon{position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--live-red)}
+.gl-rec-icon::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--live-red);animation:livePulse 1.2s ease infinite}
+.gl-notice-bar{padding:8px 16px;background:rgba(255,255,255,.08);display:flex;align-items:center;gap:8px}
+.gl-notice-bar-label{font-size:10px;font-weight:700;color:var(--orange);flex-shrink:0}
+.gl-notice-bar-text{font-size:12px;color:rgba(255,255,255,.7);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+
+/* 참가자 그리드 */
+.gl-participants{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;padding:4px}
+.gl-participant{aspect-ratio:4/3;background:#1a1a1a;border-radius:var(--r-sm);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.gl-participant-name{position:absolute;bottom:4px;left:6px;font-size:10px;font-weight:600;background:rgba(0,0,0,.5);padding:1px 6px;border-radius:var(--r-sm)}
+.gl-participant-avatar{width:40px;height:40px;border-radius:50%;background:var(--gray-500)}
+.gl-participant-hand{position:absolute;top:4px;right:6px;font-size:14px}
+.gl-more-participants{display:flex;align-items:center;justify-content:center;padding:8px;cursor:pointer}
+.gl-more-participants-btn{font-size:12px;color:rgba(255,255,255,.5);font-weight:600}
+.gl-all-btn{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:var(--r-sm);background:rgba(255,255,255,.15);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--white);backdrop-filter:blur(4px)}
+
+/* 하단 도구바 */
+.gl-toolbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;padding:12px 16px 28px;display:flex;align-items:center;justify-content:space-around;background:linear-gradient(transparent,rgba(0,0,0,.7));z-index:50}
+.gl-tool-btn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:none;color:var(--white)}
+.gl-tool-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.gl-tool-btn span{font-size:9px;opacity:.7}
+.gl-tool-btn.off svg{opacity:.35}
+.gl-tool-btn.off span{opacity:.35}
+
+/* ── 팝업 모달 ── */
+.modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:none;align-items:center;justify-content:center}
+.modal-wrap.open{display:flex}
+.modal-box{background:var(--white);border-radius:var(--r-lg);padding:24px 20px;width:calc(100% - 48px);max-width:320px;animation:popIn .25s ease}
+@keyframes popIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:8px;text-align:center}
+.modal-body{font-size:13px;color:var(--gray-500);text-align:center;margin-bottom:20px;line-height:1.6}
+.modal-btns{display:flex;gap:8px}
+.modal-btn{flex:1;padding:12px;border-radius:var(--r-md);font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit}
+.modal-btn.outline{background:var(--gray-100);color:var(--black)}
+.modal-btn.solid{background:var(--black);color:var(--white)}
+.modal-btn.danger{background:var(--red);color:var(--white)}
+
+/* 바텀시트 */
+.bottom-sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:390px;background:var(--white);border-radius:20px 20px 0 0;z-index:400;padding:20px 20px 40px;box-shadow:0 -4px 24px rgba(0,0,0,.12);transition:transform .3s ease}
+.bottom-sheet.open{transform:translateX(-50%) translateY(0)}
+.bottom-sheet-handle{width:36px;height:4px;background:var(--gray-200);border-radius:2px;margin:0 auto 16px}
+.bottom-sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:390;display:none}
+.bottom-sheet-overlay.open{display:block}
+
+/* ── 스낵바 ── */
+.snackbar{position:fixed;bottom:calc(var(--nav-h) + 12px);left:50%;transform:translateX(-50%) translateY(20px);background:#f5f5f5;color:#9f9f9f;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:500;white-space:nowrap;z-index:500;opacity:0;transition:all .3s ease;pointer-events:none;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.snackbar.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── 하단 네비 ── */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;height:var(--nav-h);background:var(--white);border-top:1px solid var(--gray-200);display:flex;align-items:center;z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:6px 0;text-decoration:none}
+.nav-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.nav-icon svg{width:22px;height:22px;stroke:var(--gray-400);fill:none;stroke-width:1.8}
+.nav-label{font-size:10px;color:var(--gray-400);font-weight:500}
+.nav-item.active .nav-icon svg{stroke:var(--black)}
+.nav-item.active .nav-label{color:var(--black);font-weight:700}
+
+/* ── 애니메이션 ── */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.ani{animation:fadeInUp .3s ease both}
