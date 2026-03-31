@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 커뮤니티</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}"/>
+  <style>
+    /* ── 작성자 행 ── */
+    .com-author-row{display:flex;align-items:center;gap:10px;padding:14px 16px 10px}
+    .com-author-pic{width:40px;height:40px;border-radius:50%;background:var(--gray-200);flex-shrink:0}
+    .com-author-info{flex:1;min-width:0}
+    .com-author-name{font-size:14px;font-weight:700}
+    .com-author-time{font-size:11px;color:var(--gray-400);margin-top:1px}
+    /* ── 반응 행 ── */
+    .com-reaction-bar{display:flex;align-items:center;gap:0;padding:6px 16px 10px}
+    .com-reaction-bar .rc-btn{gap:5px;font-size:13px;color:var(--gray-500);padding:4px 10px 4px 0}
+    .com-reaction-bar .rc-btn svg{width:18px;height:18px}
+    /* ── 이미지 슬라이더 ── */
+    .com-img-slider{position:relative;width:100%;overflow:hidden;background:var(--gray-200);aspect-ratio:1/1}
+    .com-img-track{display:flex;transition:transform .3s cubic-bezier(.4,0,.2,1);height:100%}
+    .com-img-item{flex-shrink:0;width:100%;height:100%;background:var(--gray-200)}
+    .com-img-dots{position:absolute;bottom:10px;left:0;right:0;
+      display:flex;justify-content:center;gap:5px}
+    .com-img-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5)}
+    .com-img-dot.active{background:#fff}
+    /* ── 본문 ── */
+    .com-content-area{padding:12px 16px}
+    .com-content-text{font-size:14px;line-height:1.65;white-space:pre-wrap;word-break:break-all}
+    .com-tags-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  </style>
+</head>
+<body>
+
+<header class="dt-header">
+  <button class="dt-back" onclick="history.back()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="dt-header-title">커뮤니티</span>
+  <button class="dt-sub-btn" id="sub-btn">구독</button>
+  <button class="dt-more" id="more-btn">
+    <svg viewBox="0 0 24 24" width="20" height="20">
+      <circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>
+    </svg>
+  </button>
+</header>
+
+<!-- 작성자 -->
+<div class="com-author-row">
+  <div class="com-author-pic"></div>
+  <div class="com-author-info">
+    <div class="com-author-name" id="com-author"></div>
+    <div class="com-author-time" id="com-time"></div>
+  </div>
+</div>
+
+<!-- 반응 -->
+<div class="com-reaction-bar">
+  <button class="rc-btn" id="like-btn">
+    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <span id="like-cnt">0</span>
+  </button>
+  <button class="rc-btn">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span id="comment-cnt">0</span>
+  </button>
+  <button class="rc-btn">
+    <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    <span id="bookmark-cnt">0</span>
+  </button>
+</div>
+
+<!-- 이미지 슬라이더 -->
+<div class="com-img-slider" id="img-slider">
+  <div class="com-img-track" id="img-track">
+    <div class="com-img-item"></div>
+    <div class="com-img-item"></div>
+  </div>
+  <div class="com-img-dots" id="img-dots"></div>
+</div>
+
+<!-- 본문 -->
+<div class="com-content-area">
+  <div class="com-content-text" id="com-content"></div>
+  <div class="com-tags-row" id="com-tags"></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- 댓글 -->
+<div class="comment-section">
+  <div class="comment-section-title" id="comment-title">댓글 0개</div>
+  <div id="comment-list"></div>
+</div>
+
+<div class="scroll-pad"></div>
+
+<!-- 댓글 입력 -->
+<div class="comment-input-bar">
+  <div class="comment-input-pic"></div>
+  <div class="comment-input-wrap">
+    <input type="text" placeholder="댓글 작성" id="comment-input"/>
+  </div>
+  <button class="comment-send" id="comment-send">
+    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<!-- 더보기 팝업 (작성자용 / 타인용) -->
+<div class="more-popup" id="more-popup">
+  <div class="more-popup-bg" id="more-bg"></div>
+  <div class="more-popup-box" style="top:56px;right:12px" id="more-box">
+    <div class="more-popup-item">공유하기</div>
+    <div class="more-popup-item danger">신고하기</div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/community_detail.js') }}"></script>
+</body>
+</html>
