@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 그룹 메인</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/group.css') }}"/>
+</head>
+<body>
+
+<!-- 헤더 (스크롤 시 고정) -->
+<header class="gp-header" id="groupHeader">
+  <a href="{{ url_for('group') }}" class="gp-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
+  <span class="gp-header-title" id="headerGroupName">그룹</span>
+</header>
+
+<div class="gp-content">
+
+  <!-- 2-1-1. 그룹 이미지 (배경 + 프로필) -->
+  <div class="gm-banner" id="groupBanner">
+    <div class="gm-banner-overlay"></div>
+    <div class="gm-profile-img" id="groupProfileImg"></div>
+    <button class="gm-join-btn leave" id="joinLeaveBtn" onclick="toggleMembership()">탈퇴</button>
+  </div>
+
+  <!-- 2-1-2. 그룹 설명 -->
+  <section class="gm-desc ani">
+    <div class="gm-name" id="groupName">하체 마스터 클럽</div>
+    <div class="gm-creator" id="groupCreator">그룹장: 핏걸_나연</div>
+    <div class="gm-text" id="groupDesc">매주 3회 하체 운동을 함께하는 그룹입니다. 스쿼트, 런지, 데드리프트 중심으로 서로 격려하며 운동해요!</div>
+    <div class="gm-tags" id="groupTags"></div>
+    <div class="gm-members-btn" id="membersBtn" onclick="openMembersSheet()">
+      <div class="gm-members-avatars" id="membersAvatars"></div>
+      <span class="gm-members-count" id="membersCount">32명</span>
+      <div class="gm-members-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </div>
+  </section>
+
+  <!-- 2-1-3. 그룹 이슈 (핏츠 + 오늘의 chat) -->
+  <section class="gm-section ani">
+    <div class="gm-section-header">
+      <span class="gm-section-title">그룹 이슈</span>
+    </div>
+    <div class="gm-issue-row">
+      <div class="gm-issue-card" id="storyCard" onclick="openStories()">
+        <div class="gm-issue-label">이 그룹의 Story</div>
+        <div class="gm-story-scroll" id="storyScroll"></div>
+      </div>
+      <div class="gm-issue-card" id="todayChatCard">
+        <div class="gm-issue-label">오늘의 Chat</div>
+        <div class="gm-today-chat" id="todayChatText"></div>
+        <div class="gm-today-chat-author" id="todayChatAuthor"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2-1-4. 그룹 채팅 -->
+  <section class="gm-section ani">
+    <div class="gm-section-header">
+      <span class="gm-section-title">채팅</span>
+    </div>
+    <div class="gm-chat-list" id="chatList"></div>
+    <div class="gm-chat-add" id="chatAddBtn" onclick="addChat()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      채팅방 추가
+    </div>
+  </section>
+
+  <!-- 2-1-5. 라이브 다시보기 저장소 -->
+  <section class="gm-section ani">
+    <div class="gm-section-header">
+      <span class="gm-section-title">라이브 다시보기</span>
+    </div>
+    <a href="{{ url_for('group_storage', group_id=group_id) }}" class="gm-storage-link" style="text-decoration:none;color:inherit">
+      <div class="gm-storage-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2"/><polyline points="10 9 15 12 10 15"/></svg>
+      </div>
+      <span class="gm-storage-text">라이브 다시보기 저장소</span>
+      <span class="gm-storage-count" id="storageCount">12개</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+  </section>
+
+  <!-- 2-1-6. 그룹 라이브 목록 -->
+  <section class="gm-section ani">
+    <div class="gm-section-header">
+      <span class="gm-section-title">라이브 목록</span>
+    </div>
+    <div class="gm-live-list" id="liveList"></div>
+  </section>
+
+  <!-- 2-1-7. 새 라이브 추가 버튼 -->
+  <div style="padding:0 20px 20px">
+    <button class="gm-new-live-btn" id="newLiveBtn" onclick="createNewLive()">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      새 라이브 만들기
+    </button>
+  </div>
+
+</div>
+
+<!-- 그룹원 관리 바텀시트 -->
+<div class="bottom-sheet-overlay" id="membersOverlay" onclick="closeMembersSheet()"></div>
+<div class="bottom-sheet" id="membersSheet">
+  <div class="bottom-sheet-handle"></div>
+  <div style="font-size:16px;font-weight:700;margin-bottom:16px">그룹원 목록</div>
+  <div id="membersList" style="max-height:300px;overflow-y:auto"></div>
+</div>
+
+<!-- 가입인사 모달 -->
+<div class="modal-wrap" id="joinModal">
+  <div class="modal-box">
+    <div class="modal-title">가입 신청</div>
+    <div style="margin-bottom:14px">
+      <textarea id="joinGreeting" placeholder="가입인사를 입력하세요 (1~100자)" maxlength="100" style="width:100%;padding:10px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:13px;font-family:inherit;outline:none;resize:none;min-height:60px"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn outline" onclick="closeJoinModal()">취소</button>
+      <button class="modal-btn solid" onclick="submitJoin()">보내기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 탈퇴 확인 모달 -->
+<div class="modal-wrap" id="leaveModal">
+  <div class="modal-box">
+    <div class="modal-title">그룹을 탈퇴하시겠습니까?</div>
+    <div class="modal-body">탈퇴 후에는 그룹 채팅과 라이브에 참여할 수 없습니다.</div>
+    <div class="modal-btns">
+      <button class="modal-btn outline" onclick="closeLeaveModal()">취소</button>
+      <button class="modal-btn danger" onclick="confirmLeave()">탈퇴</button>
+    </div>
+  </div>
+</div>
+
+<!-- 권한 없음 모달 -->
+<div class="modal-wrap" id="noPermModal">
+  <div class="modal-box">
+    <div class="modal-title">권한 없음</div>
+    <div class="modal-body" id="noPermMsg">채팅방을 만들 권한이 없습니다.</div>
+    <div class="modal-btns">
+      <button class="modal-btn solid" onclick="document.getElementById('noPermModal').classList.remove('open')">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 스낵바 -->
+<div class="snackbar" id="snackbar"></div>
+
+<nav class="bottom-nav">
+  <a href="{{ url_for('main') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="nav-label">홈</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div><span class="nav-label">운동</span></a>
+  <a href="{{ url_for('group') }}" class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span class="nav-label">그룹</span></a>
+  <a href="{{ url_for('analyze') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><span class="nav-label">분석</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-label">MY</span></a>
+</nav>
+
+<script>
+  window.GROUP_ID = "{{ group_id }}";
+  window.URL_GROUP_LIVE_CREATE = "{{ url_for('group_live_create', group_id=group_id) }}";
+  window.URL_GROUP_CHAT = "{{ url_for('group_chat', group_id=group_id) }}";
+  window.URL_GROUP_LIVE = "{{ url_for('group_live') }}";
+  window.URL_GROUP = "{{ url_for('group') }}";
+</script>
+<script src="{{ url_for('static', filename='js/group_main.js') }}"></script>
+</body>
+</html>
