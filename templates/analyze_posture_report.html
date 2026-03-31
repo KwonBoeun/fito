@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 자세 분석 리포트</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/analyze_posture.css') }}"/>
+</head>
+<body>
+
+<header class="ps-header">
+  <a href="{{ url_for('analyze_posture') }}" class="ps-back">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="ps-header-title">자세 분석 리포트</span>
+</header>
+
+<div class="ps-report-content">
+
+  <!-- ── 리포트 헤더 ── -->
+  <div class="report-hero">
+    <div class="report-hero-title">자세 분석 보고서</div>
+    <div class="report-hero-sub" id="reportDate">2025-03-26</div>
+    <span class="report-hero-badge" id="reportMode">영상 분석</span>
+  </div>
+
+  <!-- ── 운동 요약 ── -->
+  <section class="report-section">
+    <div class="report-section-title">운동 요약</div>
+
+    <div class="report-summary-cards">
+      <div class="report-card">
+        <div class="report-card-label">운동 완료율</div>
+        <div class="report-card-value" id="summaryCompletion">87.5</div>
+        <div class="report-card-unit">%</div>
+      </div>
+      <div class="report-card">
+        <div class="report-card-label">자세 점수</div>
+        <div class="report-card-value" id="summaryScore">76.4</div>
+        <div class="report-card-unit">점</div>
+      </div>
+      <div class="report-card">
+        <div class="report-card-label">운동 시간</div>
+        <div class="report-card-value" id="summaryTime">01:24</div>
+        <div class="report-card-unit">분:초</div>
+      </div>
+    </div>
+
+    <!-- 보완 구간 -->
+    <div class="report-fix-title">보완 구간</div>
+    <div class="report-fix-list" id="fixList">
+      <!-- JS 렌더링 -->
+    </div>
+  </section>
+
+  <!-- ── 세부 분석 1 ── -->
+  <section class="report-section">
+    <div class="report-section-title">세부 분석</div>
+
+    <!-- 자세 피드백 -->
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:#333">자세 피드백</div>
+    <div class="report-feedback-list" id="feedbackList">
+      <!-- JS 렌더링 -->
+    </div>
+
+    <!-- 자세별 정확도 레이더 차트 -->
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:#333">자세별 정확도</div>
+    <div class="report-radar-wrap">
+      <div id="reportRadar"></div>
+      <div class="report-radar-legend" id="radarLegend">
+        <!-- JS 렌더링 -->
+      </div>
+    </div>
+
+    <!-- 추천 사항 -->
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:#333">추천 사항</div>
+    <div class="report-reco-box" id="recoBox">
+      <!-- JS 렌더링 -->
+    </div>
+  </section>
+
+  <!-- ── 세부 분석 2: 추천 운동 영상 ── -->
+  <section class="report-section">
+    <div class="report-section-title">추천 운동 영상</div>
+    <div class="report-video-list" id="videoList">
+      <!-- JS 렌더링 -->
+    </div>
+  </section>
+
+  <!-- 완료 버튼 -->
+  <div class="report-done-btn-wrap">
+    <a href="{{ url_for('analyze') }}" class="ps-btn-primary" style="display:block;text-align:center;text-decoration:none;line-height:1.5">
+      분석 메인으로 돌아가기
+    </a>
+  </div>
+
+</div><!-- /report-content -->
+
+<nav class="bottom-nav">
+  <a href="{{ url_for('main') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="nav-label">홈</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div><span class="nav-label">운동</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="nav-label">그룹</span></a>
+  <a href="{{ url_for('analyze') }}" class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><span class="nav-label">분석</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-label">MY</span></a>
+</nav>
+
+<script src="{{ url_for('static', filename='js/analyze_posture_report.js') }}"></script>
+</body>
+</html>

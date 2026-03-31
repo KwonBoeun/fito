@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 분석</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/analyze.css') }}"/>
+</head>
+<body>
+
+<!-- ── 상단 헤더 ── -->
+<header class="az-header">
+  <span class="az-header-title">분석</span>
+</header>
+
+<!-- ── 스크롤 영역 ── -->
+<div class="az-content">
+
+  <!-- ── 날짜 & 기본 스탯 ── -->
+  <div class="az-stat-bar">
+    <div class="az-date" id="az-date">2025.00.00 (금)</div>
+    <div class="az-stats">
+      <div class="az-stat-item">
+        <span class="az-stat-label">나의 키</span>
+        <span class="az-stat-value" id="stat-height">175cm</span>
+      </div>
+      <div class="az-stat-item">
+        <span class="az-stat-label">나의 체중</span>
+        <span class="az-stat-value" id="stat-weight">68kg</span>
+      </div>
+      <div class="az-stat-item">
+        <span class="az-stat-label">운동 시간</span>
+        <span class="az-stat-value" id="stat-time">01H 20M</span>
+      </div>
+      <div class="az-stat-item">
+        <span class="az-stat-label">칼로리</span>
+        <span class="az-stat-value" id="stat-kcal">0420kcal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════
+       기록 분석
+       ════════════════════════ -->
+  <section class="az-section">
+    <div class="az-section-header">
+      <h2 class="az-section-title">기록 분석</h2>
+      <a href="{{ url_for('analyze_record') }}" class="az-section-link">
+        기록 분석 메인
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+
+    <div class="az-record-cards">
+
+      <!-- 오늘 운동 분석 -->
+      <div class="az-record-card">
+        <div class="az-record-card-title">오늘 운동 분석</div>
+        <div id="today-chart" class="az-today-chart"></div>
+        <div id="today-info"></div>
+      </div>
+
+      <!-- 운동 균형도 -->
+      <div class="az-record-card">
+        <div class="az-record-card-title">운동 균형도</div>
+        <div class="az-balance-wrap">
+          <div id="balance-radar"></div>
+          <div class="az-balance-legend">
+            <div class="az-balance-item"><div class="az-balance-dot" style="background:#000"></div>이번 주</div>
+            <div class="az-balance-item"><div class="az-balance-dot" style="background:#ccc"></div>지난 주</div>
+            <div style="margin-top:4px;font-size:10px;color:#aaa;line-height:1.5">
+              상체 75% &nbsp;하체 55%<br>
+              코어 40% &nbsp;유산소 80%<br>
+              유연성 30%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 내 강점과 취약점 -->
+      <div class="az-record-card">
+        <div class="az-record-card-title">내 강점과 취약점</div>
+        <div class="az-strength-wrap">
+          <div class="az-strength-col" id="strength-good"></div>
+          <div class="az-strength-col" id="strength-weak"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════
+       자세 분석
+       ════════════════════════ -->
+  <section class="az-section">
+    <div class="az-section-header">
+      <h2 class="az-section-title">자세 분석</h2>
+      <a href="{{ url_for('analyze_posture') }}" class="az-section-link">
+        자세 분석 메인
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+
+    <!-- 두 버튼 -->
+    <div class="az-posture-btns">
+      <!-- 영상 업로드 분석 -->
+      <a href="{{ url_for('analyze_posture') }}?mode=upload" class="az-posture-btn">
+        <div class="az-posture-btn-icon">
+          <!-- 업로드 아이콘 (트레이 + 화살표 위) -->
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="15" width="18" height="6" rx="1" ry="1"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <span class="az-posture-btn-label">영상 업로드 분석</span>
+      </a>
+
+      <!-- 실시간 분석 -->
+      <a href="{{ url_for('analyze_posture') }}?mode=realtime" class="az-posture-btn">
+        <div class="az-posture-btn-icon">
+          <!-- 실시간 웨이브 아이콘 -->
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 0 1 0 20"/>
+            <path d="M12 6a6 6 0 0 1 0 12"/>
+            <path d="M12 10a2 2 0 0 1 0 4"/>
+          </svg>
+        </div>
+        <span class="az-posture-btn-label">실시간 분석</span>
+      </a>
+    </div>
+
+    <!-- 최근 분석 기록 -->
+    <div class="az-recent-title">최근 분석 기록</div>
+    <div class="az-recent-list" id="recent-list"></div>
+  </section>
+
+</div><!-- /az-content -->
+
+<!-- ── BOTTOM NAV ── -->
+<nav class="bottom-nav">
+  <a href="{{ url_for('main') }}" class="nav-item">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    <span class="nav-label">홈</span>
+  </a>
+  <a href="#" class="nav-item">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    </div>
+    <span class="nav-label">운동</span>
+  </a>
+  <a href="#" class="nav-item">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <span class="nav-label">그룹</span>
+  </a>
+  <a href="{{ url_for('analyze') }}" class="nav-item active">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    </div>
+    <span class="nav-label">분석</span>
+  </a>
+  <a href="#" class="nav-item">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <span class="nav-label">MY</span>
+  </a>
+</nav>
+
+<script src="{{ url_for('static', filename='js/analyze.js') }}"></script>
+</body>
+</html>

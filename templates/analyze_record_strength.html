@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 강점과 취약점 분석</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/analyze_record.css') }}"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="rc-header">
+  <a href="{{ url_for('analyze_record') }}" class="rc-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
+  <span class="rc-header-title">강점과 취약점 분석</span>
+</header>
+
+<!-- 활성화 조건 미달 시 표시 (JS로 제어) -->
+<div id="inactiveSection" style="display:none;padding:24px 20px">
+  <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:#333">최근 4주 데이터를 분석 중입니다</div>
+  <div style="font-size:13px;color:#666;margin-bottom:14px" id="inactiveMsg">정밀 분석을 위해 조금 더 운동해 볼까요? (현재 60% 달성)</div>
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill" id="inactiveProg" style="width:60%"></div></div>
+    <div class="prog-label" id="inactiveProgLabel">운동 시간: 54분 / 90분 목표</div>
+  </div>
+</div>
+
+<div class="rc-content" id="activeSection">
+
+  <!-- 기간 선택 (공통) -->
+  <div style="padding:12px 20px 0;display:flex;align-items:center;justify-content:space-between">
+    <span style="font-size:13px;font-weight:700;color:#333">최근 4주 데이터를 분석 중입니다</span>
+    <select class="period-dropdown" id="periodSelect" onchange="onPeriodChange(this.value)">
+      <option value="week">1주일</option>
+      <option value="month" selected>1개월</option>
+      <option value="3month">3개월</option>
+      <option value="6month">6개월</option>
+      <option value="year">1년</option>
+    </select>
+  </div>
+
+  <!-- ──── 나의 강점 ──── -->
+  <section class="rc-section rc-no-cursor" style="margin-top:8px">
+    <div class="rc-section-header">
+      <div>
+        <div class="rc-section-title">나의 강점</div>
+        <div style="font-size:14px;font-weight:600;color:#2d9e5e;margin-top:4px" id="strengthTitle">나의 강점은 꾸준한 운동 빈도이에요</div>
+      </div>
+    </div>
+
+    <!-- 정규분포 곡선 -->
+    <div class="distrib-wrap">
+      <div class="distrib-title">나와 비슷한 연령대에서의 위치</div>
+      <div style="height:130px;position:relative">
+        <canvas id="strengthDistrib"></canvas>
+        <div id="strengthPctLabel" style="position:absolute;top:4px;right:8px;font-size:11px;font-weight:700;color:#f5a623">상위 18%</div>
+      </div>
+    </div>
+
+    <!-- 강점 그래프 해석 -->
+    <div class="interpret-box" id="strengthInterpret">
+      <p>나와 비슷한 20대 여성 중 상위 18%에 해당하는 뛰어난 기록입니다.</p>
+      <p>지난 기간 대비 운동 빈도가 23% 상승하며 성장을 지속하고 있습니다.</p>
+    </div>
+
+    <!-- 강점 피드백 -->
+    <div class="feedback-box" id="strengthFeedback">
+      지금의 꾸준함을 유지하기 위해 무리한 증량보다는 정해진 요일에 출석하는 것을 권장해 드려요.
+    </div>
+  </section>
+
+  <!-- ──── 나의 취약점 ──── -->
+  <section class="rc-section rc-no-cursor">
+    <div class="rc-section-header">
+      <div>
+        <div class="rc-section-title">나의 취약점</div>
+        <div style="font-size:14px;font-weight:600;color:#e05c4b;margin-top:4px" id="weaknessTitle">나의 취약점은 운동 집중도이에요</div>
+      </div>
+    </div>
+
+    <!-- 정규분포 곡선 -->
+    <div class="distrib-wrap">
+      <div class="distrib-title">취약점 항목 비교 분포</div>
+      <div style="height:130px;position:relative">
+        <canvas id="weakDistrib"></canvas>
+        <div id="weakPctLabel" style="position:absolute;top:4px;right:8px;font-size:11px;font-weight:700;color:#e05c4b">하위 35%</div>
+      </div>
+    </div>
+
+    <!-- 취약점 그래프 해석 -->
+    <div class="interpret-box" id="weaknessInterpret">
+      <p>나와 비슷한 20대 여성 중 집중도가 하위 35%에 해당해요.</p>
+      <p>현재 집중도 점수가 낮아 전체적인 운동 균형 점수가 낮게 측정되었습니다.</p>
+      <p>내일은 집중도를 보완할 수 있는 저강도 유산소나 스트레칭을 추천해 드려요.</p>
+    </div>
+  </section>
+
+  <!-- ──── 추천 운동 ──── -->
+  <section class="rc-section rc-no-cursor">
+    <div class="rc-section-header"><div class="rc-section-title">추천 운동</div></div>
+    <div class="rec-scroll">
+      <div class="rec-card-row" id="recCardRow"></div>
+    </div>
+  </section>
+
+  <!-- ──── 트레이너 추천 ──── -->
+  <section class="rc-section rc-no-cursor">
+    <div class="rc-section-header">
+      <div class="rc-section-title">트레이너 추천</div>
+      <a href="#" class="see-more">추천 더보기<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></a>
+    </div>
+    <div class="trainer-scroll">
+      <div class="trainer-row" id="trainerRow"></div>
+    </div>
+  </section>
+
+</div>
+
+<nav class="bottom-nav">
+  <a href="{{ url_for('main') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="nav-label">홈</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div><span class="nav-label">운동</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="nav-label">그룹</span></a>
+  <a href="{{ url_for('analyze') }}" class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><span class="nav-label">분석</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-label">MY</span></a>
+</nav>
+<script src="{{ url_for('static', filename='js/analyze_record_strength.js') }}"></script>
+</body>
+</html>
