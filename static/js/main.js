@@ -167,18 +167,19 @@ function feedHtml(type, d) {
   const meta   = isLive
     ? `<span class="feed-meta">${fmt(d.viewers)}명 시청 중</span>`
     : `<span class="feed-meta">조회수 ${fmt(d.views)} · ${timeAgo(d.h)}</span>`;
-  return `<div class="feed-unit ani"><div class="feed-thumb">${badge}</div><div class="feed-info"><div class="feed-title">${d.title}</div><div class="feed-author"><div class="adot"></div><span>${d.author}</span></div>${meta}<div class="feed-tags">${tagsHtml(d.tags)}</div></div></div><div class="unit-div"></div>`;
+  const url = isLive ? `/live/${d.id}` : `/vod/${d.id}`;
+  return `<div class="feed-unit ani" onclick="location.href='${url}'" style="cursor:pointer"><div class="feed-thumb">${badge}</div><div class="feed-info"><div class="feed-title">${d.title}</div><div class="feed-author"><div class="adot"></div><span>${d.author}</span></div>${meta}<div class="feed-tags">${tagsHtml(d.tags)}</div></div></div><div class="unit-div"></div>`;
 }
 
 /* FITS 3열 묶음 */
 function fits3Html(items) {
-  const cells = items.map(f => `<div class="fits-cell"><div class="fits-cell-thumb"></div><div class="fits-cell-author"><div class="adot"></div><span>${f.author}</span></div><div class="fits-cell-title">${f.title}</div></div>`).join('');
+  const cells = items.map(f => `<div class="fits-cell" onclick="location.href='/fits/${f.id}'" style="cursor:pointer"><div class="fits-cell-thumb"></div><div class="fits-cell-author"><div class="adot"></div><span>${f.author}</span></div><div class="fits-cell-title">${f.title}</div></div>`).join('');
   return `<div class="fits3-unit ani"><div class="fits3-grid">${cells}</div></div><div class="unit-div"></div>`;
 }
 
 /* FITS 2열 묶음 (FITS 카테고리 추천 - 2개씩 묶음) */
 function fits2Html(items) {
-  const cells = items.map(f => `<div class="fits2-cell"><div class="fits2-thumb"></div><div class="fits2-author"><div class="adot"></div><span>${f.author}</span></div><div class="fits2-title">${f.title}</div></div>`).join('');
+  const cells = items.map(f => `<div class="fits2-cell" onclick="location.href='/fits/${f.id}'" style="cursor:pointer"><div class="fits2-thumb"></div><div class="fits2-author"><div class="adot"></div><span>${f.author}</span></div><div class="fits2-title">${f.title}</div></div>`).join('');
   return `<div class="fits2-unit ani"><div class="fits2-grid">${cells}</div></div><div class="unit-div"></div>`;
 }
 
@@ -190,7 +191,7 @@ function comRecHtml(items) {
 
   const colHtml = (col, startIdx) => col.map((d, i) => {
     const imgH = IMG_HEIGHTS[(startIdx + i) % IMG_HEIGHTS.length];
-    return `<div class="com-rec-item ani">
+    return `<div class="com-rec-item ani" onclick="location.href='/community/${d.id}'" style="cursor:pointer">
       <div class="com-rec-img" style="height:${imgH}px"></div>
       <div class="com-rec-footer">
         <div class="com-rec-header">
@@ -220,7 +221,7 @@ function qCardHtml(d) {
   const imgHtml = d.hasImg
     ? `<div class="q-card-img"><div class="q-card-img-half"></div><div class="q-card-img-half"></div></div>`
     : '';
-  return `<div class="q-card ani">
+  return `<div class="q-card ani" onclick="location.href='/question/${d.id}'" style="cursor:pointer">
     <div class="q-card-hdr">
       <div class="q-card-author">
         <div class="q-card-pic"></div>
@@ -247,9 +248,10 @@ function qCardHtml(d) {
 }
 
 /* ─ 전체 카테고리: 커뮤니티 슬라이드 (가로형: 정사각형 이미지 + 우측 텍스트) ─ */
-function buildAllComSlide(d) {
-  return `<div class="pop-slide">
-    <div class="com-pop-slide">
+/* ─ 전체 카테고리: 커뮤니티 슬라이드 (가로형 1열 2행) ─ */
+function buildAllComSlide(items) {
+  const rows = (Array.isArray(items) ? items : [items]).map(d =>
+    `<div class="com-pop-slide" onclick="location.href='/community/${d.id}'" style="cursor:pointer">
       <div class="com-pop-sq-img"></div>
       <div class="com-pop-right">
         <div class="com-pop-username">@${d.author}</div>
@@ -262,22 +264,29 @@ function buildAllComSlide(d) {
           <span class="com-pop-time">${timeAgo(d.h)}</span>
         </div>
       </div>
-    </div>
-  </div>`;
+    </div>`
+  ).join('');
+  return `<div class="pop-slide"><div class="com-pop-stack">${rows}</div></div>`;
 }
 
-/* ─ 전체 카테고리: 질문 슬라이드 (2열 카드) ─ */
+/* ─ 전체 카테고리: 질문 슬라이드 (가로형 1열 2행, 커뮤니티와 동일 크기) ─ */
 function buildAllQSlide(pair) {
-  const cards = pair.map(q => `<div class="qpop-card">
-    <div class="qpop-title">${q.title}</div>
-    <div class="qpop-body">${q.body}</div>
-    <div class="qpop-tags">${tagsHtml(q.tags)}</div>
-    <div class="qpop-footer">
-      <div class="qpop-reactions"><div class="rc">${HEART}${fmt(q.likes)}</div><div class="rc">${COMMENT}${fmt(q.comments)}</div><div class="rc">${BOOKMARK}${fmt(q.bookmarks)}</div></div>
-      <span class="qpop-time">${timeAgo(q.h)}</span>
-    </div>
-  </div>`).join('');
-  return `<div class="pop-slide"><div class="slide-2col">${cards}</div></div>`;
+  const rows = pair.map(q =>
+    `<div class="q-pop-row" onclick="location.href='/question/${q.id}'" style="cursor:pointer">
+      <div class="q-pop-row-body">
+        <div class="q-pop-row-title">${q.title}</div>
+        <div class="q-pop-row-text">${q.body}</div>
+        <div class="q-pop-row-tags">${tagsHtml(q.tags)}</div>
+        <div class="q-pop-row-footer">
+          <div class="rc">${HEART}${fmt(q.likes)}</div>
+          <div class="rc">${COMMENT}${fmt(q.comments)}</div>
+          <div class="rc">${BOOKMARK}${fmt(q.bookmarks)}</div>
+          <span class="q-pop-row-time">${timeAgo(q.h)}</span>
+        </div>
+      </div>
+    </div>`
+  ).join('');
+  return `<div class="pop-slide"><div style="display:flex;flex-direction:column;gap:8px">${rows}</div></div>`;
 }
 
 /* 스켈레톤 */
@@ -290,19 +299,19 @@ function buildAllPopSlides() {
   const liveTop = [...LIVE_DATA].sort((a,b) => b.viewers - a.viewers)[0];
   const vodTop  = [...VOD_DATA].sort((a,b) => popScore(b.views,b.h) - popScore(a.views,a.h))[0];
   const fitsTop = [...FITS_DATA].sort((a,b) => popScore(b.views,b.h) - popScore(a.views,a.h)).slice(0,2);
-  const comTop  = [...COM_DATA].sort((a,b) => popScore(b.likes,b.h) - popScore(a.likes,a.h))[0];
+  const comTop  = [...COM_DATA].sort((a,b) => popScore(b.likes,b.h) - popScore(a.likes,a.h)).slice(0,2);
   const qTop    = [...Q_DATA].sort((a,b) => popScore(b.likes,b.h) - popScore(a.likes,a.h)).slice(0,2);
 
   return [
     /* 라이브 - 16:9 */
-    `<div class="pop-slide"><div class="slide-thumb-169">${liveBadge(liveTop.viewers)}</div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${liveTop.title}</div><div class="slide-author">${liveTop.author}</div><div class="tags">${tagsHtml(liveTop.tags)}</div></div></div></div>`,
+    `<div class="pop-slide" onclick="location.href='/live/${liveTop.id}'" style="cursor:pointer"><div class="slide-thumb-169">${liveBadge(liveTop.viewers)}</div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${liveTop.title}</div><div class="slide-author">${liveTop.author}</div><div class="tags">${tagsHtml(liveTop.tags)}</div></div></div></div>`,
     /* VOD - 16:9 */
-    `<div class="pop-slide"><div class="slide-thumb-169"></div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${vodTop.title}</div><div class="slide-author">${vodTop.author}</div><div class="slide-sub">조회수 ${fmt(vodTop.views)} · ${timeAgo(vodTop.h)}</div><div class="tags">${tagsHtml(vodTop.tags)}</div></div></div></div>`,
+    `<div class="pop-slide" onclick="location.href='/vod/${vodTop.id}'" style="cursor:pointer"><div class="slide-thumb-169"></div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${vodTop.title}</div><div class="slide-author">${vodTop.author}</div><div class="slide-sub">조회수 ${fmt(vodTop.views)} · ${timeAgo(vodTop.h)}</div><div class="tags">${tagsHtml(vodTop.tags)}</div></div></div></div>`,
     /* FITS - 2개 */
-    `<div class="pop-slide"><div class="slide-2col">${fitsTop.map(f => `<div class="fits-pop-card"><div class="fits-pop-thumb"></div><div class="fits-pop-author"><div class="adot"></div><span>${f.author}</span></div><div class="fits-pop-title">${f.title}</div></div>`).join('')}</div></div>`,
+    `<div class="pop-slide"><div class="slide-2col">${fitsTop.map(f => `<div class="fits-pop-card" onclick="location.href='/fits/${f.id}'" style="cursor:pointer"><div class="fits-pop-thumb"></div><div class="fits-pop-author"><div class="adot"></div><span>${f.author}</span></div><div class="fits-pop-title">${f.title}</div></div>`).join('')}</div></div>`,
     /* 커뮤니티 - 가로형 */
     buildAllComSlide(comTop),
-    /* 질문 - 2열 카드 */
+    /* 질문 - 가로형 */
     buildAllQSlide(qTop),
   ];
 }
@@ -311,12 +320,12 @@ function buildAllPopSlides() {
 function buildCatPopSlides(type) {
   if (type === 'live') {
     return [...LIVE_DATA].sort((a,b) => b.viewers - a.viewers).slice(0,5).map(d =>
-      `<div class="pop-slide"><div class="slide-thumb-169">${liveBadge(d.viewers)}</div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${d.title}</div><div class="slide-author">${d.author}</div><div class="slide-sub">${fmt(d.viewers)}명 시청 중</div><div class="tags">${tagsHtml(d.tags)}</div></div></div></div>`
+      `<div class="pop-slide" onclick="location.href='/live/${d.id}'" style="cursor:pointer"><div class="slide-thumb-169">${liveBadge(d.viewers)}</div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${d.title}</div><div class="slide-author">${d.author}</div><div class="slide-sub">${fmt(d.viewers)}명 시청 중</div><div class="tags">${tagsHtml(d.tags)}</div></div></div></div>`
     );
   }
   if (type === 'vod') {
     return [...VOD_DATA].sort((a,b) => popScore(b.views,b.h)-popScore(a.views,a.h)).slice(0,5).map(d =>
-      `<div class="pop-slide"><div class="slide-thumb-169"></div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${d.title}</div><div class="slide-author">${d.author}</div><div class="slide-sub">조회수 ${fmt(d.views)} · ${timeAgo(d.h)}</div><div class="tags">${tagsHtml(d.tags)}</div></div></div></div>`
+      `<div class="pop-slide" onclick="location.href='/vod/${d.id}'" style="cursor:pointer"><div class="slide-thumb-169"></div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${d.title}</div><div class="slide-author">${d.author}</div><div class="slide-sub">조회수 ${fmt(d.views)} · ${timeAgo(d.h)}</div><div class="tags">${tagsHtml(d.tags)}</div></div></div></div>`
     );
   }
   if (type === 'fits') {
@@ -325,7 +334,7 @@ function buildCatPopSlides(type) {
     const slides = [];
     for (let i = 0; i < sorted.length; i += 2) {
       const pair = sorted.slice(i, i+2);
-      slides.push(`<div class="pop-slide"><div class="slide-2col">${pair.map(f => `<div class="fits-pop-card"><div class="fits-pop-thumb"></div><div class="fits-pop-author"><div class="adot"></div><span>${f.author}</span></div><div class="fits-pop-title">${f.title}</div></div>`).join('')}</div></div>`);
+      slides.push(`<div class="pop-slide"><div class="slide-2col">${pair.map(f => `<div class="fits-pop-card" onclick="location.href='/fits/${f.id}'" style="cursor:pointer"><div class="fits-pop-thumb"></div><div class="fits-pop-author"><div class="adot"></div><span>${f.author}</span></div><div class="fits-pop-title">${f.title}</div></div>`).join('')}</div></div>`);
     }
     return slides;
   }
@@ -356,21 +365,59 @@ function buildAndInitCarousel(containerId, slides) {
   initCarousel(track, dotsEl);
 }
 
-/* ── 캐러셀 팩토리 ── */
+/* ── 캐러셀 팩토리 (snap 스와이프 + 자동 슬라이드) ── */
 function initCarousel(trackEl, dotsEl) {
   const dots = dotsEl.querySelectorAll('.dot');
   let cur = 0, timer;
+  let tx = 0, ty = 0, dragging = false, moved = false;
+
   function go(n) {
     cur = (n + dots.length) % dots.length;
-    trackEl.style.transform = `translateX(-${cur * 100}%)`;
+    trackEl.style.transition = 'transform .3s cubic-bezier(.4,0,.2,1)';
+    trackEl.style.transform  = `translateX(-${cur * 100}%)`;
     dots.forEach((d,i) => d.classList.toggle('active', i === cur));
   }
-  function start() { timer = setInterval(() => go(cur+1), 3500); }
+  function start() { timer = setInterval(() => go(cur + 1), 3500); }
   function stop()  { clearInterval(timer); }
+
   dots.forEach((d,i) => d.addEventListener('click', () => { stop(); go(i); start(); }));
-  let tx = 0;
-  trackEl.parentElement.addEventListener('touchstart', e => { tx = e.touches[0].clientX; stop(); }, {passive:true});
-  trackEl.parentElement.addEventListener('touchend',   e => { const d = tx - e.changedTouches[0].clientX; if (Math.abs(d)>40) go(cur+(d>0?1:-1)); start(); });
+
+  const wrap = trackEl.parentElement;
+
+  wrap.addEventListener('touchstart', e => {
+    tx = e.touches[0].clientX;
+    ty = e.touches[0].clientY;
+    dragging = true; moved = false;
+    stop();
+    trackEl.style.transition = 'none';
+  }, {passive:true});
+
+  wrap.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    const dx = e.touches[0].clientX - tx;
+    const dy = e.touches[0].clientY - ty;
+    /* 세로 스크롤 의도면 캐러셀 무시 */
+    if (!moved && Math.abs(dy) > Math.abs(dx)) { dragging = false; start(); return; }
+    moved = true;
+    /* 실시간으로 손가락 따라 이동 (snap 느낌) */
+    const offset = -(cur * 100) + (dx / wrap.offsetWidth * 100);
+    trackEl.style.transform = `translateX(${offset}%)`;
+  }, {passive:true});
+
+  wrap.addEventListener('touchend', e => {
+    if (!dragging) return;
+    dragging = false;
+    const dx = e.changedTouches[0].clientX - tx;
+    /* 30px 이상 끌었을 때 페이지 전환, 아니면 제자리로 snap */
+    if (Math.abs(dx) > 30) {
+      go(cur + (dx < 0 ? 1 : -1));
+    } else {
+      trackEl.style.transition = 'transform .3s cubic-bezier(.4,0,.2,1)';
+      trackEl.style.transform  = `translateX(-${cur * 100}%)`;
+    }
+    start();
+  });
+
   start();
 }
 
@@ -399,8 +446,8 @@ function renderRecommendFeed(containerId, type) {
         if (item.t==='vod')       return feedHtml('vod',  item.d);
         if (item.t==='fits3')     return fits3Html(item.items);
         /* 전체 커뮤니티/질문 유닛은 간략 단일 카드형 유지 */
-        if (item.t==='community') return `<div class="com-unit ani" style="padding:10px 16px;cursor:pointer;border-bottom:1px solid #f2f2f2"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:28px;height:28px;border-radius:50%;background:#e5e5e5;flex-shrink:0"></div><span style="font-size:12px;font-weight:600">@${item.d.author}</span></div><div style="font-size:13px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:4px">${item.d.content}</div><div style="display:flex;gap:4px;margin-bottom:4px">${tagsHtml(item.d.tags)}</div><div style="display:flex;gap:8px;font-size:11px;color:#666">${HEART}${fmt(item.d.likes)}&nbsp;${COMMENT}${fmt(item.d.comments)}&nbsp;<span style="margin-left:auto;color:#999">${timeAgo(item.d.h)}</span></div></div>`;
-        if (item.t==='question')  return `<div style="padding:12px 16px;cursor:pointer;border-bottom:1px solid #f2f2f2" class="ani"><div style="font-size:13px;font-weight:600;margin-bottom:3px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${item.d.title}</div><div style="font-size:12px;color:#666;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:4px">${item.d.body}</div><div style="display:flex;gap:8px;font-size:11px;color:#666">${HEART}${fmt(item.d.likes)}&nbsp;${COMMENT}${fmt(item.d.comments)}&nbsp;<span style="margin-left:auto;color:#999">${timeAgo(item.d.h)}</span></div></div>`;
+        if (item.t==='community') return `<div class="com-unit ani" onclick="location.href='/community/${item.d.id}'" style="padding:10px 16px;cursor:pointer;border-bottom:1px solid #f2f2f2"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:28px;height:28px;border-radius:50%;background:#e5e5e5;flex-shrink:0"></div><span style="font-size:12px;font-weight:600">@${item.d.author}</span></div><div style="font-size:13px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:4px">${item.d.content}</div><div style="display:flex;gap:4px;margin-bottom:4px">${tagsHtml(item.d.tags)}</div><div style="display:flex;gap:8px;font-size:11px;color:#666">${HEART}${fmt(item.d.likes)}&nbsp;${COMMENT}${fmt(item.d.comments)}&nbsp;<span style="margin-left:auto;color:#999">${timeAgo(item.d.h)}</span></div></div>`;
+        if (item.t==='question')  return `<div onclick="location.href='/question/${item.d.id}'" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid #f2f2f2" class="ani"><div style="font-size:13px;font-weight:600;margin-bottom:3px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${item.d.title}</div><div style="font-size:12px;color:#666;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:4px">${item.d.body}</div><div style="display:flex;gap:8px;font-size:11px;color:#666">${HEART}${fmt(item.d.likes)}&nbsp;${COMMENT}${fmt(item.d.comments)}&nbsp;<span style="margin-left:auto;color:#999">${timeAgo(item.d.h)}</span></div></div>`;
         return '';
       }).join('');
 

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 질문</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}"/>
+  <style>
+    .q-author-row{display:flex;align-items:center;gap:10px;padding:14px 16px 8px}
+    .q-author-pic{width:40px;height:40px;border-radius:50%;background:var(--gray-200);flex-shrink:0}
+    .q-author-name{font-size:14px;font-weight:700;flex:1}
+    .q-title{font-size:18px;font-weight:800;padding:6px 16px 8px;line-height:1.4}
+    .q-body{font-size:14px;color:var(--gray-500);padding:0 16px 10px;line-height:1.65;
+      white-space:pre-wrap;word-break:break-all}
+    .q-img-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:0 16px 10px}
+    .q-img-item{aspect-ratio:1/1;background:var(--gray-200);border-radius:var(--r-sm)}
+    .q-tags-row{display:flex;flex-wrap:wrap;gap:5px;padding:0 16px 12px}
+    .q-reaction-bar{display:flex;align-items:center;gap:0;padding:0 16px 12px;
+      border-bottom:1px solid var(--gray-200)}
+    .q-reaction-bar .rc-btn{gap:5px;font-size:13px;color:var(--gray-500);padding:4px 10px 4px 0}
+    .q-reaction-bar .rc-btn svg{width:18px;height:18px}
+    .answer-section{padding:14px 16px}
+    .answer-section-title{font-size:14px;font-weight:700;margin-bottom:14px}
+    /* 채택된 답변 강조 */
+    .answer-item.accepted{
+      border-left:3px solid #1a73e8;padding-left:10px;
+      background:linear-gradient(to right, #f0f6ff, transparent);
+      border-radius:0 var(--r-md) var(--r-md) 0;
+    }
+    .accepted-badge{font-size:10px;font-weight:700;color:#1a73e8;
+      background:#e8f0fe;padding:2px 7px;border-radius:var(--r-full);margin-left:6px}
+  </style>
+</head>
+<body>
+
+<header class="dt-header">
+  <button class="dt-back" onclick="history.back()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="dt-header-title">질문</span>
+  <button class="dt-sub-btn" id="sub-btn">구독</button>
+  <button class="dt-more" id="more-btn">
+    <svg viewBox="0 0 24 24" width="20" height="20">
+      <circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>
+    </svg>
+  </button>
+</header>
+
+<div class="q-author-row">
+  <div class="q-author-pic"></div>
+  <span class="q-author-name" id="q-author"></span>
+</div>
+
+<div class="q-title" id="q-title"></div>
+<div class="q-body" id="q-body"></div>
+<div class="q-img-grid" id="q-imgs" style="display:none">
+  <div class="q-img-item"></div>
+  <div class="q-img-item"></div>
+</div>
+<div class="q-tags-row" id="q-tags"></div>
+
+<div class="q-reaction-bar">
+  <button class="rc-btn" id="like-btn">
+    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <span id="like-cnt">0</span>
+  </button>
+  <button class="rc-btn">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span id="comment-cnt">0</span>
+  </button>
+  <button class="rc-btn">
+    <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    <span id="bookmark-cnt">0</span>
+  </button>
+</div>
+
+<div class="answer-section">
+  <div class="answer-section-title" id="answer-title">답변 0개</div>
+  <div id="answer-list"></div>
+</div>
+
+<div class="scroll-pad"></div>
+
+<div class="comment-input-bar">
+  <div class="comment-input-pic"></div>
+  <div class="comment-input-wrap">
+    <input type="text" placeholder="댓글 작성" id="comment-input"/>
+  </div>
+  <button class="comment-send" id="comment-send">
+    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<div class="more-popup" id="more-popup">
+  <div class="more-popup-bg" id="more-bg"></div>
+  <div class="more-popup-box" style="top:56px;right:12px">
+    <div class="more-popup-item">공유하기</div>
+    <div class="more-popup-item danger">신고하기</div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/question_detail.js') }}"></script>
+</body>
+</html>

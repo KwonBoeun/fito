@@ -1,0 +1,90 @@
+/* ── FITO Detail Pages — Shared CSS ── */
+:root {
+  --black:#000; --white:#fff;
+  --gray-50:#f9f9f9; --gray-100:#f2f2f2; --gray-200:#e5e5e5;
+  --gray-300:#ccc;   --gray-400:#999;    --gray-500:#666;
+  --live-red:#e8161c; --live-bg:#111;
+  --tag-color:#4b668b;
+  --r-sm:6px; --r-md:10px; --r-full:999px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{
+  height:100%;background:var(--white);color:var(--black);font-size:14px;
+  font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  line-height:1.5;overscroll-behavior:none;
+  /* ── 9:16 비율 고정 (메인화면과 동일) ── */
+  max-width:390px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+
+/* ── 공통 헤더 ── */
+.dt-header{position:sticky;top:0;z-index:200;display:flex;align-items:center;
+  height:52px;padding:0 16px;background:var(--white);border-bottom:1px solid var(--gray-200);gap:10px}
+.dt-back{width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border-radius:50%;background:none;border:none;flex-shrink:0}
+.dt-back svg{width:22px;height:22px;stroke:var(--black);stroke-width:2;fill:none}
+.dt-header-title{font-size:16px;font-weight:700;flex:1}
+.dt-more{width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;background:none;border:none;flex-shrink:0}
+.dt-more svg{width:20px;height:20px;fill:var(--black)}
+.dt-sub-btn{padding:5px 14px;border-radius:var(--r-full);font-size:12px;font-weight:600;
+  border:1.5px solid var(--black);background:var(--white);cursor:pointer;white-space:nowrap}
+
+/* ── 해시태그 ── */
+.hashtag{color:var(--tag-color);font-size:12px;font-weight:500}
+
+/* ── 반응 아이콘 ── */
+.reaction-row{display:flex;align-items:center;gap:14px}
+.rc-btn{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--gray-500);
+  background:none;border:none;cursor:pointer;padding:0}
+.rc-btn svg{width:16px;height:16px;stroke:var(--gray-500);fill:none;stroke-width:2}
+.rc-btn.liked svg{stroke:var(--live-red);fill:var(--live-red)}
+
+/* ── 구분선 ── */
+.divider{height:8px;background:var(--gray-100);margin:0}
+.line-div{height:1px;background:var(--gray-200);margin:0 16px}
+
+/* ── 댓글 공통 ── */
+.comment-section{padding:16px}
+.comment-section-title{font-size:14px;font-weight:700;margin-bottom:14px}
+.comment-item{display:flex;gap:10px;margin-bottom:16px}
+.comment-pic{width:32px;height:32px;border-radius:50%;background:var(--gray-200);flex-shrink:0}
+.comment-body{flex:1;min-width:0}
+.comment-author{font-size:12px;font-weight:600;margin-bottom:2px}
+.comment-author .owner{color:#1a73e8}
+.comment-text{font-size:13px;line-height:1.5;word-break:break-all}
+.comment-meta{display:flex;align-items:center;gap:12px;margin-top:4px;font-size:11px;color:var(--gray-400)}
+.reply-toggle{font-size:11px;color:var(--gray-500);background:none;border:none;cursor:pointer;
+  padding:4px 0;display:flex;align-items:center;gap:4px}
+.reply-list{margin-top:10px;padding-left:0}
+.reply-item{display:flex;gap:8px;margin-bottom:12px}
+.reply-pic{width:26px;height:26px;border-radius:50%;background:var(--gray-200);flex-shrink:0}
+
+/* ── 하단 댓글 입력창 ── */
+.comment-input-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:390px;z-index:200;
+  background:var(--white);border-top:1px solid var(--gray-200);
+  padding:10px 16px;padding-bottom:max(10px, env(safe-area-inset-bottom));
+  display:flex;align-items:center;gap:10px}
+.comment-input-pic{width:32px;height:32px;border-radius:50%;background:var(--gray-200);flex-shrink:0}
+.comment-input-wrap{flex:1;display:flex;align-items:center;background:var(--gray-100);
+  border-radius:var(--r-full);padding:8px 14px;gap:8px}
+.comment-input-wrap input{flex:1;border:none;background:none;outline:none;
+  font-size:13px;font-family:inherit;color:var(--black)}
+.comment-input-wrap input::placeholder{color:var(--gray-400)}
+.comment-send{width:32px;height:32px;border-radius:50%;background:var(--black);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.comment-send svg{width:14px;height:14px;stroke:var(--white);fill:none;stroke-width:2.5}
+
+/* ── 더보기 팝업 ── */
+.more-popup{position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:390px;z-index:500;display:none;pointer-events:none}
+.more-popup.open{display:block;pointer-events:all}
+.more-popup-bg{position:absolute;inset:0}
+.more-popup-box{position:absolute;background:var(--white);border-radius:var(--r-md);
+  box-shadow:0 4px 20px rgba(0,0,0,.15);overflow:hidden;min-width:140px}
+.more-popup-item{padding:13px 18px;font-size:14px;cursor:pointer;white-space:nowrap}
+.more-popup-item:active{background:var(--gray-100)}
+.more-popup-item.danger{color:var(--live-red)}
+
+/* ── 스크롤 패딩 (하단 입력창 높이만큼) ── */
+.scroll-pad{height:70px}
