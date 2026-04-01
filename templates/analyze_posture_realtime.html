@@ -28,7 +28,7 @@
   </style>
 </head>
 <body>
-
+<div class="app-wrap">
 <!-- 헤더 -->
 <div class="rt-header">
   <div class="rt-back" onclick="tapScreen()">
@@ -175,5 +175,6 @@
   window.RT_URL_REPORT  = "{{ url_for('analyze_posture_report') }}";
 </script>
 <script src="{{ url_for('static', filename='js/analyze_posture_realtime.js') }}"></script>
+</div>
 </body>
 </html>
