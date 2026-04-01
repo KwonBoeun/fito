@@ -12,15 +12,6 @@
   <a href="{{ url_for('analyze_record') }}" class="rc-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
   <span class="rc-header-title">나의 운동 분석</span>
   <div class="rc-header-right">
-    <div style="position:relative">
-      <div class="more-btn" onclick="toggleMore()"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></div>
-      <div class="more-dropdown" id="moreDropdown">
-        <div class="more-dd-item" onclick="closeMore()">기록 추가</div>
-        <div class="more-dd-item" onclick="closeMore()">기록 수정</div>
-        <div class="more-dd-item" onclick="closeMore()">순서 편집</div>
-        <div class="more-dd-item danger" onclick="showResetModal()">기록 초기화</div>
-      </div>
-    </div>
   </div>
 </header>
 
@@ -51,7 +42,17 @@
 
   <!-- 오늘 한 운동 리스트 -->
   <section class="rc-section rc-no-cursor">
-    <div class="rc-section-header"><div class="rc-section-title">오늘 한 운동</div></div>
+    <div class="rc-section-header"><div class="rc-section-title">오늘 한 운동</div>
+    <div style="position:relative">
+      <div class="more-btn" onclick="toggleMore()"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></div>
+      <div class="more-dropdown" id="moreDropdown">
+        <div class="more-dd-item" onclick="closeMore()">기록 추가</div>
+        <div class="more-dd-item" onclick="closeMore()">기록 수정</div>
+        <div class="more-dd-item" onclick="closeMore()">순서 편집</div>
+        <div class="more-dd-item danger" onclick="showResetModal()">기록 초기화</div>
+      </div>
+    </div>
+    </div>
     <div class="workout-list-wrap">
       <div class="workout-list" id="workoutList"></div>
     </div>

@@ -45,13 +45,65 @@ html,body{font-family:'Noto Sans KR',sans-serif;background:var(--white);color:va
 .rc-no-cursor{cursor:default}
 .rc-no-cursor:active{background:none}
 
-/* ── 기간 버튼 ── */
-.period-bar{display:flex;gap:6px;padding:12px 16px;border-bottom:1px solid var(--gray-100);overflow-x:auto;scrollbar-width:none;background:var(--white);position:sticky;top:52px;z-index:90}
-.period-bar::-webkit-scrollbar{display:none}
-.period-btn{flex-shrink:0;padding:6px 14px;border-radius:var(--r-full);font-size:13px;font-weight:500;border:1.5px solid var(--gray-200);background:var(--white);cursor:pointer;font-family:inherit;transition:all .15s}
-.period-btn.active{background:var(--black);color:var(--white);border-color:var(--black)}
-.period-cal-btn{margin-left:auto;flex-shrink:0;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--gray-500);cursor:pointer;padding:4px 8px;border:1.5px solid var(--gray-200);border-radius:var(--r-full);background:var(--white);font-family:inherit}
-.period-cal-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+/* 전체 바 */
+.period-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gray-100);
+  background: var(--white);
+  position: sticky;
+  top: 52px;
+  z-index: 90;
+}
+
+/*  스크롤 영역만 따로 */
+.period-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 0;          
+  white-space: nowrap;
+  max-width: calc(100% - 80px);
+}
+
+.period-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* 기존 버튼 유지 */
+.period-btn {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: var(--r-full);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1.5px solid var(--gray-200);
+  background: var(--white);
+}
+
+.period-cal-btn {
+  flex-shrink: 0;
+  margin-left: 8px;   
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  font-size: 12px;
+  color: var(--gray-500);
+  cursor: pointer;
+
+  padding: 6px 10px;  
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--r-full);
+  background: var(--white);
+
+  white-space: nowrap; 
+}
 
 /* ── 차트 ── */
 .chart-wrap{background:var(--gray-50);border-radius:var(--r-md);padding:16px;margin-bottom:16px}
