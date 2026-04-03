@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - FITS</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}"/>
+  <style>
+    html,body{height:100%;overflow:hidden;background:#000}
+    /* ── 전체 화면 세로 스크롤 컨테이너 ── */
+    .fits-container{
+      height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;
+      scroll-behavior:smooth;-webkit-overflow-scrolling:touch;
+    }
+    .fits-container::-webkit-scrollbar{display:none}
+    /* ── 개별 FITS 슬라이드 ── */
+    .fits-slide{
+      height:100vh;width:100%;scroll-snap-align:start;
+      position:relative;background:var(--gray-200);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;
+    }
+    /* 상단 레이블 */
+    .fits-label{
+      position:absolute;top:0;left:0;right:0;z-index:10;
+      padding:max(16px, env(safe-area-inset-top)) 16px 0;
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .fits-label-title{color:#fff;font-size:17px;font-weight:800;
+      text-shadow:0 1px 4px rgba(0,0,0,.6)}
+    .fits-back{background:none;border:none;cursor:pointer;padding:4px;
+      display:flex;align-items:center;justify-content:center}
+    .fits-back svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2.5;
+      filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))}
+    /* 우측 액션 버튼 */
+    .fits-actions{
+      position:absolute;right:14px;bottom:100px;z-index:10;
+      display:flex;flex-direction:column;align-items:center;gap:22px;
+    }
+    .fits-action-btn{
+      display:flex;flex-direction:column;align-items:center;gap:4px;
+      background:none;border:none;cursor:pointer;
+    }
+    .fits-action-icon{
+      width:44px;height:44px;border-radius:50%;
+      background:rgba(0,0,0,.4);backdrop-filter:blur(4px);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .fits-action-icon svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2}
+    .fits-action-btn.liked .fits-action-icon svg{stroke:#ff4d6d;fill:#ff4d6d}
+    .fits-action-count{color:#fff;font-size:11px;font-weight:600;
+      text-shadow:0 1px 3px rgba(0,0,0,.6)}
+    /* 하단 정보 */
+    .fits-bottom{
+      position:absolute;bottom:0;left:0;right:0;z-index:10;
+      padding:20px 16px max(20px,env(safe-area-inset-bottom));
+      background:linear-gradient(transparent, rgba(0,0,0,.65));
+    }
+    .fits-author-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .fits-author-pic{width:36px;height:36px;border-radius:50%;
+      background:var(--gray-300);border:2px solid #fff;flex-shrink:0}
+    .fits-author-name{color:#fff;font-size:14px;font-weight:700;
+      text-shadow:0 1px 3px rgba(0,0,0,.7)}
+    .fits-author-sub{padding:3px 10px;border-radius:var(--r-full);border:1.5px solid #fff;
+      color:#fff;font-size:12px;font-weight:600;background:none;cursor:pointer;margin-left:4px}
+    .fits-title{color:#fff;font-size:14px;font-weight:500;line-height:1.5;
+      text-shadow:0 1px 3px rgba(0,0,0,.7);margin-bottom:4px}
+    .fits-tags{display:flex;flex-wrap:wrap;gap:6px}
+    .fits-tag{color:rgba(255,255,255,.85);font-size:12px;font-weight:500}
+    /* 댓글 드로어 */
+    .fits-comment-drawer{
+      position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
+      width:100%;max-width:390px;z-index:300;
+      background:var(--white);border-radius:16px 16px 0 0;
+      transition:transform .3s cubic-bezier(.4,0,.2,1);
+      max-height:60vh;display:flex;flex-direction:column;
+    }
+    .fits-comment-drawer.open{transform:translateX(-50%) translateY(0)}
+    .fits-drawer-handle{width:36px;height:4px;background:var(--gray-300);
+      border-radius:2px;margin:10px auto 8px}
+    .fits-drawer-title{font-size:14px;font-weight:700;padding:0 16px 10px;
+      border-bottom:1px solid var(--gray-200)}
+    .fits-drawer-body{flex:1;overflow-y:auto;padding:12px 16px}
+    .fits-comment-bar{padding:10px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom));
+      border-top:1px solid var(--gray-200);display:flex;align-items:center;gap:8px}
+    .fits-comment-bar input{flex:1;background:var(--gray-100);border:none;outline:none;
+      border-radius:var(--r-full);padding:8px 14px;font-size:13px;font-family:inherit}
+    .fits-drawer-bg{position:fixed;inset:0;z-index:290;display:none}
+    .fits-comment-drawer.open ~ .fits-drawer-bg{display:block}
+  </style>
+</head>
+<body>
+
+<div class="fits-container" id="fits-container">
+  <!-- JS가 슬라이드 생성 -->
+</div>
+
+<!-- 댓글 드로어 -->
+<div class="fits-comment-drawer" id="comment-drawer">
+  <div class="fits-drawer-handle"></div>
+  <div class="fits-drawer-title" id="drawer-title">댓글 0개</div>
+  <div class="fits-drawer-body" id="drawer-body"></div>
+  <div class="fits-comment-bar">
+    <input type="text" placeholder="댓글을 입력하세요" id="drawer-input"/>
+    <button class="comment-send" id="drawer-send">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</div>
+<div class="fits-drawer-bg" id="drawer-bg"></div>
+
+<script src="{{ url_for('static', filename='js/fits_detail.js') }}"></script>
+</body>
+</html>

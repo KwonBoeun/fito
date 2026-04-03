@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 자세 분석</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/analyze_posture.css') }}"/>
+</head>
+<body>
+
+<header class="ps-header">
+  <a href="{{ url_for('analyze') }}" class="ps-back">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="ps-header-title">자세 분석</span>
+</header>
+
+<!-- 스와이프 탭 바 -->
+<div class="ps-tab-bar" id="tabBar">
+  <div class="ps-tab active" onclick="switchTab(0)">
+    영상 업로드 분석<div class="ps-tab-indicator"></div>
+  </div>
+  <div class="ps-tab" onclick="switchTab(1)">
+    실시간 분석<div class="ps-tab-indicator"></div>
+  </div>
+</div>
+
+<div class="ps-main-content">
+  <!-- 탭 패널 (스와이프 가능) -->
+  <div class="ps-tab-panels" id="tabPanels">
+
+    <!-- ══ 탭 0: 영상 업로드 분석 ══ -->
+    <div class="ps-tab-panel active" id="panel-upload">
+
+      <!-- 영상 업로드 영역 -->
+      <div class="ps-video-area" id="uploadVideoArea" onclick="openUploadModal()">
+        <div class="ps-video-placeholder" id="uploadPlaceholder">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2"/><polyline points="8 12 12 8 16 12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+          <span>분석 영상 업로드</span>
+        </div>
+        <div class="ps-video-thumb" id="uploadThumb">
+          <span style="color:#aaa;font-size:13px">영상 업로드됨</span>
+          <span class="ps-video-thumb-label" id="uploadDuration">00:00</span>
+          <button class="ps-video-change-btn" onclick="event.stopPropagation();openUploadModal()">변경</button>
+        </div>
+      </div>
+
+      <!-- 분석 유형 -->
+      <div class="ps-section">
+        <div class="ps-section-title" style="position:relative">
+          분석 유형
+          <div class="ps-info-icon" id="uploadTypeInfoIcon" onclick="toggleInfo('uploadTypeInfo')">?</div>
+          <div class="info-popup" id="uploadTypeInfo">
+            <b>기본 분석</b> : 앱에 저장된 기본 운동 자세 데이터 기반으로 분석<br><br>
+            <b>참고 영상 기반</b> : 직접 업로드한 참고 영상을 기반으로 분석
+          </div>
+        </div>
+        <div class="ps-type-btns">
+          <button class="ps-type-btn" id="upload-basic" onclick="selectAnalysisType('upload','basic')">기본 분석</button>
+          <button class="ps-type-btn" id="upload-ref"   onclick="selectAnalysisType('upload','ref')">참고 영상 기반 분석</button>
+        </div>
+      </div>
+
+      <!-- 참고 영상 -->
+      <div class="ps-section">
+        <div class="ps-section-title" style="position:relative">
+          참고 영상
+          <div class="ps-info-icon" onclick="toggleInfo('uploadRefInfo')">?</div>
+          <div class="info-popup" id="uploadRefInfo">
+            분석 기준이 될 참고 운동 영상을 업로드하세요.<br>
+            최대 3분, mp4 형식만 지원합니다.
+          </div>
+        </div>
+        <div class="ps-type-btns" id="upload-ref-btns">
+          <button class="ps-type-btn disabled" id="upload-ref-link" onclick="selectRefUploadType('upload','link')">링크 업로드</button>
+          <button class="ps-type-btn disabled" id="upload-ref-file" onclick="selectRefUploadType('upload','file')">파일 업로드</button>
+        </div>
+        <div class="ps-ref-row" id="upload-ref-status-row" style="display:none;margin-top:8px">
+          <div class="ps-ref-status" id="upload-ref-status">업로드된 참고 영상 없음</div>
+        </div>
+      </div>
+
+      <!-- 분석 예시 -->
+      <div class="ps-example-area">
+        <span class="ps-example-badge">분석 예시</span>
+        <div class="ps-example-skeleton">
+          <div class="ps-example-figure">
+            <div class="ps-example-head"></div>
+            <div class="ps-example-body"></div>
+            <div class="ps-example-legs"><div class="ps-example-leg"></div><div class="ps-example-leg"></div></div>
+          </div>
+          <div class="ps-example-arrow">→</div>
+          <div class="ps-example-figure">
+            <div class="ps-example-head" style="background:#4b668b;opacity:.5"></div>
+            <div class="ps-example-body" style="background:#4b668b;opacity:.5"></div>
+            <div class="ps-example-legs">
+              <div class="ps-example-leg" style="background:#2d9e5e"></div>
+              <div class="ps-example-leg" style="background:#e05c4b"></div>
+            </div>
+          </div>
+        </div>
+        <span class="ps-example-label">골격 비교 분석</span>
+      </div>
+
+    </div>
+
+    <!-- ══ 탭 1: 실시간 분석 ══ -->
+    <div class="ps-tab-panel" id="panel-realtime">
+
+      <!-- 실시간 카메라 영역 -->
+      <div class="ps-camera-area" id="rtCameraArea">
+        <span class="ps-camera-label">실시간 화면</span>
+      </div>
+
+      <!-- 분석 유형 -->
+      <div class="ps-section">
+        <div class="ps-section-title" style="position:relative">
+          분석 유형
+          <div class="ps-info-icon" onclick="toggleInfo('rtTypeInfo')">?</div>
+          <div class="info-popup" id="rtTypeInfo">
+            <b>기본 분석</b> : 앱에 저장된 기본 운동 자세 기반<br><br>
+            <b>참고 영상 기반</b> : 업로드한 참고 영상과 비교 분석
+          </div>
+        </div>
+        <div class="ps-type-btns">
+          <button class="ps-type-btn" id="rt-basic" onclick="selectAnalysisType('rt','basic')">기본 분석</button>
+          <button class="ps-type-btn" id="rt-ref"   onclick="selectAnalysisType('rt','ref')">참고 영상 기반 분석</button>
+        </div>
+      </div>
+
+      <!-- 참고 영상 -->
+      <div class="ps-section">
+        <div class="ps-section-title" style="position:relative">
+          참고 영상
+          <div class="ps-info-icon" onclick="toggleInfo('rtRefInfo')">?</div>
+          <div class="info-popup" id="rtRefInfo">참고 영상을 파일 또는 링크로 업로드하세요.</div>
+        </div>
+        <div class="ps-type-btns" id="rt-ref-btns">
+          <button class="ps-type-btn disabled" id="rt-ref-link" onclick="selectRefUploadType('rt','link')">링크 업로드</button>
+          <button class="ps-type-btn disabled" id="rt-ref-file" onclick="selectRefUploadType('rt','file')">파일 업로드</button>
+        </div>
+        <div class="ps-ref-row" id="rt-ref-status-row" style="display:none;margin-top:8px">
+          <div class="ps-ref-status" id="rt-ref-status">업로드된 참고 영상 없음</div>
+        </div>
+      </div>
+
+      <!-- 분석 예시 -->
+      <div class="ps-example-area">
+        <span class="ps-example-badge">실시간 분석 예시</span>
+        <div class="ps-example-skeleton">
+          <div class="ps-example-figure">
+            <div class="ps-example-head"></div>
+            <div class="ps-example-body"></div>
+            <div class="ps-example-legs">
+              <div class="ps-example-leg" style="background:#2d9e5e"></div>
+              <div class="ps-example-leg" style="background:#2d9e5e"></div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:#999;text-align:center">관절<br>인식</div>
+          <div class="ps-example-figure">
+            <div class="ps-example-head" style="background:#4b668b;opacity:.5"></div>
+            <div class="ps-example-body" style="background:#4b668b;opacity:.5"></div>
+            <div class="ps-example-legs">
+              <div class="ps-example-leg" style="background:#e05c4b"></div>
+              <div class="ps-example-leg" style="background:#2d9e5e"></div>
+            </div>
+          </div>
+        </div>
+        <span class="ps-example-label">오버레이 교정</span>
+      </div>
+
+    </div>
+  </div><!-- /tab-panels -->
+
+  <!-- 분석 시작 버튼 -->
+  <div class="ps-start-wrap">
+    <button class="ps-btn-primary" id="startBtn" onclick="startAnalysis()">분석 시작</button>
+  </div>
+</div>
+
+<!-- ── 영상 업로드 모달 ── -->
+<div class="upload-modal" id="uploadModal">
+  <div class="upload-sheet">
+    <div class="upload-handle"></div>
+    <div class="upload-modal-title">분석 영상 업로드</div>
+
+    <div class="upload-video-area" onclick="document.getElementById('fileInput').click()">
+      <span class="upload-video-label" id="uploadModalLabel">영상 업로드</span>
+    </div>
+    <input type="file" id="fileInput" accept="video/mp4" style="display:none" onchange="handleFileSelect(event)"/>
+
+    <!-- 타임라인 (영상 업로드 후 표시) -->
+    <div class="upload-timeline-wrap" id="timelineWrap" style="display:none">
+      <div class="upload-timeline-label">구간 선택 (분석 받을 구간을 선택하세요)</div>
+      <div class="upload-timeline-bar">
+        <div class="upload-timeline-fill" id="timelineFill"></div>
+        <div class="upload-timeline-handle left"></div>
+        <div class="upload-timeline-handle right"></div>
+      </div>
+    </div>
+
+    <!-- 구간 -->
+    <div class="upload-segments" id="segmentList">
+      <div class="upload-segment" id="seg-1">
+        <span class="upload-segment-label">구간 1</span>
+        <div class="upload-time-input" onclick="editTime('seg1-start')"><span id="seg1-start">00:00</span></div>
+        <span class="upload-segment-sep">~</span>
+        <div class="upload-time-input" onclick="editTime('seg1-end')"><span id="seg1-end">00:00</span></div>
+        <div class="upload-segment-spacer"></div>
+        <button class="upload-seg-add-btn" onclick="addSegment()" id="addSegBtn">+</button>
+        <button class="upload-seg-del-btn" disabled id="delSeg1Btn">-</button>
+      </div>
+    </div>
+
+    <div class="upload-modal-btns">
+      <button class="upload-modal-btn cancel" onclick="closeUploadModal()">취소</button>
+      <button class="upload-modal-btn confirm" onclick="confirmUpload()">완료</button>
+    </div>
+  </div>
+</div>
+
+<!-- 링크 입력 모달 -->
+<div class="modal-wrap" id="linkModal">
+  <div class="modal-box">
+    <div class="modal-title">링크로 참고 영상 업로드</div>
+    <div style="margin-bottom:14px">
+      <input id="linkInput" type="url" placeholder="https://..."
+        style="width:100%;padding:10px 12px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:14px;font-family:inherit;outline:none"/>
+      <div style="font-size:11px;color:#999;margin-top:6px">YouTube, Vimeo 등 공개 영상 링크를 입력하세요</div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn outline" onclick="document.getElementById('linkModal').classList.remove('open')">취소</button>
+      <button class="modal-btn solid" onclick="confirmLink()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 스낵바 -->
+<div class="snackbar" id="snackbar"></div>
+
+<nav class="bottom-nav">
+  <a href="{{ url_for('main') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="nav-label">홈</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div><span class="nav-label">운동</span></a>
+  <a href="{{ url_for('group') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="nav-label">그룹</span></a>
+  <a href="{{ url_for('analyze') }}" class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><span class="nav-label">분석</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-label">MY</span></a>
+</nav>
+
+<script src="{{ url_for('static', filename='js/analyze_posture_main.js') }}"></script>
+</body>
+</html>

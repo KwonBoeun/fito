@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 실시간 분석</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/analyze_posture.css') }}"/>
+  <style>
+    html, body { background:#111 !important; max-width:100%; overflow:hidden; }
+    .rt-header {
+      position:fixed; top:0; left:50%; transform:translateX(-50%);
+      width:100%; max-width:390px; z-index:50;
+      display:flex; align-items:center; padding:12px 16px; gap:12px;
+      background:linear-gradient(rgba(0,0,0,.6),transparent);
+    }
+    .rt-header-title { color:#fff; font-size:15px; font-weight:700; }
+    .rt-back { cursor:pointer; display:flex; align-items:center; }
+    .rt-back svg { width:22px; height:22px; stroke:#fff; fill:none; stroke-width:2; }
+    /* 오버레이 토글 버튼 */
+    .rt-overlay-btn {
+      margin-left:auto;
+      background:rgba(255,255,255,.15); border:1.5px solid rgba(255,255,255,.3);
+      border-radius:999px; color:#fff; font-size:11px; font-weight:700;
+      padding:4px 12px; cursor:pointer; backdrop-filter:blur(4px);
+      border:none; font-family:inherit;
+    }
+    .rt-overlay-btn.on { background:rgba(255,255,255,.35); }
+  </style>
+</head>
+<body>
+<div class="app-wrap">
+<!-- 헤더 -->
+<div class="rt-header">
+  <div class="rt-back" onclick="tapScreen()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </div>
+  <span class="rt-header-title">실시간 분석</span>
+  <button class="rt-overlay-btn on" id="overlayToggleBtn" onclick="toggleOverlay()">오버레이 ON</button>
+</div>
+
+<!-- 분석 화면 -->
+<div class="rt-split-wrap" id="splitWrap">
+  <!-- 참고 영상 영역 -->
+  <div class="rt-pane ref" id="refPane">
+    <span class="rt-pane-label">참고 영상</span>
+    <div id="scoreDisplay" style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%)">
+      <span class="rt-score-badge good" id="scoreBadge">good · 88%</span>
+    </div>
+  </div>
+  <!-- 사용자 카메라 영역 -->
+  <div class="rt-pane user" id="userPane">
+    <span class="rt-pane-label">나의 화면</span>
+    <!-- 오버레이 레이어 (반투명) -->
+    <div id="overlayLayer" style="position:absolute;inset:0;background:rgba(75,102,139,.15);display:flex;align-items:center;justify-content:center;pointer-events:none">
+      <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">오버레이 활성</span>
+    </div>
+  </div>
+</div>
+
+<!-- PIP 박스 -->
+<div class="rt-pip-box" id="pipBox" style="display:none">
+  <span style="color:#aaa;font-size:10px;text-align:center;display:flex;height:100%;align-items:center;justify-content:center">PIP</span>
+</div>
+
+<!-- 나가기 바 (화면 탭 시 표시) -->
+<div class="rt-exit-bar" id="exitBar">
+  <button class="rt-exit-btn" onclick="showExitModal()">나가기</button>
+</div>
+
+<!-- 하단 컨트롤 -->
+<div class="rt-controls">
+  <!-- 정지/재개 -->
+  <button class="rt-pause-btn" id="pauseBtn" onclick="togglePause()">
+    <svg id="pauseIcon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+  </button>
+
+  <!-- 중앙 영역 (일치율 표시) -->
+  <div style="text-align:center">
+    <div style="color:rgba(255,255,255,.6);font-size:11px;margin-bottom:4px">자세 일치율</div>
+    <div style="color:#fff;font-size:22px;font-weight:900" id="matchPct">—</div>
+  </div>
+
+  <!-- 스피드 다이얼 -->
+  <div class="rt-dial" id="dial">
+    <div class="rt-switch-btn" onclick="switchPanes()" title="화면 전환">
+      <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+    </div>
+    <div class="rt-dial-items" id="dialItems">
+      <div class="rt-dial-item" onclick="setLayout('pip')" title="PIP">PIP</div>
+      <div class="rt-dial-item selected" onclick="setLayout('11')" title="1:1">1:1</div>
+      <div class="rt-dial-item" onclick="setLayout('12')" title="1:2">1:2</div>
+    </div>
+    <div class="rt-dial-main-btn" onclick="toggleDial()">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- ── 화면 유형 선택 팝업 ── -->
+<div class="rt-type-modal" id="typeModal">
+  <div class="rt-type-sheet">
+    <div class="rt-type-handle"></div>
+    <div class="rt-type-title">화면 구성을 선택해 주세요</div>
+    <div class="rt-type-sub">분석 중에도 변경 가능합니다</div>
+    <div class="rt-type-options">
+      <!-- PIP -->
+      <div class="rt-type-option" id="opt-pip" onclick="chooseType('pip')">
+        <div class="rt-type-radio"></div>
+        <div class="rt-type-option-img" style="position:relative">
+          <div class="pip-main" style="width:65%;height:100%;background:#ddd;border-radius:4px"></div>
+          <div class="pip-sub"></div>
+        </div>
+        <div class="rt-type-option-label">PIP</div>
+      </div>
+      <!-- 1:1 -->
+      <div class="rt-type-option selected" id="opt-11" onclick="chooseType('11')">
+        <div class="rt-type-radio"></div>
+        <div class="rt-type-option-img">
+          <div class="half"></div>
+          <div class="half dark"></div>
+        </div>
+        <div class="rt-type-option-label">1:1 분할</div>
+      </div>
+      <!-- 1:2 -->
+      <div class="rt-type-option" id="opt-12" onclick="chooseType('12')">
+        <div class="rt-type-radio"></div>
+        <div class="rt-type-option-img">
+          <div class="half" style="flex:1"></div>
+          <div class="half dark" style="flex:2"></div>
+        </div>
+        <div class="rt-type-option-label">1:2 분할</div>
+      </div>
+    </div>
+    <div class="rt-type-btns">
+      <button class="rt-type-btn cancel" onclick="cancelTypeModal()">분석 취소</button>
+      <button class="rt-type-btn start"  onclick="confirmTypeAndStart()">분석 시작할래요</button>
+    </div>
+  </div>
+</div>
+
+<!-- 카운트다운 -->
+<div class="rt-countdown" id="countdown">
+  <div class="rt-countdown-num" id="countNum">10</div>
+</div>
+
+<!-- 종료 팝업 -->
+<div class="modal-wrap" id="exitModal">
+  <div class="modal-box">
+    <div class="modal-title">아직 운동이 끝나지 않았어요</div>
+    <div class="modal-body">지금 종료하시겠습니까?</div>
+    <div class="modal-btns">
+      <button class="modal-btn solid"   onclick="forceExit()">지금 종료할래요</button>
+      <button class="modal-btn outline" onclick="closeExitModal()">계속 할래요</button>
+    </div>
+  </div>
+</div>
+
+<!-- 분석 종료 팝업 (운동 완료 시) -->
+<div class="modal-wrap" id="resultModal">
+  <div class="modal-box">
+    <div class="modal-title">운동이 완료되었어요 🎉</div>
+    <div class="modal-body">분석 결과를 확인하시겠어요?</div>
+    <div class="modal-btns">
+      <button class="modal-btn solid"   onclick="goReport()">결과 보러 가기</button>
+      <button class="modal-btn outline" onclick="noResult()">결과 받지 않기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 스낵바 -->
+<div class="snackbar" id="snackbar"></div>
+
+<script>
+  window.RT_URL_POSTURE = "{{ url_for('analyze_posture') }}";
+  window.RT_URL_REPORT  = "{{ url_for('analyze_posture_report') }}";
+</script>
+<script src="{{ url_for('static', filename='js/analyze_posture_realtime.js') }}"></script>
+</div>
+</body>
+</html>

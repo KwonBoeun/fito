@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 기록 분석</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/analyze_record.css') }}"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<header class="rc-header">
+  <a href="{{ url_for('analyze') }}" class="rc-back">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="rc-header-title">기록 분석</span>
+</header>
+
+<div class="rc-content">
+
+  <!-- ① 나의 정보 -->
+  <div class="rc-stat-bar ani" onclick="location.href='{{ url_for('analyze_record_history') }}'">
+    <div class="rc-date" id="rcDate">2025.00.00 (금)</div>
+    <div class="rc-stats">
+      <div class="rc-stat-item">
+        <span class="rc-stat-label">나의 키</span>
+        <span class="rc-stat-value" id="statHeight">000cm</span>
+      </div>
+      <div class="rc-stat-item">
+        <span class="rc-stat-label">나의 체중</span>
+        <span class="rc-stat-value" id="statWeight">00kg</span>
+      </div>
+      <div class="rc-stat-item">
+        <span class="rc-stat-label">운동 시간</span>
+        <span class="rc-stat-value" id="statTime">00H 00M</span>
+      </div>
+      <div class="rc-stat-item">
+        <span class="rc-stat-label">칼로리</span>
+        <span class="rc-stat-value" id="statKcal">0000kcal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 나의 오늘 운동 분석 -->
+  <div class="rc-section ani" onclick="location.href='{{ url_for('analyze_record_workout') }}'">
+    <div class="rc-section-header">
+      <div>
+        <div class="rc-section-title">나의 오늘 운동 분석</div>
+        <div class="rc-section-sub" id="workoutSummaryText">데이터를 불러오는 중...</div>
+      </div>
+      <svg class="rc-section-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <!-- 레이더 차트 미리보기 -->
+    <div style="position:relative;width:200px;height:200px;margin:0 auto">
+      <canvas id="radarPreviewChart"></canvas>
+      <div id="radarEmptyMsg" style="display:none;position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+        <div style="font-size:11px;color:#999;text-align:center">오늘 운동 기록이 없어요</div>
+        <button style="font-size:11px;padding:4px 10px;background:#000;color:#fff;border:none;border-radius:999px;cursor:pointer;font-family:inherit" onclick="event.stopPropagation();location.href='{{ url_for('analyze_record_workout') }}'">스쿼트 10회</button>
+        <button style="font-size:11px;padding:4px 10px;background:#000;color:#fff;border:none;border-radius:999px;cursor:pointer;font-family:inherit" onclick="event.stopPropagation();location.href='{{ url_for('analyze_record_workout') }}'">스트레칭 5분</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 운동 균형도 -->
+  <div class="rc-section ani" onclick="location.href='{{ url_for('analyze_record_balance') }}'">
+    <div class="rc-section-header">
+      <div>
+        <div class="rc-section-title">운동 균형도</div>
+        <div class="rc-section-sub" id="balanceStatusMsg">균형 분석 중...</div>
+      </div>
+      <svg class="rc-section-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <!-- 신체 부위 색상 맵 -->
+    <div class="body-map-wrap">
+      <div class="body-svg-container">
+        <svg viewBox="0 0 100 180" xmlns="http://www.w3.org/2000/svg">
+          <!-- 머리 -->
+          <ellipse cx="50" cy="18" rx="14" ry="16" fill="#e5e5e5" opacity="0.6"/>
+          <!-- 목 -->
+          <rect x="44" y="32" width="12" height="8" rx="4" fill="#e5e5e5" opacity="0.6"/>
+          <!-- 상체 (어깨+가슴+등) -->
+          <rect id="bodyUpper" x="24" y="40" width="52" height="42" rx="6" fill="#3b82f6" opacity="0.5"/>
+          <text x="50" y="65" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">상체</text>
+          <!-- 코어 (복부) -->
+          <rect id="bodyCore" x="30" y="82" width="40" height="26" rx="4" fill="#f5a623" opacity="0.5"/>
+          <text x="50" y="99" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">코어</text>
+          <!-- 왼팔 -->
+          <rect x="10" y="42" width="14" height="50" rx="7" fill="#3b82f6" opacity="0.4"/>
+          <!-- 오른팔 -->
+          <rect x="76" y="42" width="14" height="50" rx="7" fill="#3b82f6" opacity="0.4"/>
+          <!-- 하체 (엉덩이+허벅지) -->
+          <rect id="bodyLower" x="26" y="108" width="48" height="42" rx="6" fill="#2d9e5e" opacity="0.5"/>
+          <text x="50" y="133" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">하체</text>
+          <!-- 왼쪽 종아리 -->
+          <rect x="28" y="150" width="20" height="28" rx="8" fill="#2d9e5e" opacity="0.4"/>
+          <!-- 오른쪽 종아리 -->
+          <rect x="52" y="150" width="20" height="28" rx="8" fill="#2d9e5e" opacity="0.4"/>
+        </svg>
+      </div>
+      <div style="margin-left:16px;display:flex;flex-direction:column;gap:6px;justify-content:center">
+        <div class="balance-legend-item"><div class="balance-legend-dot" style="background:#3b82f6"></div>상체 <span id="upperPct" style="font-weight:700;color:#3b82f6">75%</span></div>
+        <div class="balance-legend-item"><div class="balance-legend-dot" style="background:#2d9e5e"></div>하체 <span id="lowerPct" style="font-weight:700;color:#2d9e5e">55%</span></div>
+        <div class="balance-legend-item"><div class="balance-legend-dot" style="background:#f5a623"></div>코어 <span id="corePct" style="font-weight:700;color:#f5a623">40%</span></div>
+        <div class="balance-legend-item"><div class="balance-legend-dot" style="background:#8b5cf6"></div>유산소 <span id="cardPct" style="font-weight:700;color:#8b5cf6">30%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 내 강점과 취약점 분석 -->
+  <div class="rc-section ani" onclick="location.href='{{ url_for('analyze_record_strength') }}'">
+    <div class="rc-section-header">
+      <div>
+        <div class="rc-section-title">내 강점과 취약점 분석</div>
+        <div class="rc-section-sub">최근 4주 데이터를 분석 중입니다</div>
+      </div>
+      <svg class="rc-section-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div id="strengthPreview">
+      <div style="margin-bottom:6px">
+        <span class="sv-label strength">강점</span>
+        <div class="sv-text" id="strengthText">꾸준함이 최고의 무기입니다. 최근 4주간 운동 빈도 지표가 매우 높습니다.</div>
+      </div>
+      <div style="margin-top:10px">
+        <span class="sv-label weakness">취약점</span>
+        <div class="sv-text" id="weaknessText">하체 운동량이 상체 대비 40% 부족합니다. 균형을 위해 스쿼트 비중을 높여보세요.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<nav class="bottom-nav">
+  <a href="{{ url_for('main') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="nav-label">홈</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div><span class="nav-label">운동</span></a>
+  <a href="{{ url_for('group') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="nav-label">그룹</span></a>
+  <a href="{{ url_for('analyze') }}" class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><span class="nav-label">분석</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-label">MY</span></a>
+</nav>
+
+<script src="{{ url_for('static', filename='js/analyze_record.js') }}"></script>
+</body>
+</html>
