@@ -5,20 +5,25 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
   <title>FITO - 그룹</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/group.css') }}"/>
+  <style>.gp-sort-bar{display:none;gap:6px;padding:8px 16px;border-bottom:1px solid var(--gray-100);overflow-x:auto;scrollbar-width:none;background:var(--white)}
+  .gp-sort-btn{flex-shrink:0;padding:5px 12px;border-radius:999px;font-size:12px;border:1.5px solid var(--gray-200);background:var(--white);cursor:pointer;font-family:inherit;transition:all .15s}
+  .gp-sort-btn.active{background:var(--black);color:var(--white);border-color:var(--black)}</style>
 </head>
 <body>
-
-<header class="gp-header">
-  <span class="gp-header-title">그룹</span>
-</header>
-
+<header class="gp-header"><span class="gp-header-title">그룹</span></header>
 <div class="gp-search-bar">
   <div class="gp-search-wrap">
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="groupSearchInput" type="text" placeholder="그룹 검색" maxlength="50" autocomplete="off"/>
   </div>
 </div>
-
+<!-- 정렬 바 (검색 시 표시) -->
+<div class="gp-sort-bar" id="sortBar">
+  <button class="gp-sort-btn active" data-sort="activity" onclick="setSort('activity')">활동량순</button>
+  <button class="gp-sort-btn" data-sort="popular" onclick="setSort('popular')">인기순</button>
+  <button class="gp-sort-btn" data-sort="latest" onclick="setSort('latest')">최신순</button>
+  <button class="gp-sort-btn" data-sort="members" onclick="setSort('members')">가입자순</button>
+</div>
 <div class="gp-content">
   <div class="gp-recommend-banner ani" id="recommendBanner" style="display:none;cursor:pointer">
     <div class="gp-recommend-banner-title" id="recommendText"></div>
@@ -27,33 +32,26 @@
   <div class="gp-list" id="groupList"></div>
   <div class="gp-empty" id="emptyState" style="display:none"></div>
 </div>
-
-<button class="gp-fab" id="createGroupFab" onclick="onCreateGroupClick()">
-  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-</button>
-
-<div class="modal-wrap" id="createConfirmModal">
-  <div class="modal-box">
-    <div class="modal-title">새 그룹을 만드시겠습니까?</div>
-    <div class="modal-body">그룹을 만들면 그룹장이 되어 그룹을 관리할 수 있습니다.</div>
-    <div class="modal-btns">
-      <button class="modal-btn outline" onclick="closeCreateModal()">아니요</button>
-      <button class="modal-btn solid" onclick="goCreateGroup()">예</button>
-    </div>
-  </div>
-</div>
-
+<button class="gp-fab" onclick="onCreateGroupClick()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+<div class="modal-wrap" id="createConfirmModal"><div class="modal-box">
+  <div class="modal-title">새 그룹을 만드시겠습니까?</div>
+  <div class="modal-body">그룹을 만들면 그룹장이 되어 그룹을 관리할 수 있습니다.</div>
+  <div class="modal-btns"><button class="modal-btn outline" onclick="closeCreateModal()">아니요</button><button class="modal-btn solid" onclick="goCreateGroup()">예</button></div>
+</div></div>
 <div class="snackbar" id="snackbar"></div>
-
 <nav class="bottom-nav">
   <a href="{{ url_for('main') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="nav-label">홈</span></a>
-  <a href="{{ url_for('pt') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div><span class="nav-label">운동</span></a>
+  <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div><span class="nav-label">운동</span></a>
   <a href="{{ url_for('group') }}" class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span class="nav-label">그룹</span></a>
   <a href="{{ url_for('analyze') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><span class="nav-label">분석</span></a>
   <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-label">MY</span></a>
 </nav>
-
 <script src="{{ url_for('static', filename='js/group_store.js') }}"></script>
 <script src="{{ url_for('static', filename='js/group.js') }}"></script>
+<script>
+// URL에 tag 파라미터가 있으면 자동 검색
+const urlTag=new URLSearchParams(location.search).get('tag');
+if(urlTag){document.getElementById('groupSearchInput').value=urlTag;renderGroups(urlTag);}
+</script>
 </body>
 </html>

@@ -6,120 +6,93 @@
   <title>FITO - 라이브 저장소</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/group.css') }}"/>
   <style>
-    /* 핏츠 편집 */
-    .fits-editor{padding:16px}
-    .fits-preview{width:100%;aspect-ratio:9/16;background:#111;border-radius:var(--r-md);margin-bottom:14px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
-    .fits-preview-play{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;cursor:pointer}
-    .fits-preview-play svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2}
-    .fits-timeline{width:100%;height:48px;background:var(--gray-100);border-radius:8px;position:relative;margin-bottom:14px;overflow:hidden}
-    .fits-timeline-fill{position:absolute;top:0;bottom:0;left:10%;right:40%;background:rgba(0,0,0,.15);border:2px solid var(--black);border-radius:6px}
-    .fits-timeline-label{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--gray-400)}
-    .fits-range-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
-    .fits-range-input{flex:1;padding:8px 10px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:inherit;text-align:center;outline:none}
-    .fits-range-input:focus{border-color:var(--black)}
-    .fits-option-row{display:flex;gap:8px;margin-bottom:14px}
-    .fits-option-btn{flex:1;padding:10px;border:1.5px solid var(--gray-200);border-radius:var(--r-md);font-size:12px;font-weight:600;cursor:pointer;background:var(--white);text-align:center;font-family:inherit;transition:all .15s}
-    .fits-option-btn.active{border-color:var(--black);background:var(--black);color:var(--white)}
-    .fits-caption-input{width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--r-md);font-size:13px;font-family:inherit;outline:none;resize:none;min-height:60px}
-    .fits-caption-input:focus{border-color:var(--black)}
-    .fits-share-btn{width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:var(--r-md);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px}
-    .fits-share-btn:active{opacity:.8}
+    .fits-tl{width:100%;height:48px;background:var(--gray-100);border-radius:10px;position:relative;margin-bottom:10px;touch-action:none}
+    .fits-tl-fill{position:absolute;top:0;bottom:0;background:rgba(0,0,0,.12);border:2px solid var(--black);border-radius:8px;pointer-events:none}
+    .fits-tl-handle{position:absolute;top:-2px;bottom:-2px;width:16px;background:var(--black);border-radius:4px;cursor:ew-resize;z-index:5;touch-action:none}
+    .fits-tl-handle::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:16px;background:rgba(255,255,255,.6);border-radius:1px}
+    .ml-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:all .15s;margin-bottom:4px}
+    .ml-item.sel{background:var(--black);color:var(--white)}
+    .ml-item:not(.sel){background:var(--gray-50)}
+    .cap-row{display:flex;gap:6px;align-items:center;margin-bottom:8px}
+    .cap-input{padding:7px 10px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:12px;font-family:inherit;outline:none}
+    .cap-input:focus{border-color:var(--black)}
   </style>
 </head>
 <body>
-
 <header class="gp-header">
   <a href="{{ url_for('group_main', id=group_id) }}" class="gp-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
   <span class="gp-header-title">라이브 다시보기 저장소</span>
 </header>
-
 <div class="gs-sort-bar">
-  <button class="gs-sort-btn active" id="sortLatest" onclick="setSort('latest',this)">최신순</button>
-  <button class="gs-sort-btn" id="sortName" onclick="setSort('name',this)">이름순</button>
+  <button class="gs-sort-btn active" onclick="setSort('latest',this)">최신순</button>
+  <button class="gs-sort-btn" onclick="setSort('name',this)">이름순</button>
 </div>
-
 <div class="gp-content">
   <div class="gs-video-list" id="videoList"></div>
   <div class="gp-empty" id="emptyState" style="display:none">저장된 그룹 라이브 영상이 없습니다</div>
 </div>
 
-<!-- 영상 상세 보기 -->
+<!-- 영상 상세 + 재생 -->
 <div class="bottom-sheet-overlay" id="videoOverlay" onclick="closeVideoDetail()"></div>
-<div class="bottom-sheet" id="videoSheet" style="max-height:80vh">
+<div class="bottom-sheet" id="videoSheet" style="max-height:85vh;overflow-y:auto">
   <div class="bottom-sheet-handle"></div>
-  <div style="width:100%;aspect-ratio:16/9;background:#111;border-radius:var(--r-md);margin-bottom:12px;display:flex;align-items:center;justify-content:center">
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-  </div>
+  <div id="playerArea"></div>
   <div style="font-size:15px;font-weight:700;margin-bottom:4px" id="detailTitle"></div>
   <div style="font-size:11px;color:var(--gray-400);margin-bottom:12px" id="detailMeta"></div>
   <div style="display:flex;gap:8px">
-    <button onclick="openFitsEditor()" style="flex:1;padding:10px;background:var(--black);color:var(--white);border:none;border-radius:var(--r-md);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">핏츠 만들기</button>
-    <button onclick="showSnackbar('다운로드를 시작합니다')" style="flex:1;padding:10px;background:var(--gray-100);color:var(--black);border:none;border-radius:var(--r-md);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">다운로드</button>
+    <button onclick="openFitsEditor()" style="flex:1;padding:10px;background:var(--black);color:var(--white);border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">핏츠 만들기</button>
+    <button onclick="showSnackbar('다운로드를 시작합니다')" style="flex:1;padding:10px;background:var(--gray-100);color:#000;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">다운로드</button>
   </div>
 </div>
 
-<!-- 핏츠 만들기 편집 화면 -->
+<!-- 핏츠 만들기 -->
 <div class="bottom-sheet-overlay" id="fitsOverlay" onclick="closeFitsEditor()"></div>
-<div class="bottom-sheet" id="fitsSheet" style="max-height:90vh;overflow-y:auto">
+<div class="bottom-sheet" id="fitsSheet" style="max-height:92vh;overflow-y:auto">
   <div class="bottom-sheet-handle"></div>
   <div style="font-size:16px;font-weight:700;margin-bottom:14px">핏츠 만들기</div>
-
-  <div class="fits-editor">
+  <div style="padding:0 4px">
     <!-- 미리보기 -->
-    <div class="fits-preview">
-      <div class="fits-preview-play">
-        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      </div>
+    <div style="width:100%;aspect-ratio:9/16;background:#111;border-radius:12px;margin-bottom:14px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
       <div style="position:absolute;top:8px;left:8px;font-size:11px;color:#fff;background:rgba(0,0,0,.5);padding:2px 8px;border-radius:999px" id="fitsSourceTitle"></div>
     </div>
 
-    <!-- 구간 선택 타임라인 -->
-    <div style="font-size:13px;font-weight:700;margin-bottom:8px">구간 선택</div>
-    <div class="fits-timeline">
-      <div class="fits-timeline-fill" id="fitsFill"></div>
-      <div class="fits-timeline-label">드래그하여 구간 선택</div>
+    <!-- 구간 선택 (드래그 핸들) -->
+    <div style="font-size:13px;font-weight:700;margin-bottom:8px">구간 선택 <span style="font-size:11px;color:var(--gray-400);font-weight:400">(핸들을 드래그하세요)</span></div>
+    <div class="fits-tl" id="fitsTimelineBar">
+      <div class="fits-tl-fill" id="fitsFill"></div>
+      <div class="fits-tl-handle" id="fitsHandleL" style="left:10%"></div>
+      <div class="fits-tl-handle" id="fitsHandleR" style="left:50%"></div>
     </div>
-    <div class="fits-range-row">
-      <div>
-        <div style="font-size:10px;color:var(--gray-400);margin-bottom:2px">시작</div>
-        <input class="fits-range-input" id="fitsStart" type="text" value="00:00" placeholder="00:00"/>
-      </div>
-      <span style="color:var(--gray-400)">~</span>
-      <div>
-        <div style="font-size:10px;color:var(--gray-400);margin-bottom:2px">종료</div>
-        <input class="fits-range-input" id="fitsEnd" type="text" value="00:30" placeholder="00:30"/>
-      </div>
-      <div style="font-size:11px;color:var(--gray-500);white-space:nowrap" id="fitsDuration">30초</div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:14px">
+      <span style="font-size:12px;font-weight:600" id="fitsStartTime">00:00</span>
+      <span style="font-size:12px;font-weight:700;color:var(--blue)" id="fitsDuration">30초</span>
+      <span style="font-size:12px;font-weight:600" id="fitsEndTime">00:30</span>
     </div>
 
-    <!-- 음악 추가 -->
-    <div style="font-size:13px;font-weight:700;margin-bottom:8px">음악 추가</div>
-    <div class="fits-option-row">
-      <button class="fits-option-btn active" id="fitsMusicNone" onclick="setFitsMusic('none')">없음</button>
-      <button class="fits-option-btn" id="fitsMusicSelect" onclick="setFitsMusic('select')">🎵 음악 선택</button>
-    </div>
-    <div id="fitsMusicInfo" style="display:none;font-size:12px;color:var(--green);margin-bottom:14px;padding:8px 12px;background:#e8f7ef;border-radius:8px"></div>
+    <!-- 음악 선택 (리스트) -->
+    <div style="font-size:13px;font-weight:700;margin-bottom:8px">음악 선택</div>
+    <div id="musicListEl" style="max-height:200px;overflow-y:auto;margin-bottom:14px"></div>
 
-    <!-- 자막 추가 -->
-    <div style="font-size:13px;font-weight:700;margin-bottom:8px">자막</div>
+    <!-- 자막 추가 (구간 선택) -->
+    <div style="font-size:13px;font-weight:700;margin-bottom:8px">자막 추가</div>
     <div id="fitsCaptionList" style="margin-bottom:8px"></div>
-    <div style="display:flex;gap:6px;margin-bottom:14px">
-      <input id="fitsCaptionText" class="fits-range-input" type="text" placeholder="자막 내용 입력" style="flex:1;text-align:left"/>
-      <input id="fitsCaptionTime" class="fits-range-input" type="text" placeholder="시점 (예: 00:05)" style="width:80px"/>
-      <button onclick="addFitsCaption()" style="padding:8px 14px;background:var(--black);color:var(--white);border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap">추가</button>
+    <div class="cap-row">
+      <input id="fitsCaptionText" class="cap-input" type="text" placeholder="자막 내용" style="flex:1"/>
+      <input id="fitsCaptionStart" class="cap-input" type="text" placeholder="시작" style="width:56px;text-align:center"/>
+      <span style="color:var(--gray-400)">~</span>
+      <input id="fitsCaptionEnd" class="cap-input" type="text" placeholder="종료" style="width:56px;text-align:center"/>
+      <button onclick="addFitsCaption()" style="padding:7px 12px;background:var(--black);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">추가</button>
     </div>
 
     <!-- 설명 -->
     <div style="font-size:13px;font-weight:700;margin-bottom:8px">핏츠 설명</div>
-    <textarea class="fits-caption-input" id="fitsDesc" placeholder="핏츠에 대한 설명을 입력하세요"></textarea>
-
-    <!-- 공유 버튼 -->
-    <button class="fits-share-btn" onclick="shareFits()">핏츠 공유하기</button>
+    <textarea id="fitsDesc" placeholder="핏츠에 대한 설명" style="width:100%;padding:10px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:13px;font-family:inherit;outline:none;resize:none;min-height:60px"></textarea>
+    <button onclick="shareFits()" style="width:100%;padding:14px;background:var(--black);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:12px">핏츠 공유하기</button>
   </div>
 </div>
 
 <div class="snackbar" id="snackbar"></div>
-
 <nav class="bottom-nav">
   <a href="{{ url_for('main') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="nav-label">홈</span></a>
   <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div><span class="nav-label">운동</span></a>
@@ -127,7 +100,6 @@
   <a href="{{ url_for('analyze') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><span class="nav-label">분석</span></a>
   <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-label">MY</span></a>
 </nav>
-
 <script src="{{ url_for('static', filename='js/group_store.js') }}"></script>
 <script src="{{ url_for('static', filename='js/group_storage.js') }}"></script>
 </body>
