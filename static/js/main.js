@@ -52,18 +52,18 @@ const LIVE_DATA = [
   { id:9, title:'전신 스트레칭 모닝 루틴', author:'모닝핏', viewers:287, tags:['#스트레칭','#아침'], h:7 },
 ];
 const VOD_DATA = [
-  { id:1, title:'스쿼트 완벽 자세 가이드', author:'피트니스TV', views:84200, tags:['#스쿼트','#자세교정'], h:12 },
-  { id:2, title:'집에서 하는 30분 홈트 루틴', author:'홈트여왕', views:62100, tags:['#홈트','#초보자'], h:36 },
-  { id:3, title:'뱃살 빼는 코어 운동 10선', author:'다이어터민', views:51000, tags:['#다이어트','#코어'], h:5 },
-  { id:4, title:'데드리프트 입문자 가이드', author:'트레이너박', views:43000, tags:['#데드리프트','#하체'], h:48 },
-  { id:5, title:'어깨 라운드 교정 스트레칭', author:'자세교정연구소', views:38000, tags:['#자세교정','#어깨'], h:20 },
-  { id:6, title:'상체 루틴 완전 정복', author:'근육맨제이', views:35000, tags:['#상체','#루틴'], h:72 },
-  { id:7, title:'힙업 운동 TOP5', author:'힙돼지', views:31000, tags:['#힙업','#하체'], h:15 },
-  { id:8, title:'초보자 벌크업 식단 가이드', author:'영양사진', views:27000, tags:['#벌크업','#식단'], h:30 },
-  { id:9, title:'런닝 페이스별 칼로리 소모', author:'러너킴', views:24000, tags:['#러닝','#유산소'], h:40 },
-  { id:10, title:'팔굽혀펴기 자세 교정', author:'피트니스TV', views:21000, tags:['#팔굽혀펴기','#상체'], h:60 },
-  { id:11, title:'폼롤러 전신 마사지', author:'회복전문', views:18000, tags:['#폼롤러','#회복'], h:24 },
-  { id:12, title:'플랭크 변형 10가지', author:'코어킹', views:15000, tags:['#플랭크','#코어'], h:90 },
+  { id:1,  title:'스쿼트 완벽 자세 가이드',     author:'피트니스TV',    views:84200, tags:['#스쿼트','#자세교정'],  h:12,  dur:754  },
+  { id:2,  title:'집에서 하는 30분 홈트 루틴',  author:'홈트여왕',      views:62100, tags:['#홈트','#초보자'],      h:36,  dur:1823 },
+  { id:3,  title:'뱃살 빼는 코어 운동 10선',    author:'다이어터민',    views:51000, tags:['#다이어트','#코어'],    h:5,   dur:612  },
+  { id:4,  title:'데드리프트 입문자 가이드',     author:'트레이너박',    views:43000, tags:['#데드리프트','#하체'],  h:48,  dur:1120 },
+  { id:5,  title:'어깨 라운드 교정 스트레칭',   author:'자세교정연구소',views:38000, tags:['#자세교정','#어깨'],    h:20,  dur:487  },
+  { id:6,  title:'상체 루틴 완전 정복',          author:'근육맨제이',    views:35000, tags:['#상체','#루틴'],        h:72,  dur:2247 },
+  { id:7,  title:'힙업 운동 TOP5',               author:'힙돼지',        views:31000, tags:['#힙업','#하체'],        h:15,  dur:934  },
+  { id:8,  title:'초보자 벌크업 식단 가이드',   author:'영양사진',      views:27000, tags:['#벌크업','#식단'],      h:30,  dur:1456 },
+  { id:9,  title:'런닝 페이스별 칼로리 소모',   author:'러너킴',        views:24000, tags:['#러닝','#유산소'],      h:40,  dur:778  },
+  { id:10, title:'팔굽혀펴기 자세 교정',         author:'피트니스TV',    views:21000, tags:['#팔굽혀펴기','#상체'],  h:60,  dur:523  },
+  { id:11, title:'폼롤러 전신 마사지',            author:'회복전문',      views:18000, tags:['#폼롤러','#회복'],      h:24,  dur:1089 },
+  { id:12, title:'플랭크 변형 10가지',            author:'코어킹',        views:15000, tags:['#플랭크','#코어'],      h:90,  dur:867  },
 ];
 const FITS_DATA = [
   { id:1,  title:'스쿼트 30초 챌린지', author:'핏걸_나연', views:124000, tags:['#스쿼트'], h:3 },
@@ -160,15 +160,19 @@ function liveBadge(n) {
   return `<div class="thumb-live"><div class="live-badge-wrap"><span class="lb">LIVE</span><span class="lc">${fmt(n)}</span></div></div>`;
 }
 
+/* ── VOD 시간 포맷 ── */
+const fmtDur = s => { const m=Math.floor(s/60),sec=Math.floor(s%60); return `${m}:${String(sec).padStart(2,'0')}`; };
+
 /* 라이브/VOD 피드 유닛 */
 function feedHtml(type, d) {
   const isLive = type === 'live';
   const badge  = isLive ? liveBadge(d.viewers) : '';
+  const durBadge = (!isLive && d.dur) ? `<div class="vod-dur-badge">${fmtDur(d.dur)}</div>` : '';
   const meta   = isLive
     ? `<span class="feed-meta">${fmt(d.viewers)}명 시청 중</span>`
     : `<span class="feed-meta">조회수 ${fmt(d.views)} · ${timeAgo(d.h)}</span>`;
   const url = isLive ? `/live/${d.id}` : `/vod/${d.id}`;
-  return `<div class="feed-unit ani" onclick="location.href='${url}'" style="cursor:pointer"><div class="feed-thumb">${badge}</div><div class="feed-info"><div class="feed-title">${d.title}</div><div class="feed-author"><div class="adot"></div><span>${d.author}</span></div>${meta}<div class="feed-tags">${tagsHtml(d.tags)}</div></div></div><div class="unit-div"></div>`;
+  return `<div class="feed-unit ani" onclick="location.href='${url}'" style="cursor:pointer"><div class="feed-thumb">${badge}${durBadge}</div><div class="feed-info"><div class="feed-title">${d.title}</div><div class="feed-author"><div class="adot"></div><span>${d.author}</span></div>${meta}<div class="feed-tags">${tagsHtml(d.tags)}</div></div></div><div class="unit-div"></div>`;
 }
 
 /* FITS 3열 묶음 */
@@ -306,7 +310,7 @@ function buildAllPopSlides() {
     /* 라이브 - 16:9 */
     `<div class="pop-slide" onclick="location.href='/live/${liveTop.id}'" style="cursor:pointer"><div class="slide-thumb-169">${liveBadge(liveTop.viewers)}</div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${liveTop.title}</div><div class="slide-author">${liveTop.author}</div><div class="tags">${tagsHtml(liveTop.tags)}</div></div></div></div>`,
     /* VOD - 16:9 */
-    `<div class="pop-slide" onclick="location.href='/vod/${vodTop.id}'" style="cursor:pointer"><div class="slide-thumb-169"></div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${vodTop.title}</div><div class="slide-author">${vodTop.author}</div><div class="slide-sub">조회수 ${fmt(vodTop.views)} · ${timeAgo(vodTop.h)}</div><div class="tags">${tagsHtml(vodTop.tags)}</div></div></div></div>`,
+    `<div class="pop-slide" onclick="location.href='/vod/${vodTop.id}'" style="cursor:pointer"><div class="slide-thumb-169"><div class="slide-dur-badge">${fmtDur(vodTop.dur||0)}</div></div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${vodTop.title}</div><div class="slide-author">${vodTop.author}</div><div class="slide-sub">조회수 ${fmt(vodTop.views)} · ${timeAgo(vodTop.h)}</div><div class="tags">${tagsHtml(vodTop.tags)}</div></div></div></div>`,
     /* FITS - 2개 */
     `<div class="pop-slide"><div class="slide-2col">${fitsTop.map(f => `<div class="fits-pop-card" onclick="location.href='/fits/${f.id}'" style="cursor:pointer"><div class="fits-pop-thumb"></div><div class="fits-pop-author"><div class="adot"></div><span>${f.author}</span></div><div class="fits-pop-title">${f.title}</div></div>`).join('')}</div></div>`,
     /* 커뮤니티 - 가로형 */
@@ -325,7 +329,7 @@ function buildCatPopSlides(type) {
   }
   if (type === 'vod') {
     return [...VOD_DATA].sort((a,b) => popScore(b.views,b.h)-popScore(a.views,a.h)).slice(0,5).map(d =>
-      `<div class="pop-slide" onclick="location.href='/vod/${d.id}'" style="cursor:pointer"><div class="slide-thumb-169"></div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${d.title}</div><div class="slide-author">${d.author}</div><div class="slide-sub">조회수 ${fmt(d.views)} · ${timeAgo(d.h)}</div><div class="tags">${tagsHtml(d.tags)}</div></div></div></div>`
+      `<div class="pop-slide" onclick="location.href='/vod/${d.id}'" style="cursor:pointer"><div class="slide-thumb-169"><div class="slide-dur-badge">${fmtDur(d.dur||0)}</div></div><div class="slide-info"><div class="prof-dot"></div><div class="slide-meta"><div class="slide-title">${d.title}</div><div class="slide-author">${d.author}</div><div class="slide-sub">조회수 ${fmt(d.views)} · ${timeAgo(d.h)}</div><div class="tags">${tagsHtml(d.tags)}</div></div></div></div>`
     );
   }
   if (type === 'fits') {
@@ -500,6 +504,12 @@ function initCategoryTabs() {
   let active = 0, lock = false;
   const initialized = new Set(['all']);
 
+  /* PTR에서 현재 탭 타입을 알 수 있도록 노출 */
+  window._getActiveFeedInfo = () => ({
+    type:    types[active],
+    feedId: `rec-feed-${types[active]}`,
+  });
+
   function activate(idx) {
     if (lock || idx === active) return;
     lock = true; setTimeout(() => { lock = false; }, 500);
@@ -526,6 +536,7 @@ function initPTR(onRefresh) {
   const THRESH = 70;
   let sy = 0, pulling = false, refreshing = false;
 
+  /* ── 터치 방식 (모바일) ── */
   document.addEventListener('touchstart', e => {
     if (window.scrollY === 0) { sy = e.touches[0].clientY; pulling = true; }
   }, {passive:true});
@@ -550,6 +561,41 @@ function initPTR(onRefresh) {
     ptr.style.transform = 'translateX(-50%) translateY(8px)';
     onRefresh(() => { refreshing = false; ptr.classList.remove('spin','show'); ptr.style.transform = 'translateX(-50%) translateY(-64px)'; });
   });
+
+  /* ── 트랙패드 / 마우스휠 방식 (노트북) ── */
+  /* 최상단에서 두 손가락을 위로 올리면(deltaY < 0) PTR 발동 */
+  let wheelAcc = 0, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    if (refreshing) return;
+    /* 최상단이 아니면 무시 */
+    if (window.scrollY > 0) { wheelAcc = 0; return; }
+    /* 아래로 스크롤(deltaY > 0)이면 무시 */
+    if (e.deltaY >= 0) { wheelAcc = 0; return; }
+    /* 위로 스크롤 누적 */
+    wheelAcc += Math.abs(e.deltaY);
+    const prog = Math.min(wheelAcc / 200, 1);
+    ptr.style.transform = `translateX(-50%) translateY(${prog * 60 - 64}px)`;
+    ptr.classList.toggle('show',  wheelAcc > 20);
+    ptr.classList.toggle('ready', wheelAcc >= 200);
+    /* 타이머: 휠이 멈추면 발동 여부 결정 */
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(() => {
+      if (!refreshing && ptr.classList.contains('ready')) {
+        refreshing = true;
+        ptr.classList.add('spin'); ptr.classList.remove('ready');
+        ptr.style.transform = 'translateX(-50%) translateY(8px)';
+        onRefresh(() => {
+          refreshing = false;
+          ptr.classList.remove('spin','show');
+          ptr.style.transform = 'translateX(-50%) translateY(-64px)';
+        });
+      } else {
+        ptr.style.transform = 'translateX(-50%) translateY(-64px)';
+        ptr.classList.remove('show','ready');
+      }
+      wheelAcc = 0;
+    }, 150);
+  }, {passive:true});
 }
 
 /* ── 스크롤 헤더 ── */
@@ -591,13 +637,28 @@ function initSearch() {
     document.getElementById('rec-list').innerHTML = list.length
       ? list.map(w=>`<div class="recent-item"><div class="recent-l" data-w="${w}">${CLOCK_IC}${w}</div><div class="recent-x" data-w="${w}">${CLOSE_IC}</div></div>`).join('')
       : `<div style="color:#999;font-size:13px;padding:12px 0">최근 검색 기록이 없습니다</div>`;
-    document.querySelectorAll('.recent-l[data-w]').forEach(el=>el.addEventListener('click',()=>{input.value=el.dataset.w;doSearch(el.dataset.w);}));
+    document.querySelectorAll('.recent-l[data-w]').forEach(el => {
+      el.addEventListener('click', () => {
+        const w = el.dataset.w;
+        input.value = w;
+        clear.style.display = 'flex';
+        /* 렌더링 완료 후 검색 실행 */
+        requestAnimationFrame(() => doSearch(w));
+      });
+    });
     document.querySelectorAll('.recent-x[data-w]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();rmRecent(el.dataset.w);renderRecent();}));
   }
   function renderRelated(q) {
     showSection('rel');
-    const all=['스쿼트','스쿼트 자세','스트레칭','상체운동','하체운동','홈트','다이어트','단백질','데드리프트','플랭크'];
-    const rel=all.filter(w=>w.startsWith(q)).slice(0,10);
+    /* 실제 데이터 title/author/tags에서 q로 시작하는 단어 추출 */
+    const pool = new Set();
+    const add = (str) => { if(str && str.toLowerCase().startsWith(q.toLowerCase())) pool.add(str); };
+    [...LIVE_DATA,...VOD_DATA,...FITS_DATA].forEach(d => {
+      add(d.title); add(d.author); (d.tags||[]).forEach(t => add(t.replace('#','')));
+    });
+    [...COM_DATA].forEach(d => { (d.tags||[]).forEach(t => add(t.replace('#',''))); });
+    [...Q_DATA].forEach(d => { add(d.title); (d.tags||[]).forEach(t => add(t.replace('#',''))); });
+    const rel = [...pool].slice(0, 10);
     document.getElementById('rel-list').innerHTML = rel.length
       ? rel.map(w=>`<div class="related-item" data-w="${w}">${ARROW}${w}</div>`).join('')
       : `<div style="color:#999;font-size:13px;padding:12px 0">연관 검색어가 없습니다</div>`;
@@ -605,21 +666,139 @@ function initSearch() {
   }
   function doSearch(q) {
     if (!q.trim()) { renderRecent(); return; }
-    addRecent(q.trim()); showSection('res');
-    const typo={'스쿽트':'스쿼트','혹트':'홈트'}[q];
-    const matched=VOD_DATA.filter(v=>v.title.includes(q)||v.tags.some(t=>t.includes(q)));
-    let html='';
-    if(typo) html+=`<div class="did-you-mean">혹시 <span id="dym">${typo}</span> 을(를) 찾으셨나요?</div>`;
-    if(!matched.length&&!typo){html+=`<div class="no-result">🔍 "${q}"에 대한 결과가 없습니다</div>`;}
-    else{
-      html+=`<div class="srch-tabs"><div class="s-tab active">전체</div><div class="s-tab">라이브</div><div class="s-tab">VOD</div><div class="s-tab">FITS</div><div class="s-tab">커뮤니티</div><div class="s-tab">질문</div></div><div class="srch-filters"><div class="f-btn active">인기순</div><div class="f-btn">최신순</div></div>`;
-      html+=matched.slice(0,2).map(d=>feedHtml('vod',d)).join('');
+    addRecent(q.trim());
+    showSection('res');
+
+    /* ── 전체 카테고리 검색 ── */
+    const matchStr = (v) => v && String(v).toLowerCase().includes(q.toLowerCase());
+    const matchItem = (item, fields) => fields.some(f => {
+      const v = item[f];
+      if (Array.isArray(v)) return v.some(t => matchStr(t));
+      return matchStr(v);
+    });
+
+    const results = {
+      live:      LIVE_DATA.filter(d => matchItem(d, ['title','author','tags'])),
+      vod:       VOD_DATA.filter(d =>  matchItem(d, ['title','author','tags'])),
+      fits:      FITS_DATA.filter(d => matchItem(d, ['title','author','tags'])),
+      community: COM_DATA.filter(d =>  matchItem(d, ['content','author','tags'])),
+      question:  Q_DATA.filter(d =>   matchItem(d, ['title','body','author','tags'])),
+    };
+    const totalCount = Object.values(results).reduce((s,a) => s + a.length, 0);
+
+    /* 오타 교정 */
+    const TYPOS = {'스쿽트':'스쿼트','혹트':'홈트','스쿼터':'스쿼트','필라':'필라테스'};
+    const typo = TYPOS[q];
+
+    let html = '';
+    if (typo) {
+      html += `<div class="did-you-mean">혹시 <span id="dym" style="cursor:pointer;color:#4b668b;font-weight:700">${typo}</span> 을(를) 찾으셨나요?</div>`;
     }
-    document.getElementById('res-content').innerHTML=html;
-    const dym=document.getElementById('dym');
-    if(dym) dym.addEventListener('click',()=>{input.value=dym.textContent;doSearch(dym.textContent);});
-    document.querySelectorAll('.s-tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.s-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');}));
-    document.querySelectorAll('.f-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.f-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+    if (totalCount === 0 && !typo) {
+      html += `<div class="no-result">🔍 "<strong>${q}</strong>"에 대한 결과가 없습니다</div>`;
+      document.getElementById('res-content').innerHTML = html;
+      return;
+    }
+
+    /* 탭 + 필터 */
+    html += `
+      <div class="srch-tabs" id="srch-tabs">
+        <div class="s-tab active" data-cat="all">전체</div>
+        <div class="s-tab" data-cat="live">라이브</div>
+        <div class="s-tab" data-cat="vod">VOD</div>
+        <div class="s-tab" data-cat="fits">FITS</div>
+        <div class="s-tab" data-cat="community">커뮤니티</div>
+        <div class="s-tab" data-cat="question">질문</div>
+      </div>
+      <div class="srch-filters" id="srch-filters">
+        <div class="f-btn active" data-sort="popular">인기순</div>
+        <div class="f-btn" data-sort="recent">최신순</div>
+      </div>
+      <div id="srch-results-body"></div>`;
+
+    document.getElementById('res-content').innerHTML = html;
+
+    const dymEl = document.getElementById('dym');
+    if (dymEl) dymEl.addEventListener('click', () => { input.value = dymEl.textContent; doSearch(dymEl.textContent); });
+
+    let curCat = 'all', curSort = 'popular';
+
+    const sortArr = (arr, type) => {
+      const a = [...arr];
+      if (curSort === 'popular') {
+        if (type === 'live') return a.sort((x,y) => y.viewers - x.viewers);
+        if (type === 'community' || type === 'question') return a.sort((x,y) => y.likes - x.likes);
+        return a.sort((x,y) => y.views - x.views);
+      }
+      return a.sort((x,y) => x.h - y.h); /* 최신순 */
+    };
+
+    const mkFits = (arr) => sortArr(arr,'fits').map(d =>
+      `<div onclick="location.href='/fits/${d.id}'" style="display:flex;gap:12px;padding:10px 16px;cursor:pointer;border-bottom:1px solid #f2f2f2;align-items:center">
+        <div style="width:80px;height:80px;background:var(--gray-200);border-radius:6px;flex-shrink:0"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px">${d.title}</div>
+          <div style="font-size:12px;color:#666">${d.author}</div>
+          <div style="margin-top:3px">${tagsHtml(d.tags)}</div>
+        </div>
+      </div>`).join('');
+    const mkCom = (arr) => sortArr(arr,'community').map(d =>
+      `<div onclick="location.href='/community/${d.id}'" style="padding:10px 16px;cursor:pointer;border-bottom:1px solid #f2f2f2">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <div style="width:26px;height:26px;border-radius:50%;background:#e5e5e5;flex-shrink:0"></div>
+          <span style="font-size:12px;font-weight:600">@${d.author}</span>
+          <span style="font-size:11px;color:#999;margin-left:auto">${timeAgo(d.h)}</span>
+        </div>
+        <div style="font-size:13px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:4px">${d.content}</div>
+        <div style="margin-bottom:4px">${tagsHtml(d.tags)}</div>
+        <div style="display:flex;gap:8px;font-size:11px;color:#666">${HEART}${fmt(d.likes)}&nbsp;${COMMENT}${fmt(d.comments)}</div>
+      </div>`).join('');
+    const mkQ = (arr) => sortArr(arr,'question').map(d =>
+      `<div onclick="location.href='/question/${d.id}'" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid #f2f2f2">
+        <div style="font-size:13px;font-weight:700;margin-bottom:3px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${d.title}</div>
+        <div style="font-size:12px;color:#666;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:4px">${d.body}</div>
+        <div style="margin-bottom:4px">${tagsHtml(d.tags)}</div>
+        <div style="display:flex;gap:8px;font-size:11px;color:#666">${HEART}${fmt(d.likes)}&nbsp;${COMMENT}${fmt(d.comments)}&nbsp;<span style="margin-left:auto;color:#999">${timeAgo(d.h)}</span></div>
+      </div>`).join('');
+
+    const noRes = `<div style="padding:32px 16px;text-align:center;color:#999;font-size:13px">이 카테고리에서 결과가 없습니다</div>`;
+
+    function renderResults() {
+      const body = document.getElementById('srch-results-body');
+      if (!body) return;
+      let out = '';
+      if (curCat === 'all') {
+        if (results.live.length)      out += `<div class="srch-cat-label">라이브</div>${sortArr(results.live,'live').map(d=>feedHtml('live',d)).join('')}`;
+        if (results.vod.length)       out += `<div class="srch-cat-label">VOD</div>${sortArr(results.vod,'vod').map(d=>feedHtml('vod',d)).join('')}`;
+        if (results.fits.length)      out += `<div class="srch-cat-label">FITS</div>${mkFits(results.fits)}`;
+        if (results.community.length) out += `<div class="srch-cat-label">커뮤니티</div>${mkCom(results.community)}`;
+        if (results.question.length)  out += `<div class="srch-cat-label">질문</div>${mkQ(results.question)}`;
+      } else if (curCat === 'live')      out = results.live.length      ? sortArr(results.live,'live').map(d=>feedHtml('live',d)).join('') : noRes;
+        else if (curCat === 'vod')       out = results.vod.length       ? sortArr(results.vod,'vod').map(d=>feedHtml('vod',d)).join('')   : noRes;
+        else if (curCat === 'fits')      out = results.fits.length      ? mkFits(results.fits)      : noRes;
+        else if (curCat === 'community') out = results.community.length ? mkCom(results.community)  : noRes;
+        else if (curCat === 'question')  out = results.question.length  ? mkQ(results.question)     : noRes;
+      body.innerHTML = out || noRes;
+    }
+
+    renderResults();
+
+    document.querySelectorAll('#srch-tabs .s-tab').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('#srch-tabs .s-tab').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        curCat = t.dataset.cat;
+        renderResults();
+      });
+    });
+    document.querySelectorAll('#srch-filters .f-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#srch-filters .f-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        curSort = b.dataset.sort;
+        renderResults();
+      });
+    });
   }
 
   document.querySelectorAll('.search-bar,.hdr-search-ic,.cat-search-btn').forEach(el=>el.addEventListener('click',open));
@@ -639,9 +818,6 @@ function checkFlow() {
   if (isNew) localStorage.setItem('fito_user','1');
   if (isNew) setTimeout(()=>document.getElementById('modal-tutorial').classList.add('open'),500);
   else if (last && now-Number(last)>7*24*60*60*1000) setTimeout(()=>document.getElementById('modal-welcome').classList.add('open'),500);
-  const first=localStorage.getItem('fito_first');
-  if(!first) localStorage.setItem('fito_first',now);
-  if(isNew||(now-Number(first||now))<72*60*60*1000) document.getElementById('ob-banner').style.display='flex';
 }
 
 function initModals() {
@@ -658,5 +834,9 @@ document.addEventListener('DOMContentLoaded', () => {
   checkFlow();
   buildAndInitCarousel('pop-car-all', buildAllPopSlides());
   renderRecommendFeed('rec-feed-all', 'all');
-  initPTR(done => { renderRecommendFeed('rec-feed-all','all'); setTimeout(done, 800); });
+  initPTR(done => {
+    const info = window._getActiveFeedInfo ? window._getActiveFeedInfo() : { type:'all', feedId:'rec-feed-all' };
+    renderRecommendFeed(info.feedId, info.type);
+    setTimeout(done, 800);
+  });
 });

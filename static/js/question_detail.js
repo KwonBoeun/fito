@@ -108,6 +108,14 @@ function init() {
     this.classList.toggle('liked', liked);
   });
 
+  /* 북마크 */
+  let bookmarked = false, bookmarks = post.bookmarks;
+  document.getElementById('bookmark-btn').addEventListener('click', function() {
+    bookmarked = !bookmarked; bookmarks += bookmarked ? 1 : -1;
+    document.getElementById('bookmark-cnt').textContent = fmt(bookmarks);
+    this.classList.toggle('bookmarked', bookmarked);
+  });
+
   /* 답변 작성 */
   const input = document.getElementById('comment-input');
   document.getElementById('comment-send').addEventListener('click', () => {

@@ -6,7 +6,54 @@
   <title>FITO - VOD</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}"/>
   <style>
-    .vod-video{width:100%;aspect-ratio:16/9;background:var(--gray-200);position:relative}
+    /* ── VOD 플레이어 래퍼 ── */
+    .vod-player-wrap{width:100%;aspect-ratio:16/9;background:#111;position:relative;
+      overflow:hidden;cursor:pointer}
+    /* 썸네일 배경 */
+    .vod-player-bg{position:absolute;inset:0;background:var(--gray-200)}
+    /* 컨트롤 오버레이 */
+    .vod-controls{position:absolute;inset:0;display:flex;flex-direction:column;
+      justify-content:flex-end;background:linear-gradient(transparent 40%,rgba(0,0,0,.7));
+      opacity:1;transition:opacity .3s}
+    .vod-controls.hidden{opacity:0;pointer-events:none}
+    /* 중앙 재생 버튼 */
+    .vod-center-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.25);
+      backdrop-filter:blur(4px);border:none;cursor:pointer;
+      display:flex;align-items:center;justify-content:center}
+    .vod-center-btn svg{width:26px;height:26px;fill:#fff;stroke:none}
+    /* 하단 컨트롤 바 */
+    .vod-ctrl-bar{padding:0 12px 10px;display:flex;flex-direction:column;gap:6px}
+    /* 진행 바 */
+    .vod-seek-wrap{position:relative;height:18px;display:flex;align-items:center;cursor:pointer}
+    .vod-seek-track{position:absolute;left:0;right:0;height:3px;background:rgba(255,255,255,.3);
+      border-radius:2px}
+    .vod-seek-fill{height:3px;background:#fff;border-radius:2px;position:absolute;left:0;
+      transition:width .2s linear}
+    .vod-seek-thumb{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;
+      top:50%;transform:translate(-50%,-50%);transition:left .2s linear;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+    .vod-seek-input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;margin:0}
+    /* 하단 버튼 열 */
+    .vod-ctrl-row{display:flex;align-items:center;gap:4px}
+    .vod-ctrl-btn{background:none;border:none;cursor:pointer;padding:4px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .vod-ctrl-btn svg{width:18px;height:18px;fill:#fff;stroke:none}
+    .vod-ctrl-btn.stroke svg{fill:none;stroke:#fff;stroke-width:2}
+    .vod-time{color:#fff;font-size:11px;font-weight:500;white-space:nowrap;margin:0 4px}
+    .vod-ctrl-right{margin-left:auto;display:flex;align-items:center;gap:2px}
+    /* 속도/화질 팝업 */
+    .vod-popup{position:absolute;bottom:52px;background:rgba(20,20,20,.95);
+      border-radius:var(--r-md);padding:6px 0;min-width:100px;display:none;z-index:10}
+    .vod-popup.open{display:block}
+    .vod-popup-item{padding:10px 16px;font-size:13px;color:#fff;cursor:pointer;
+      display:flex;align-items:center;justify-content:space-between}
+    .vod-popup-item:active{background:rgba(255,255,255,.1)}
+    .vod-popup-item.active{color:#4b9eff}
+    .vod-popup-check{font-size:12px}
+    /* 풀스크린 모드 */
+    .vod-player-wrap.fullscreen{position:fixed;inset:0;z-index:1000;
+      aspect-ratio:unset;width:100%;height:100%;max-width:none}
+    /* VOD 정보 */
     .vod-info-section{padding:14px 16px 12px}
     .vod-title{font-size:17px;font-weight:700;margin-bottom:8px;line-height:1.4}
     .vod-meta-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
@@ -16,12 +63,11 @@
     .vod-author-name{font-size:14px;font-weight:600;flex:1}
     .vod-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
     .vod-desc-toggle{font-size:12px;color:var(--gray-500);background:none;border:none;cursor:pointer;padding:2px 0}
-    .vod-desc{font-size:13px;color:var(--gray-600);line-height:1.6;margin-top:6px;
+    .vod-desc{font-size:13px;color:#555;line-height:1.6;margin-top:6px;
       overflow:hidden;max-height:0;transition:max-height .3s ease}
     .vod-desc.open{max-height:200px}
     /* 댓글 */
-    .vod-comment-hdr{display:flex;align-items:center;justify-content:space-between;
-      padding:14px 16px 10px}
+    .vod-comment-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
     .vod-comment-hdr span{font-size:14px;font-weight:700}
     .vod-comment-hdr a{font-size:12px;color:var(--gray-500);text-decoration:none}
     /* 추천 영상 */
@@ -29,8 +75,11 @@
     .rec-section-title{font-size:14px;font-weight:700;margin-bottom:12px}
     .rec-card{display:flex;gap:12px;margin-bottom:14px;cursor:pointer}
     .rec-thumb{width:120px;height:68px;border-radius:var(--r-sm);background:var(--gray-200);
-      flex-shrink:0;display:flex;align-items:center;justify-content:center;
-      font-size:11px;color:var(--gray-400)}
+      flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;
+      font-size:10px;color:var(--gray-400)}
+    /* 추천 썸네일 시간 뱃지 */
+    .rec-dur{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.75);
+      color:#fff;font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px}
     .rec-info{flex:1;min-width:0}
     .rec-title{font-size:13px;font-weight:600;overflow:hidden;display:-webkit-box;
       -webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.4;margin-bottom:4px}
@@ -51,8 +100,71 @@
   </button>
 </header>
 
-<!-- 영상 -->
-<div class="vod-video"></div>
+<!-- ── VOD 플레이어 ── -->
+<div class="vod-player-wrap" id="player-wrap">
+  <div class="vod-player-bg"></div>
+
+  <!-- 컨트롤 오버레이 -->
+  <div class="vod-controls" id="vod-controls">
+    <!-- 중앙 재생/일시정지 -->
+    <button class="vod-center-btn" id="center-btn">
+      <svg id="center-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </button>
+
+    <div class="vod-ctrl-bar">
+      <!-- seekbar -->
+      <div class="vod-seek-wrap" id="seek-wrap">
+        <div class="vod-seek-track"></div>
+        <div class="vod-seek-fill" id="seek-fill" style="width:0%"></div>
+        <div class="vod-seek-thumb" id="seek-thumb" style="left:0%"></div>
+        <input type="range" class="vod-seek-input" id="seek-input" min="0" max="100" value="0" step="0.1"/>
+      </div>
+
+      <!-- 버튼 열 -->
+      <div class="vod-ctrl-row">
+        <!-- 재생/일시정지 -->
+        <button class="vod-ctrl-btn" id="play-btn">
+          <svg id="play-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+        <!-- 볼륨 -->
+        <button class="vod-ctrl-btn stroke" id="mute-btn">
+          <svg id="mute-icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        </button>
+        <!-- 현재시간 / 총시간 -->
+        <span class="vod-time" id="vod-time">0:00 / 0:00</span>
+
+        <div class="vod-ctrl-right">
+          <!-- 재생 속도 -->
+          <button class="vod-ctrl-btn" id="speed-btn" style="font-size:11px;color:#fff;font-weight:700;width:32px">1x</button>
+          <!-- 화질 -->
+          <button class="vod-ctrl-btn" id="quality-btn" style="font-size:10px;color:#fff;font-weight:700;width:36px">HD</button>
+          <!-- 전체화면 -->
+          <button class="vod-ctrl-btn stroke" id="fullscreen-btn">
+            <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 속도 팝업 -->
+    <div class="vod-popup" id="speed-popup" style="right:60px">
+      <div class="vod-popup-item" data-speed="0.5">0.5x</div>
+      <div class="vod-popup-item" data-speed="0.75">0.75x</div>
+      <div class="vod-popup-item active" data-speed="1">1x <span class="vod-popup-check">✓</span></div>
+      <div class="vod-popup-item" data-speed="1.25">1.25x</div>
+      <div class="vod-popup-item" data-speed="1.5">1.5x</div>
+      <div class="vod-popup-item" data-speed="2">2x</div>
+    </div>
+
+    <!-- 화질 팝업 -->
+    <div class="vod-popup" id="quality-popup" style="right:12px">
+      <div class="vod-popup-item active" data-q="FHD">1080p <span class="vod-popup-check">✓</span></div>
+      <div class="vod-popup-item" data-q="HD">720p</div>
+      <div class="vod-popup-item" data-q="SD">480p</div>
+      <div class="vod-popup-item" data-q="LD">360p</div>
+    </div>
+  </div>
+</div>
 
 <!-- VOD 정보 -->
 <div class="vod-info-section">
@@ -69,7 +181,7 @@
   <div class="vod-author-row">
     <div class="vod-author-pic"></div>
     <span class="vod-author-name" id="vod-author"></span>
-    <button class="dt-sub-btn">구독</button>
+    <button class="dt-sub-btn" id="sub-btn">구독</button>
   </div>
   <div class="vod-tags" id="vod-tags"></div>
   <button class="vod-desc-toggle" id="desc-toggle">영상 설명 보기 ▾</button>
@@ -101,7 +213,7 @@
   <div class="comment-input-wrap">
     <input type="text" placeholder="댓글을 입력하세요" id="comment-input"/>
   </div>
-  <button class="comment-send">
+  <button class="comment-send" id="comment-send">
     <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
   </button>
 </div>

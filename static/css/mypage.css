@@ -1,0 +1,226 @@
+/* ===========================
+   FITO - MY 페이지 CSS
+   =========================== */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
+
+:root {
+  --black: #000; --white: #fff;
+  --gray-50: #f9f9f9; --gray-100: #f2f2f2;
+  --gray-200: #e5e5e5; --gray-300: #ccc;
+  --gray-400: #999; --gray-500: #666; --gray-700: #333;
+  --green: #2ecc71;
+  --r-sm: 6px; --r-md: 12px; --r-lg: 18px; --r-full: 999px;
+  --nav-h: 60px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--white); color: var(--black);
+  font-size: 14px; line-height: 1.5;
+  max-width: 390px; margin: 0 auto;
+  overflow-x: hidden; -webkit-font-smoothing: antialiased;
+}
+
+/* ── 헤더 ── */
+.my-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  height: 52px;
+  display: flex; align-items: center; justify-content: center;
+}
+.my-header-title { font-size: 16px; font-weight: 700; }
+
+/* ── 프로필/마이페이지 토글 ── */
+.my-tab-toggle {
+  display: flex; justify-content: center;
+  padding: 14px 0 0;
+  background: var(--white);
+  position: sticky; top: 52px; z-index: 90;
+}
+.my-toggle-wrap {
+  display: flex;
+  background: var(--gray-100);
+  border-radius: var(--r-full);
+  padding: 3px;
+}
+.my-toggle-btn {
+  padding: 6px 24px;
+  border-radius: var(--r-full);
+  font-size: 14px; font-weight: 600;
+  cursor: pointer; border: none;
+  background: transparent; color: var(--gray-400);
+  font-family: inherit; transition: all .2s;
+}
+.my-toggle-btn.active {
+  background: var(--black); color: var(--white);
+}
+
+/* ── 콘텐츠 ── */
+.my-content { padding-bottom: calc(var(--nav-h) + 16px); }
+.my-screen { display: none; }
+.my-screen.active { display: block; }
+
+/* ══════════════════════════════
+   프로필 화면
+   ══════════════════════════════ */
+
+/* 프로필 상단 */
+.profile-top {
+  padding: 20px 20px 16px;
+  display: flex; align-items: center; gap: 20px;
+}
+.profile-avatar-wrap { position: relative; flex-shrink: 0; }
+.profile-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--gray-200);
+  border: 2.5px solid var(--green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 700; color: var(--gray-400);
+  overflow: hidden;
+}
+.profile-info { flex: 1; min-width: 0; }
+.profile-name-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+.profile-name  { font-size: 17px; font-weight: 700; }
+.profile-rank  {
+  font-size: 12px; color: var(--gray-400);
+  background: var(--gray-100); border-radius: var(--r-full);
+  padding: 2px 8px;
+}
+.profile-stats {
+  display: flex; gap: 16px;
+}
+.profile-stat {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+}
+.profile-stat-value { font-size: 14px; font-weight: 700; }
+.profile-stat-label { font-size: 10px; color: var(--gray-400); font-weight: 500; }
+
+/* 그룹 참여 정보 */
+.profile-groups {
+  padding: 0 20px 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.profile-group-avatars { display: flex; }
+.profile-group-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--gray-300); border: 2px solid var(--white);
+  margin-right: -6px; font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gray-500);
+}
+.profile-group-text {
+  font-size: 12px; color: var(--gray-500); margin-left: 10px;
+  flex: 1;
+}
+
+/* 버튼 행 */
+.profile-btns {
+  padding: 0 20px 16px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.profile-btn {
+  padding: 9px; border-radius: var(--r-md);
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; text-align: center;
+  border: 1.5px solid var(--gray-200);
+  background: var(--white); color: var(--black);
+  font-family: inherit; transition: background .15s;
+}
+.profile-btn:active { background: var(--gray-100); }
+
+/* 콘텐츠 탭 */
+.profile-content-tabs {
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+  display: flex; justify-content: space-around;
+  position: sticky; top: calc(52px + 52px); z-index: 80;
+  background: var(--white);
+}
+.profile-content-tab {
+  flex: 1; padding: 12px 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: border-color .2s;
+}
+.profile-content-tab svg {
+  width: 22px; height: 22px; stroke: var(--gray-300);
+  fill: none; stroke-width: 1.8;
+}
+.profile-content-tab.active { border-bottom-color: var(--black); }
+.profile-content-tab.active svg { stroke: var(--black); }
+
+/* 콘텐츠 그리드 */
+.profile-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--gray-200);
+}
+.profile-grid-item {
+  aspect-ratio: 1; background: var(--gray-100);
+  cursor: pointer; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; transition: opacity .15s;
+}
+.profile-grid-item:active { opacity: .8; }
+
+/* ══════════════════════════════
+   마이페이지 화면
+   ══════════════════════════════ */
+.mypage-section { padding: 16px 20px 0; }
+.mypage-section-title {
+  font-size: 15px; font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* 챌린지/리워드 카드 */
+.mypage-card {
+  background: var(--gray-100); border-radius: var(--r-md);
+  height: 80px; margin-bottom: 20px;
+  cursor: pointer; transition: background .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.mypage-card:active { background: var(--gray-200); }
+.mypage-card-empty { font-size: 12px; color: var(--gray-400); }
+
+/* 메뉴 그룹 */
+.mypage-menu-group {
+  border-top: 1px solid var(--gray-100);
+  padding: 8px 0;
+  margin: 0 20px;
+}
+.mypage-menu-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 0;
+  cursor: pointer; transition: background .1s;
+  border-radius: var(--r-sm);
+}
+.mypage-menu-item:active { background: var(--gray-50); }
+.mypage-menu-label { font-size: 15px; font-weight: 500; }
+.mypage-menu-arrow {
+  width: 18px; height: 18px;
+  stroke: var(--gray-300); fill: none; stroke-width: 2;
+}
+.mypage-menu-item.logout .mypage-menu-label { color: var(--gray-400); }
+
+/* ── 하단 네비 ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 390px; height: var(--nav-h);
+  background: var(--white); border-top: 1px solid var(--gray-200);
+  display: flex; align-items: center; z-index: 100;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; cursor: pointer; padding: 6px 0;
+  text-decoration: none;
+}
+.nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+.nav-icon svg { width: 22px; height: 22px; stroke: var(--gray-400); fill: none; stroke-width: 1.8; }
+.nav-label { font-size: 10px; color: var(--gray-400); font-weight: 500; }
+.nav-item.active .nav-icon svg { stroke: var(--black); }
+.nav-item.active .nav-label { color: var(--black); font-weight: 700; }

@@ -6,6 +6,30 @@ app = Flask(__name__)
 def main():
     return render_template('main.html')
 
+<<<<<<< HEAD
+=======
+# ── 상세 페이지 ──
+@app.route('/live/<int:content_id>')
+def live_detail(content_id):
+    return render_template('live_detail.html', content_id=content_id)
+
+@app.route('/vod/<int:content_id>')
+def vod_detail(content_id):
+    return render_template('vod_detail.html', content_id=content_id)
+
+@app.route('/fits/<int:content_id>')
+def fits_detail(content_id):
+    return render_template('fits_detail.html', content_id=content_id)
+
+@app.route('/community/<int:content_id>')
+def community_detail(content_id):
+    return render_template('community_detail.html', content_id=content_id)
+
+@app.route('/question/<int:content_id>')
+def question_detail(content_id):
+    return render_template('question_detail.html', content_id=content_id)
+
+>>>>>>> main
 # ── 분석 메인 ──
 @app.route('/analyze')
 def analyze():
@@ -91,6 +115,11 @@ def group_chat():
     group_id = request.args.get('group_id', '1')
     chat_type = request.args.get('type', 'all')
     return render_template('group_chat.html', group_id=group_id, chat_type=chat_type)
+
+# ── MY 페이지 ──
+@app.route('/mypage')
+def mypage():
+    return render_template('mypage.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
