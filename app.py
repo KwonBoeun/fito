@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from flask import Flask, render_template, jsonify, request
 from src.mock_data import get_popular_contents, get_recommend_contents, get_search_suggests
 
@@ -57,7 +56,6 @@ def api_search_suggest():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-=======
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -165,4 +163,3 @@ def group_chat():
 
 if __name__ == '__main__':
     app.run(debug=True)
->>>>>>> d0ae56a4ddc4e9538d0283d131b604c5ccb495a9
