@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - PT</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pt.css') }}"/>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<header class="pt-header">
+  <span class="pt-header-title">PT</span>
+  <div class="pt-search-box" onclick="alert('트레이너 검색')">
+    <span>트레이너 검색</span>
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+  </div>
+</header>
+
+<div class="pt-content">
+
+  <!-- ══════════════════════════════
+       1-1. 구독중인 트레이너
+       ══════════════════════════════ -->
+  <div class="subscribe-banner-wrap" id="subscribeBannerWrap">
+    <!-- JS로 렌더링 -->
+  </div>
+
+  <div class="pt-divider"></div>
+
+  <!-- ══════════════════════════════
+       1-2. 트레이너 추천 버튼
+       ══════════════════════════════ -->
+  <div class="pt-section">
+    <div class="pt-section-title">트레이너 추천</div>
+    <div class="recommend-btns">
+      <div class="recommend-btn" onclick="alert('분석 바탕 트레이너 추천')">
+        <div class="recommend-btn-icon">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <span class="recommend-btn-label">분석 바탕 추천</span>
+      </div>
+      <div class="recommend-btn" onclick="alert('인기 트레이너')">
+        <div class="recommend-btn-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <span class="recommend-btn-label">인기 트레이너</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pt-divider"></div>
+
+  <!-- ══════════════════════════════
+       1-3. 트레이너 카테고리
+       ══════════════════════════════ -->
+  <div class="pt-section">
+    <div class="pt-section-title" style="display:none"></div>
+    <div class="category-grid">
+      <div class="category-btn" onclick="selectCategory(this, 'male-best')">남성 BEST</div>
+      <div class="category-btn" onclick="selectCategory(this, 'female-best')">여성 BEST</div>
+      <div class="category-btn" onclick="selectCategory(this, 'time-based')">시간별 추천</div>
+      <div class="category-btn" onclick="selectCategory(this, 'value')">가성비 좋은</div>
+      <div class="category-btn" onclick="selectCategory(this, 'review')">좋은 후기</div>
+      <div class="category-btn" onclick="selectCategory(this, 'group')">공개 그룹 모집</div>
+    </div>
+  </div>
+
+  <div class="pt-divider"></div>
+
+  <!-- ══════════════════════════════
+       1-4. 사용자 맞춤 트레이너 추천
+       ══════════════════════════════ -->
+  <div class="pt-section" id="interestSection">
+    <!-- JS로 렌더링 -->
+  </div>
+
+  <div class="pt-divider"></div>
+
+  <!-- ══════════════════════════════
+       1-5. 루틴 추천
+       ══════════════════════════════ -->
+  <div class="pt-section">
+    <div class="pt-section-title">루틴 추천</div>
+
+    <!-- 카테고리 탭 -->
+    <div class="routine-cats" id="routineCats"></div>
+
+    <!-- 루틴 카드 3개 -->
+    <div class="routine-cards" id="routineCards"></div>
+
+    <!-- 버튼 -->
+    <div class="routine-btns">
+      <div class="routine-action-btn" onclick="alert('나의 루틴')">나의 루틴</div>
+      <div class="routine-action-btn" onclick="alert('루틴 더보기')" style="background:var(--black);color:var(--white);border-color:var(--black)">루틴 더보기</div>
+    </div>
+  </div>
+
+  <div class="pt-divider"></div>
+
+  <!-- ══════════════════════════════
+       1-6. 트레이너 영상 추천
+       ══════════════════════════════ -->
+  <div class="pt-section">
+    <div class="pt-section-title">이런 트레이너 어때요?</div>
+    <div id="vodList"></div>
+  </div>
+
+</div><!-- /pt-content -->
+
+<!-- ── 라이브 참여 모달 ── -->
+<div class="live-modal-wrap" id="liveModal" onclick="if(event.target===this)closeLiveModal()">
+  <div class="live-modal-box">
+    <div class="live-modal-body">
+      라이브에 참여하시겠어요?
+    </div>
+    <div class="live-modal-btns">
+      <button class="live-modal-btn join" onclick="joinLive()">참여</button>
+      <button class="live-modal-btn cancel" onclick="closeLiveModal()">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 하단 네비 ── -->
+<nav class="bottom-nav">
+  <a href="{{ url_for('main') }}" class="nav-item">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+    <span class="nav-label">홈</span>
+  </a>
+  <a href="{{ url_for('pt') }}" class="nav-item active">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+    <span class="nav-label">운동</span>
+  </a>
+  <a href="{{ url_for('group') }}" class="nav-item">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    <span class="nav-label">그룹</span>
+  </a>
+  <a href="{{ url_for('analyze') }}" class="nav-item">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+    <span class="nav-label">분석</span>
+  </a>
+  <a href="#" class="nav-item">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    <span class="nav-label">MY</span>
+  </a>
+</nav>
+
+<script src="{{ url_for('static', filename='js/pt.js') }}"></script>
+</body>
+</html>

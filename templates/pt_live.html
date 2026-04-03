@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 트레이너 라이브</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pt_live.css') }}"/>
+</head>
+<body>
+
+<div class="live-wrap" id="liveWrap">
+
+  <!-- ════════════════════════
+       1-1. 상단바
+       ════════════════════════ -->
+  <div class="live-topbar" id="liveTopbar">
+    <div class="topbar-left">
+      <div class="topbar-icon-btn" id="audioBtn" onclick="toggleAudioModal()">
+        <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+      </div>
+      <div>
+        <div class="topbar-title" id="trainerNameTop">김맹맹 트레이너</div>
+        <div class="topbar-sub" id="liveTimer">00:00 경과 · 2인 참여중</div>
+      </div>
+    </div>
+    <button class="topbar-exit" onclick="exitLive()">나가기</button>
+  </div>
+
+  <!-- ════════════════════════
+       1-2. 공지바
+       ════════════════════════ -->
+  <div class="live-notice-bar" id="noticeBar">
+    <!-- 기본 미리보기 -->
+    <div class="notice-preview" id="noticePreview" onclick="toggleNotice()">
+      <span class="notice-preview-icon">📢</span>
+      <span class="notice-preview-text" id="noticePreviewText">오늘 하체 루틴 집중!</span>
+      <div class="notice-fold-btn" id="noticeFoldBtn" onclick="event.stopPropagation(); toggleNotice()">
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <!-- 펼침 -->
+    <div class="notice-expanded" id="noticeExpanded">
+      <div class="notice-expanded-header">
+        <span class="notice-expanded-title">📢 공지</span>
+        <div class="notice-fold-btn" onclick="toggleNotice()">
+          <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+        </div>
+      </div>
+      <div class="notice-expanded-text" id="noticeFullText">
+        오늘 하체 루틴 집중! 스쿼트 3세트, 런지 3세트, 레그프레스 3세트 진행합니다. 질문은 채팅으로 남겨주세요.
+      </div>
+      <button class="notice-more-btn" onclick="openNoticeSheet()">공지 목록 보기</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════
+       비디오 영역
+       ════════════════════════ -->
+  <div class="live-video-area" id="videoArea" onclick="onVideoAreaClick(event)">
+
+    <!-- 1-3. 트레이너 화면 -->
+    <div class="trainer-screen" id="trainerScreen" ondblclick="toggleTrainerSolo()">
+      <div class="screen-placeholder">
+        <div class="screen-avatar" id="trainerAvatar">김</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.6)">카메라 연결 중...</div>
+      </div>
+      <div class="emoji-stream" id="emojiStream"></div>
+      <div class="screen-name-badge">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="trainerNameBadge">김맹맹</span>
+        <span style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.6)">트레이너</span>
+      </div>
+    </div>
+
+    <!-- 1-4. 사용자(나) 화면 - 기본 1:1 모드 -->
+    <div class="user-screen" id="userScreen" ondblclick="toggleUserSolo()">
+      <div class="screen-placeholder">
+        <div class="screen-avatar" id="userAvatar">나</div>
+      </div>
+      <div class="screen-name-badge" style="bottom:8px;left:8px">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="userNameBadge">나</span>
+      </div>
+    </div>
+
+    <!-- ALL 모드 - 참여자 2열 그리드 (기본 숨김) -->
+    <div class="user-grid" id="userGrid" style="display:none">
+      <div class="user-grid-cell" ondblclick="toggleUserSolo()">
+        <div class="screen-placeholder">
+          <div class="screen-avatar">나</div>
+        </div>
+        <div class="screen-name-badge">
+          <span id="gridMyName">나</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.5);margin-left:3px">(내 화면)</span>
+        </div>
+      </div>
+      <div class="user-grid-cell">
+        <div class="screen-placeholder">
+          <div class="screen-avatar">박</div>
+        </div>
+        <div class="screen-name-badge"><span>박민지</span></div>
+      </div>
+      <div class="user-grid-cell">
+        <div class="screen-placeholder">
+          <div class="screen-avatar">이</div>
+        </div>
+        <div class="screen-name-badge"><span>이준혁</span></div>
+      </div>
+      <div class="user-grid-cell">
+        <div class="screen-placeholder">
+          <div class="screen-avatar">최</div>
+        </div>
+        <div class="screen-name-badge"><span>최수연</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════
+       시스템 알림 토스트
+       ════════════════════════ -->
+  <div class="sys-toast" id="sysToast"></div>
+
+  <!-- ════════════════════════
+       참여자 탭바
+       ════════════════════════ -->
+  <div class="participant-tabs-wrap" id="participantTabsWrap">
+    <div class="participant-tabs">
+      <div class="ptab-scroll" id="ptabScroll">
+        <button class="ptab all active" onclick="selectPtab(this, 'all')">ALL</button>
+        <button class="ptab" onclick="selectPtab(this, 'trainer')">김맹맹</button>
+        <button class="ptab" onclick="selectPtab(this, 'user1')">박민지</button>
+        <button class="ptab" onclick="selectPtab(this, 'user2')">이준혁</button>
+        <button class="ptab" onclick="selectPtab(this, 'user3')">최수연</button>
+      </div>
+      <div class="ptab-arrow" onclick="scrollPtab()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════
+       1-5. 라이브 도구바
+       ════════════════════════ -->
+  <div class="live-toolbar" id="liveToolbar">
+
+    <!-- 마이크 -->
+    <div class="tool-btn" id="micBtn" onclick="toggleMic()">
+      <div class="tool-btn-icon" id="micIcon">
+        <svg id="micSvgOn" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        <svg id="micSvgOff" viewBox="0 0 24 24" style="display:none"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </div>
+      <span class="tool-btn-label" id="micLabel">마이크</span>
+    </div>
+
+    <!-- 카메라 -->
+    <div class="tool-btn" id="camBtn" onclick="toggleCam()">
+      <div class="tool-btn-icon" id="camIcon">
+        <svg id="camSvgOn" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        <svg id="camSvgOff" viewBox="0 0 24 24" style="display:none"><line x1="1" y1="1" x2="23" y2="23"/><path d="M21 21H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3m3-3h6l2 3h4a2 2 0 0 1 2 2v9.34m-7.72-2.06A4 4 0 1 1 7.72 7.72"/></svg>
+      </div>
+      <span class="tool-btn-label" id="camLabel">카메라</span>
+    </div>
+
+    <!-- 반응 -->
+    <div class="tool-btn" id="reactionBtn" onclick="toggleReactionPopup()">
+      <div class="tool-btn-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      </div>
+      <span class="tool-btn-label">반응</span>
+    </div>
+
+    <!-- 채팅 -->
+    <div class="tool-btn" onclick="openSheet('chatSheet')">
+      <div class="tool-btn-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <span class="tool-btn-label">채팅</span>
+    </div>
+
+    <!-- 멤버 -->
+    <div class="tool-btn" onclick="openSheet('memberSheet')">
+      <div class="tool-btn-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <span class="tool-btn-label">멤버</span>
+    </div>
+
+    <!-- 더보기 -->
+    <div class="tool-btn" onclick="openSheet('moreSheet')">
+      <div class="tool-btn-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </div>
+      <span class="tool-btn-label">더보기</span>
+    </div>
+
+  </div>
+
+</div><!-- /live-wrap -->
+
+<!-- ═══════════════════
+     소리 출력 모달
+     ═══════════════════ -->
+<div class="modal-overlay" id="audioOverlay" onclick="closeAudioModal()"></div>
+<div class="audio-modal" id="audioModal">
+  <div class="audio-modal-title">소리 출력 장치</div>
+  <div class="audio-option" onclick="selectAudio('speaker', this)">
+    <span class="audio-option-icon">🔊</span>
+    <span class="audio-option-name">스피커</span>
+    <div class="sheet-radio active" id="radio-speaker"></div>
+  </div>
+  <div class="audio-option" onclick="selectAudio('earphone', this)">
+    <span class="audio-option-icon">🎧</span>
+    <span class="audio-option-name">이어폰</span>
+    <div class="sheet-radio" id="radio-earphone"></div>
+  </div>
+  <div class="audio-option" onclick="selectAudio('bluetooth', this)">
+    <span class="audio-option-icon">📶</span>
+    <span class="audio-option-name">블루투스</span>
+    <div class="sheet-radio" id="radio-bluetooth"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════
+     반응 팝업
+     ═══════════════════ -->
+<div class="modal-overlay" id="reactionOverlay" onclick="closeReactionPopup()"></div>
+<div class="reaction-popup" id="reactionPopup">
+  <div class="reaction-section-title">손들기</div>
+  <div class="raise-hand-btn" id="raiseHandBtn" onclick="toggleRaiseHand()">
+    <span class="raise-hand-btn-icon">✋</span>
+    <span class="raise-hand-btn-text">손들기</span>
+    <span class="raise-hand-status" id="raiseHandStatus">OFF</span>
+  </div>
+  <div class="reaction-section-title">이모티콘</div>
+  <div class="emoji-grid">
+    <button class="emoji-btn" onclick="sendEmoji('👍')">👍</button>
+    <button class="emoji-btn" onclick="sendEmoji('❤️')">❤️</button>
+    <button class="emoji-btn" onclick="sendEmoji('🔥')">🔥</button>
+    <button class="emoji-btn" onclick="sendEmoji('😂')">😂</button>
+    <button class="emoji-btn" onclick="sendEmoji('😮')">😮</button>
+    <button class="emoji-btn" onclick="sendEmoji('👏')">👏</button>
+    <button class="emoji-btn" onclick="sendEmoji('💪')">💪</button>
+    <button class="emoji-btn" onclick="sendEmoji('🙏')">🙏</button>
+    <button class="emoji-btn" onclick="sendEmoji('😅')">😅</button>
+    <button class="emoji-btn" onclick="sendEmoji('🎉')">🎉</button>
+  </div>
+  <div class="emoji-limit-msg" id="emojiLimitMsg">잠시 후 다시 보내주세요.</div>
+</div>
+
+<!-- ═══════════════════
+     채팅 시트
+     ═══════════════════ -->
+<div class="modal-overlay" id="chatOverlay" onclick="closeSheet('chatSheet','chatOverlay')"></div>
+<div class="bottom-sheet" id="chatSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">채팅</div>
+  <div class="chat-list" id="chatList">
+    <div class="chat-item">
+      <div class="chat-avatar" style="background:#D32F2F">김</div>
+      <div class="chat-bubble">
+        <div class="chat-name">김맹맹 트레이너</div>
+        <div class="chat-text">안녕하세요! 오늘도 열심히 해봐요 💪</div>
+      </div>
+    </div>
+    <div class="chat-item">
+      <div class="chat-avatar">박</div>
+      <div class="chat-bubble">
+        <div class="chat-name">박민지</div>
+        <div class="chat-text">안녕하세요~!</div>
+      </div>
+    </div>
+  </div>
+  <div class="chat-input-wrap">
+    <button class="chat-whisper-btn" id="whisperBtn" onclick="toggleWhisper()">귓속말</button>
+    <input class="chat-input" id="chatInput" placeholder="채팅을 입력하세요" maxlength="200"/>
+    <div class="chat-send" onclick="sendChat()">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════
+     멤버 시트
+     ═══════════════════ -->
+<div class="modal-overlay" id="memberOverlay" onclick="closeSheet('memberSheet','memberOverlay')"></div>
+<div class="bottom-sheet" id="memberSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">멤버</div>
+  <!-- 트레이너 고정 -->
+  <div class="member-item">
+    <div class="member-avatar" style="background:#D32F2F">김</div>
+    <div class="member-info">
+      <div class="member-name">김맹맹 트레이너</div>
+      <div class="member-tag">트레이너</div>
+    </div>
+    <div class="member-icons">
+      <div class="member-icon"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg></div>
+      <div class="member-icon"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></div>
+    </div>
+  </div>
+  <!-- 나 -->
+  <div class="member-item" id="myMemberRow">
+    <div class="member-avatar">나</div>
+    <div class="member-info">
+      <div class="member-name" id="myMemberName">나</div>
+      <div class="member-tag">참여자</div>
+    </div>
+    <div class="member-icons">
+      <div class="member-icon" id="memberMicIcon"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg></div>
+      <div class="member-icon" id="memberCamIcon"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></div>
+    </div>
+  </div>
+  <!-- 다른 참여자 -->
+  <div class="member-item">
+    <div class="member-avatar">박</div>
+    <div class="member-info">
+      <div class="member-name">박민지</div>
+      <div class="member-tag">참여자</div>
+    </div>
+    <div class="member-icons">
+      <div class="member-icon off"><svg viewBox="0 0 24 24"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/></svg></div>
+      <div class="member-icon"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════
+     공지 시트
+     ═══════════════════ -->
+<div class="modal-overlay" id="noticeOverlay" onclick="closeSheet('noticeSheet','noticeOverlay')"></div>
+<div class="bottom-sheet" id="noticeSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">공지 설정</div>
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label">공지 배너 표시</div>
+      <div class="toggle-sub">라이브 화면 상단에 공지를 표시합니다</div>
+    </div>
+    <div class="toggle-switch on" id="toggleBanner" onclick="toggleSetting('banner')"></div>
+  </div>
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label">새 공지가 있을때까지 배너 숨기기</div>
+      <div class="toggle-sub">새로운 공지가 등록되면 다시 표시됩니다</div>
+    </div>
+    <div class="toggle-switch" id="toggleUntilNew" onclick="toggleSetting('untilNew')"></div>
+  </div>
+  <div style="padding:16px 20px">
+    <div class="sheet-title" style="padding:0 0 12px;font-size:13px;color:rgba(255,255,255,.6)">이전 공지 목록</div>
+    <div class="chat-bubble" style="margin-bottom:8px">
+      <div class="chat-name">2분 전</div>
+      <div class="chat-text">오늘 하체 루틴 집중! 스쿼트 3세트, 런지 3세트, 레그프레스 3세트 진행합니다. 질문은 채팅으로 남겨주세요.</div>
+    </div>
+    <div class="chat-bubble">
+      <div class="chat-name">어제</div>
+      <div class="chat-text">내일 하체 위주로 진행합니다. 준비운동 꼭 해오세요!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════
+     더보기 시트
+     ═══════════════════ -->
+<div class="modal-overlay" id="moreOverlay" onclick="closeSheet('moreSheet','moreOverlay')"></div>
+<div class="bottom-sheet" id="moreSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">더보기</div>
+  <div class="sheet-item" onclick="closeSheet('moreSheet','moreOverlay'); setTimeout(()=>openSheet('noticeSheet'), 200)">
+    <div class="sheet-item-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+    <div class="sheet-item-text">
+      <div class="sheet-item-title">공지</div>
+      <div class="sheet-item-sub">공지 설정 및 이전 공지 확인</div>
+    </div>
+  </div>
+  <div class="sheet-item" onclick="alert('설정')">
+    <div class="sheet-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+    <div class="sheet-item-text">
+      <div class="sheet-item-title">설정</div>
+      <div class="sheet-item-sub">화질, 오디오 등 설정</div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/pt_live.js') }}"></script>
+</body>
+</html>

@@ -111,6 +111,17 @@ def analyze_posture_report():
     mode = request.args.get('mode', 'upload')
     return render_template('analyze_posture_report.html', mode=mode)
 
+# ── PT 메인 ──
+@app.route('/pt')
+def pt():
+    return render_template('pt.html')
+
+# ── 트레이너 라이브 ──
+@app.route('/pt/live')
+def pt_live():
+    trainer_id = request.args.get('id', '1')
+    return render_template('pt_live.html', trainer_id=trainer_id)
+
 # ── 그룹 목록/검색 ──
 @app.route('/group')
 def group():

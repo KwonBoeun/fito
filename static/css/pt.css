@@ -1,0 +1,457 @@
+/* ===========================
+   FITO - PT 메인화면 CSS
+   =========================== */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
+
+:root {
+  --black:    #000;
+  --white:    #fff;
+  --red:      #D32F2F;
+  --red-lt:   #FFEBEE;
+  --red-dk:   #B71C1C;
+  --gray-50:  #f9f9f9;
+  --gray-100: #f2f2f2;
+  --gray-200: #e5e5e5;
+  --gray-300: #ccc;
+  --gray-400: #999;
+  --gray-500: #666;
+  --gray-700: #333;
+  --r-sm: 6px; --r-md: 12px; --r-lg: 18px; --r-full: 999px;
+  --nav-h: 60px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--white);
+  color: var(--black);
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 390px;
+  margin: 0 auto;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── 헤더 ── */
+.pt-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  height: 52px;
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 10px;
+}
+.pt-header-title { font-size: 17px; font-weight: 700; flex: 1; }
+.pt-search-box {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--gray-100); border-radius: var(--r-full);
+  padding: 6px 12px; flex: 1; cursor: pointer;
+}
+.pt-search-box span { font-size: 13px; color: var(--gray-400); flex: 1; }
+.pt-search-box svg { width:16px; height:16px; stroke:var(--gray-400); fill:none; stroke-width:2; }
+
+/* ── 콘텐츠 ── */
+.pt-content { padding-bottom: calc(var(--nav-h) + 16px); }
+
+/* ── 섹션 공통 ── */
+.pt-section { padding: 20px 16px 0; }
+.pt-section-title {
+  font-size: 16px; font-weight: 700;
+  margin-bottom: 14px; letter-spacing: -.3px;
+}
+
+/* ─────────────────────────────
+   1-1. 구독중인 트레이너 배너
+   ───────────────────────────── */
+.subscribe-banner-wrap {
+  padding: 16px 16px 0;
+  position: relative;
+}
+.subscribe-slider {
+  overflow: hidden; border-radius: var(--r-lg);
+  border: 1.5px solid var(--gray-200);
+}
+.subscribe-slides {
+  display: flex;
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+}
+/* 슬라이드 전체 = 흰색 카드 */
+.subscribe-slide {
+  flex-shrink: 0; width: 100%;
+  background: var(--white);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+/* ── 상단 흰색 영역 (트레이너명) ── */
+.subscribe-slide-top {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px;
+  background: var(--white);
+}
+.live-badge {
+  background: var(--red); color: var(--white);
+  font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: var(--r-full);
+  display: inline-flex; align-items: center; gap: 4px;
+  flex-shrink: 0;
+}
+.live-badge::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--white); animation: livePulse 1.2s infinite;
+}
+@keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.subscribing-badge {
+  background: var(--gray-100); color: var(--gray-500);
+  font-size: 11px; font-weight: 600;
+  padding: 3px 8px; border-radius: var(--r-full);
+  flex-shrink: 0;
+}
+.subscribe-trainer-name {
+  font-size: 16px; font-weight: 700; color: var(--black);
+  flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.subscribe-home-icon {
+  width: 22px; height: 22px; stroke: var(--black); fill: none; stroke-width: 2;
+  flex-shrink: 0; cursor: pointer;
+}
+
+/* ── 하단 빨간색 영역 (라이브 액션) ── */
+.subscribe-slide-live-bar {
+  display: flex; align-items: center;
+  background: var(--red);
+  padding: 11px 16px;
+  gap: 0;
+}
+.live-bar-item {
+  flex: 1; text-align: center;
+  font-size: 13px; font-weight: 700; color: var(--white);
+  cursor: pointer;
+}
+.live-bar-divider {
+  width: 1px; height: 16px;
+  background: rgba(255,255,255,.35);
+  flex-shrink: 0;
+}
+.live-bar-join {
+  font-size: 14px; font-weight: 900;
+}
+
+/* ── 구독중(비라이브) 하단 ── */
+.subscribe-slide-sub-bar {
+  background: var(--gray-50);
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--gray-500); font-weight: 500;
+  cursor: pointer;
+  border-top: 1px solid var(--gray-200);
+}
+
+/* 인디케이터 */
+.subscribe-indicators {
+  display: flex; justify-content: center; gap: 5px;
+  margin-top: 10px; padding-bottom: 4px;
+}
+.subscribe-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gray-300); transition: background .2s, width .2s;
+}
+.subscribe-dot.active { background: var(--black); width: 14px; border-radius: 3px; }
+
+/* 구독 없음 상태 */
+.subscribe-empty {
+  background: var(--gray-50); border-radius: var(--r-lg);
+  padding: 20px; text-align: center; color: var(--gray-400);
+  font-size: 13px; border: 1.5px solid var(--gray-200);
+}
+
+/* ── 라이브 참여 모달 ── */
+.live-modal-wrap {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  z-index: 400; display: none; align-items: center; justify-content: center;
+}
+.live-modal-wrap.open { display: flex; }
+.live-modal-box {
+  background: var(--white); border-radius: var(--r-lg);
+  width: calc(100% - 80px); max-width: 280px;
+  overflow: hidden;
+}
+.live-modal-body {
+  padding: 28px 20px 20px;
+  text-align: center;
+  font-size: 16px; font-weight: 600; color: var(--black);
+}
+.live-modal-btns {
+  display: flex; border-top: 1px solid var(--gray-200);
+}
+.live-modal-btn {
+  flex: 1; padding: 15px;
+  font-size: 15px; font-weight: 600;
+  cursor: pointer; background: none; border: none;
+  font-family: inherit; transition: background .1s;
+}
+.live-modal-btn:active { background: var(--gray-100); }
+.live-modal-btn + .live-modal-btn {
+  border-left: 1px solid var(--gray-200);
+}
+.live-modal-btn.join { color: var(--red); }
+.live-modal-btn.cancel { color: var(--gray-500); }
+
+/* ─────────────────────────────
+   1-2. 트레이너 추천 버튼
+   ───────────────────────────── */
+.recommend-btns {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 0;
+}
+.recommend-btn {
+  background: var(--gray-50); border-radius: var(--r-md);
+  padding: 16px; display: flex; flex-direction: column;
+  align-items: center; gap: 8px; cursor: pointer;
+  border: 1.5px solid var(--gray-200);
+  transition: all .15s;
+}
+.recommend-btn:active { background: var(--gray-100); border-color: var(--gray-300); }
+.recommend-btn-icon {
+  width: 40px; height: 40px; border-radius: var(--r-sm);
+  background: var(--gray-100); display: flex; align-items: center; justify-content: center;
+}
+.recommend-btn-icon svg { width: 22px; height: 22px; stroke: var(--black); fill: none; stroke-width: 1.8; }
+.recommend-btn-label { font-size: 13px; font-weight: 600; color: var(--black); }
+
+/* ─────────────────────────────
+   1-3. 트레이너 카테고리
+   ───────────────────────────── */
+.category-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.category-btn {
+  background: var(--white); border-radius: var(--r-md);
+  padding: 12px 8px; text-align: center;
+  font-size: 13px; font-weight: 600; color: var(--black);
+  cursor: pointer; border: 1.5px solid var(--gray-200);
+  transition: background .15s, color .15s, border-color .15s;
+}
+.category-btn.selected {
+  background: var(--black); color: var(--white);
+  border-color: var(--black);
+}
+
+/* ─────────────────────────────
+   1-4. 사용자 맞춤 트레이너
+   ───────────────────────────── */
+.interest-header { margin-bottom: 12px; }
+.interest-title {
+  font-size: 17px; font-weight: 700; line-height: 1.4;
+  margin-bottom: 12px;
+}
+.interest-cats {
+  display: flex; gap: 8px; overflow-x: auto;
+  scrollbar-width: none; padding-bottom: 4px;
+}
+.interest-cats::-webkit-scrollbar { display: none; }
+.interest-cat {
+  flex-shrink: 0; padding: 5px 12px;
+  background: var(--gray-50); border-radius: var(--r-full);
+  font-size: 13px; font-weight: 600; color: var(--gray-700);
+  cursor: pointer; border: 1.5px solid var(--gray-200);
+  white-space: nowrap; transition: all .15s;
+}
+.interest-cat.active { background: var(--black); color: var(--white); border-color: var(--black); }
+
+/* 트레이너 가로스크롤 */
+.trainer-scroll-wrap {
+  overflow-x: auto; scrollbar-width: none;
+  padding: 4px 0 8px;
+}
+.trainer-scroll-wrap::-webkit-scrollbar { display: none; }
+.trainer-row {
+  display: flex; gap: 12px;
+}
+.trainer-card {
+  flex-shrink: 0; width: 76px; cursor: pointer;
+  text-align: center;
+}
+.trainer-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--gray-200); margin: 0 auto 6px;
+  overflow: hidden; position: relative;
+  border: 2px solid var(--gray-100);
+}
+.trainer-avatar-img {
+  width: 100%; height: 100%; object-fit: cover;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--gray-200); color: var(--gray-400);
+  font-size: 22px; font-weight: 700;
+}
+.trainer-name {
+  font-size: 12px; font-weight: 700;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.trainer-cat-tag {
+  font-size: 11px; color: var(--gray-400);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+
+/* 카테고리 섹션 간격 */
+.interest-section { margin-bottom: 20px; }
+
+/* ─────────────────────────────
+   1-5. 루틴 추천
+   ───────────────────────────── */
+.routine-cats {
+  display: flex; gap: 8px; overflow-x: auto;
+  scrollbar-width: none; margin-bottom: 14px;
+}
+.routine-cats::-webkit-scrollbar { display: none; }
+.routine-cat-btn {
+  flex-shrink: 0; padding: 6px 14px;
+  border-radius: var(--r-full); font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid var(--gray-200);
+  background: var(--white); color: var(--gray-500);
+  transition: all .15s;
+}
+.routine-cat-btn.active {
+  background: var(--black); color: var(--white); border-color: var(--black);
+}
+.routine-cards {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  margin-bottom: 12px;
+}
+.routine-card {
+  border-radius: var(--r-md); overflow: hidden;
+  cursor: pointer; transition: opacity .15s;
+  background: var(--gray-100);
+}
+.routine-card:active { opacity: .8; }
+.routine-card-thumb {
+  width: 100%; aspect-ratio: 9/16;
+  background: var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.routine-card-thumb-inner {
+  width: 100%; height: 100%; background: linear-gradient(145deg, #e0e0e0, #c8c8c8);
+  display: flex; align-items: flex-end; padding: 6px;
+}
+.routine-card-duration {
+  background: rgba(0,0,0,.6); color: var(--white);
+  font-size: 10px; font-weight: 600; padding: 1px 5px;
+  border-radius: 3px;
+}
+.routine-card-body { padding: 7px 6px 8px; }
+.routine-card-title {
+  font-size: 11px; font-weight: 700;
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  line-height: 1.4; margin-bottom: 3px;
+}
+.routine-card-author { font-size: 10px; color: var(--gray-400); }
+
+/* 루틴 버튼 행 */
+.routine-btns {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin-bottom: 0;
+}
+.routine-action-btn {
+  padding: 12px; border-radius: var(--r-md);
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; text-align: center;
+  border: 1.5px solid var(--gray-200);
+  background: var(--white); color: var(--black);
+  transition: all .15s;
+}
+.routine-action-btn:active { background: var(--gray-100); }
+
+/* ─────────────────────────────
+   1-6. 트레이너 영상 추천
+   ───────────────────────────── */
+.vod-card {
+  cursor: pointer; margin-bottom: 12px; transition: opacity .15s;
+}
+.vod-card:active { opacity: .8; }
+.vod-thumb {
+  width: 100%; aspect-ratio: 16/9;
+  background: var(--gray-200); border-radius: var(--r-md);
+  margin-bottom: 10px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.vod-thumb-inner {
+  width: 100%; height: 100%;
+  background: linear-gradient(145deg, #e0e0e0, #c0c0c0);
+  display: flex; align-items: center; justify-content: center;
+}
+.vod-play-icon {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center;
+}
+.vod-play-icon svg { width: 20px; height: 20px; stroke: var(--white); fill: none; stroke-width: 2; }
+.vod-info { display: flex; gap: 10px; align-items: flex-start; }
+.vod-info-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--gray-300); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: var(--gray-500);
+}
+.vod-info-text { flex: 1; min-width: 0; }
+.vod-title {
+  font-size: 13px; font-weight: 600;
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  margin-bottom: 3px; line-height: 1.4;
+}
+.vod-trainer { font-size: 11px; color: var(--gray-400); }
+.vod-tags {
+  display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px;
+}
+.vod-tag {
+  font-size: 11px; color: var(--gray-500);
+  background: var(--gray-100); border-radius: var(--r-full);
+  padding: 1px 8px;
+}
+
+/* ── 모달 ── */
+.modal-wrap {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  z-index: 400; display: none; align-items: center; justify-content: center;
+}
+.modal-wrap.open { display: flex; }
+.modal-box {
+  background: var(--white); border-radius: var(--r-lg);
+  padding: 24px 20px; width: calc(100% - 48px); max-width: 320px;
+}
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; text-align: center; }
+.modal-body  { font-size: 13px; color: var(--gray-500); text-align: center; margin-bottom: 20px; line-height: 1.6; }
+.modal-btns  { display: flex; gap: 8px; }
+.modal-btn {
+  flex: 1; padding: 12px; border-radius: var(--r-md);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  border: none; font-family: inherit;
+}
+.modal-btn.outline { background: var(--gray-100); color: var(--black); }
+.modal-btn.primary { background: var(--red); color: var(--white); }
+
+/* ── 섹션 구분선 ── */
+.pt-divider { height: 8px; background: var(--gray-100); margin: 20px 0 0; }
+
+/* ── 하단 네비 ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 390px; height: var(--nav-h);
+  background: var(--white); border-top: 1px solid var(--gray-200);
+  display: flex; align-items: center; z-index: 100;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; cursor: pointer; padding: 6px 0;
+  text-decoration: none;
+}
+.nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+.nav-icon svg { width: 22px; height: 22px; stroke: var(--gray-400); fill: none; stroke-width: 1.8; }
+.nav-label { font-size: 10px; color: var(--gray-400); font-weight: 500; }
+.nav-item.active .nav-icon svg { stroke: var(--black); }
+.nav-item.active .nav-label { color: var(--black); font-weight: 700; }
