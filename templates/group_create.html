@@ -15,26 +15,21 @@
 
 <div class="gp-content">
   <div class="gc-form">
-    <!-- 그룹 이미지 -->
     <div class="gc-field">
       <div class="gc-label">그룹 이미지</div>
       <div style="display:flex;gap:12px">
-        <div style="width:80px;height:80px;border-radius:50%;background:var(--gray-100);border:2px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" id="profileImgArea">
+        <div id="profileImgArea" style="width:80px;height:80px;border-radius:50%;background:var(--gray-100);border:2px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;overflow:hidden">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         </div>
-        <div style="flex:1;height:80px;border-radius:var(--r-md);background:var(--gray-100);border:2px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;cursor:pointer" id="bannerImgArea">
+        <div id="bannerImgArea" style="flex:1;height:80px;border-radius:var(--r-md);background:var(--gray-100);border:2px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden">
           <span style="font-size:12px;color:var(--gray-400)">배경 이미지</span>
         </div>
       </div>
     </div>
-
-    <!-- 그룹명 -->
     <div class="gc-field">
       <div class="gc-label">그룹명 <span class="gc-label-count"><span id="nameCount">0</span>/50</span></div>
       <input class="gc-input" id="groupName" type="text" placeholder="그룹명을 입력하세요" maxlength="50"/>
     </div>
-
-    <!-- 공개/비공개 -->
     <div class="gc-field">
       <div class="gc-label">공개 설정</div>
       <div class="gc-toggle-row">
@@ -42,14 +37,10 @@
         <button class="gc-toggle-btn" id="btnPrivate" onclick="setVisibility('private')">비공개</button>
       </div>
     </div>
-
-    <!-- 설명 -->
     <div class="gc-field">
       <div class="gc-label">그룹 설명 <span class="gc-label-count"><span id="descCount">0</span>/400</span></div>
       <textarea class="gc-textarea" id="groupDesc" placeholder="그룹에 대한 설명을 입력하세요" maxlength="400"></textarea>
     </div>
-
-    <!-- 해시태그 -->
     <div class="gc-field">
       <div class="gc-label">해시태그 <span class="gc-label-count"><span id="tagCountLabel">0</span>/20</span></div>
       <div class="gc-tags-wrap" id="tagsWrap"></div>
@@ -59,14 +50,11 @@
       </div>
     </div>
   </div>
-
-  <!-- 만들기 버튼 -->
   <div class="gc-submit-wrap">
     <button class="gc-submit-btn" id="submitBtn" onclick="submitGroup()" disabled>그룹 만들기</button>
   </div>
 </div>
 
-<!-- 스낵바 -->
 <div class="snackbar" id="snackbar"></div>
 
 <nav class="bottom-nav">
@@ -77,6 +65,7 @@
   <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-label">MY</span></a>
 </nav>
 
+<script src="{{ url_for('static', filename='js/group_store.js') }}"></script>
 <script src="{{ url_for('static', filename='js/group_create.js') }}"></script>
 </body>
 </html>

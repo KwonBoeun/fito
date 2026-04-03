@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
   <title>FITO - 그룹 라이브</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/group.css') }}"/>
-  <style>html,body{background:#111!important;max-width:100%;overflow-x:hidden}</style>
+  <style>
+    html,body{background:#111!important;max-width:100%;overflow-x:hidden}
+    @keyframes emojiFade{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-120%) scale(1.5)}}
+  </style>
 </head>
 <body>
 
 <div class="gl-wrap">
-  <!-- 3-1-1. 상단바 -->
+  <!-- 상단바 -->
   <div class="gl-top-bar">
     <div style="display:flex;align-items:center;gap:10px">
       <button class="gl-top-btn" id="volumeBtn" onclick="toggleVolume()">
@@ -18,12 +21,16 @@
       </button>
       <span class="gl-top-title" id="liveName">하체 라이브 같이해요</span>
     </div>
-    <button class="gl-top-btn" onclick="exitLive()">
-      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <!-- ALL 버튼 -->
+      <button class="gl-all-btn" onclick="openAllView()" style="position:static;width:auto;padding:4px 10px;font-size:11px">ALL</button>
+      <button class="gl-top-btn" onclick="exitLive()">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
   </div>
 
-  <!-- 3-1-2. 중심 화면 -->
+  <!-- 중심 화면 -->
   <div class="gl-main-video" id="mainVideo">
     <div class="gl-main-video-label" id="shareLabel">핏걸_나연</div>
     <div class="gl-rec-icon" id="recIcon" style="display:none">REC</div>
@@ -32,21 +39,19 @@
     </div>
   </div>
 
-  <!-- 3-1-4. 공지 -->
+  <!-- 공지 -->
   <div class="gl-notice-bar" id="noticeBar">
     <span class="gl-notice-bar-label">공지</span>
     <span class="gl-notice-bar-text" id="noticeText">오늘은 스쿼트 100개 챌린지입니다! 화이팅 💪</span>
   </div>
 
-  <!-- 3-1-5. 참가자 화면 -->
+  <!-- 참가자 화면 -->
   <div class="gl-participants" id="participantsGrid"></div>
-
-  <!-- 3-1-6. 더보기 -->
   <div class="gl-more-participants" id="moreParticipants" onclick="toggleAllParticipants()">
     <span class="gl-more-participants-btn" id="moreBtn">더보기 ▼</span>
   </div>
 
-  <!-- 3-1-3. 하단 도구바 -->
+  <!-- 하단 도구바 -->
   <div class="gl-toolbar">
     <button class="gl-tool-btn" id="micBtn" onclick="toggleMic()">
       <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
@@ -75,7 +80,39 @@
   </div>
 </div>
 
-<!-- 나가기 확인 팝업 -->
+<!-- 이모티콘 선택 바텀시트 -->
+<div class="bottom-sheet-overlay" id="emojiOverlay" onclick="closeEmoji()"></div>
+<div class="bottom-sheet" id="emojiSheet">
+  <div class="bottom-sheet-handle"></div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px;color:var(--black)">이모티콘 선택</div>
+  <div id="emojiGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px"></div>
+</div>
+
+<!-- 라이브 내 채팅 바텀시트 -->
+<div class="bottom-sheet-overlay" id="chatOverlay" onclick="closeLiveChat()"></div>
+<div class="bottom-sheet" id="chatSheet" style="max-height:60vh">
+  <div class="bottom-sheet-handle"></div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px;color:var(--black)">라이브 채팅</div>
+  <div id="liveChatList" style="max-height:200px;overflow-y:auto;margin-bottom:12px;padding:8px;background:var(--gray-50);border-radius:var(--r-md)"></div>
+  <div style="display:flex;gap:8px">
+    <input id="liveChatInput" type="text" placeholder="메시지 입력" style="flex:1;padding:10px 14px;border:1.5px solid #e5e5e5;border-radius:20px;font-size:13px;font-family:inherit;outline:none" onkeydown="if(event.key==='Enter')sendLiveChat()"/>
+    <button onclick="sendLiveChat()" style="padding:10px 16px;background:var(--black);color:var(--white);border:none;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">전송</button>
+  </div>
+</div>
+
+<!-- 공지 편집 바텀시트 -->
+<div class="bottom-sheet-overlay" id="noticeEditOverlay" onclick="closeNoticeEdit()"></div>
+<div class="bottom-sheet" id="noticeEditSheet">
+  <div class="bottom-sheet-handle"></div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px;color:var(--black)">공지 수정</div>
+  <textarea id="noticeEditInput" placeholder="공지 내용을 입력하세요" style="width:100%;padding:12px;border:1.5px solid #e5e5e5;border-radius:var(--r-md);font-size:13px;font-family:inherit;outline:none;resize:none;min-height:80px"></textarea>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button onclick="closeNoticeEdit()" style="flex:1;padding:12px;background:var(--gray-100);color:var(--black);border:none;border-radius:var(--r-md);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">취소</button>
+    <button onclick="saveNotice()" style="flex:1;padding:12px;background:var(--black);color:var(--white);border:none;border-radius:var(--r-md);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">저장</button>
+  </div>
+</div>
+
+<!-- 나가기 확인 -->
 <div class="modal-wrap" id="exitModal">
   <div class="modal-box" style="color:var(--black)">
     <div class="modal-title">라이브를 나가시겠습니까?</div>
@@ -87,7 +124,7 @@
   </div>
 </div>
 
-<!-- 더보기 바텀시트 (채팅, 공지) -->
+<!-- 더보기 바텀시트 -->
 <div class="bottom-sheet-overlay" id="moreOverlay" onclick="closeMoreTools()"></div>
 <div class="bottom-sheet" id="moreSheet" style="max-height:50vh">
   <div class="bottom-sheet-handle"></div>
@@ -116,11 +153,17 @@
   <div id="allParticipantsGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px"></div>
 </div>
 
-<!-- 스낵바 -->
 <div class="snackbar" id="snackbar"></div>
 
+<script>window.URL_GROUP_MAIN = "{{ url_for('group_main') }}";</script>
 <script>
-  window.URL_GROUP_MAIN = "{{ url_for('group_main') }}";
+// 이모티콘 그리드 생성
+document.addEventListener('DOMContentLoaded', () => {
+  const emojis = ['👏','💪','🔥','❤️','😂','✋','👍','🎉','💯','😍','🏋️','🤩'];
+  document.getElementById('emojiGrid').innerHTML = emojis.map(e =>
+    `<div style="font-size:28px;text-align:center;padding:10px;cursor:pointer;border-radius:8px;transition:background .1s" onclick="pickEmoji('${e}')" onmousedown="this.style.background='#eee'" onmouseup="this.style.background=''">${e}</div>`
+  ).join('');
+});
 </script>
 <script src="{{ url_for('static', filename='js/group_live.js') }}"></script>
 </body>

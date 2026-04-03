@@ -12,7 +12,6 @@
   <span class="gp-header-title">그룹</span>
 </header>
 
-<!-- 검색바 -->
 <div class="gp-search-bar">
   <div class="gp-search-wrap">
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -21,27 +20,18 @@
 </div>
 
 <div class="gp-content">
-  <!-- 추천 배너 (가입 그룹이 있을 때 가끔 노출) -->
-  <div class="gp-recommend-banner ani" id="recommendBanner" style="display:none">
+  <div class="gp-recommend-banner ani" id="recommendBanner" style="display:none;cursor:pointer">
     <div class="gp-recommend-banner-title" id="recommendText"></div>
     <div class="gp-recommend-banner-sub">지금 확인해보세요!</div>
   </div>
-
-  <!-- 그룹 리스트 -->
   <div class="gp-list" id="groupList"></div>
-
-  <!-- 빈 상태 -->
-  <div class="gp-empty" id="emptyState" style="display:none">
-    검색 결과가 없습니다.
-  </div>
+  <div class="gp-empty" id="emptyState" style="display:none"></div>
 </div>
 
-<!-- 그룹 만들기 FAB -->
 <button class="gp-fab" id="createGroupFab" onclick="onCreateGroupClick()">
   <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 </button>
 
-<!-- 그룹 만들기 확인 팝업 -->
 <div class="modal-wrap" id="createConfirmModal">
   <div class="modal-box">
     <div class="modal-title">새 그룹을 만드시겠습니까?</div>
@@ -53,10 +43,8 @@
   </div>
 </div>
 
-<!-- 스낵바 -->
 <div class="snackbar" id="snackbar"></div>
 
-<!-- 하단 네비 -->
 <nav class="bottom-nav">
   <a href="{{ url_for('main') }}" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="nav-label">홈</span></a>
   <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div><span class="nav-label">운동</span></a>
@@ -65,6 +53,7 @@
   <a href="#" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-label">MY</span></a>
 </nav>
 
+<script src="{{ url_for('static', filename='js/group_store.js') }}"></script>
 <script src="{{ url_for('static', filename='js/group.js') }}"></script>
 </body>
 </html>

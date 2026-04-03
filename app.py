@@ -6,27 +6,6 @@ app = Flask(__name__)
 def main():
     return render_template('main.html')
 
-# ── 상세 페이지 ──
-@app.route('/live/<int:content_id>')
-def live_detail(content_id):
-    return render_template('live_detail.html', content_id=content_id)
-
-@app.route('/vod/<int:content_id>')
-def vod_detail(content_id):
-    return render_template('vod_detail.html', content_id=content_id)
-
-@app.route('/fits/<int:content_id>')
-def fits_detail(content_id):
-    return render_template('fits_detail.html', content_id=content_id)
-
-@app.route('/community/<int:content_id>')
-def community_detail(content_id):
-    return render_template('community_detail.html', content_id=content_id)
-
-@app.route('/question/<int:content_id>')
-def question_detail(content_id):
-    return render_template('question_detail.html', content_id=content_id)
-
 # ── 분석 메인 ──
 @app.route('/analyze')
 def analyze():
