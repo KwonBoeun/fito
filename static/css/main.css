@@ -93,6 +93,8 @@ html,body{
 .related-item{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--gray-100);cursor:pointer;font-size:14px}
 .did-you-mean{font-size:13px;color:var(--gray-500);margin-bottom:14px}
 .did-you-mean span{color:var(--black);font-weight:600;cursor:pointer;text-decoration:underline}
+.srch-cat-label{font-size:12px;font-weight:700;color:var(--gray-400);padding:10px 16px 4px;
+  text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray-100)}
 .srch-tabs{display:flex;gap:4px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
 .srch-tabs::-webkit-scrollbar{display:none}
 .s-tab{flex-shrink:0;padding:5px 12px;border-radius:var(--r-full);font-size:12px;border:1.5px solid var(--gray-200);cursor:pointer;background:var(--white)}
@@ -180,6 +182,11 @@ html,body{
 .lb{background:var(--live-red);color:var(--white);font-size:10px;font-weight:700;padding:2px 5px;letter-spacing:.3px}
 .lc{background:var(--live-bg);color:var(--white);font-size:10px;font-weight:600;padding:2px 6px}
 .thumb-live{position:absolute;top:8px;left:8px}
+/* ── 피드 유닛 LIVE 뱃지 — 인기 캐러셀과 같은 비율이지만 작게 ── */
+.feed-thumb .thumb-live{top:4px;left:4px}
+.feed-thumb .live-badge-wrap{border-radius:3px}
+.feed-thumb .lb{font-size:8px;padding:1px 4px;letter-spacing:.2px}
+.feed-thumb .lc{font-size:8px;padding:1px 5px}
 .hashtag{font-size:11px;color:var(--hashtag);font-weight:500}
 .tags{display:flex;flex-wrap:wrap;gap:4px}
 
@@ -187,6 +194,12 @@ html,body{
 .feed-unit{display:flex;gap:10px;padding:10px 16px;cursor:pointer;transition:background .15s}
 .feed-unit:active{background:var(--gray-50)}
 .feed-thumb{width:120px;height:78px;background:var(--gray-200);border-radius:var(--r-sm);flex-shrink:0;overflow:hidden;position:relative}
+/* VOD 썸네일 시간 뱃지 */
+.vod-dur-badge{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.75);
+  color:#fff;font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px;line-height:1.5}
+/* 인기 슬라이드 VOD 시간 뱃지 */
+.slide-dur-badge{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.75);
+  color:#fff;font-size:11px;font-weight:600;padding:2px 6px;border-radius:4px;line-height:1.5}
 .feed-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px}
 .feed-title{font-size:13px;font-weight:600;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.4}
 .feed-author{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray-500)}

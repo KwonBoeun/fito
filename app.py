@@ -4,12 +4,36 @@ from src.mock_data import get_popular_contents, get_recommend_contents, get_sear
 app = Flask(__name__)
 
 # ──────────────────────────────────────────
-# 페이지 라우트
+# 메인 페이지
 # ──────────────────────────────────────────
 
 @app.route('/')
 def main():
     return render_template('main.html')
+
+# ──────────────────────────────────────────
+# 콘텐츠 상세 페이지
+# ──────────────────────────────────────────
+
+@app.route('/live/<int:content_id>')
+def live_detail(content_id):
+    return render_template('live_detail.html', content_id=content_id)
+
+@app.route('/vod/<int:content_id>')
+def vod_detail(content_id):
+    return render_template('vod_detail.html', content_id=content_id)
+
+@app.route('/fits/<int:content_id>')
+def fits_detail(content_id):
+    return render_template('fits_detail.html', content_id=content_id)
+
+@app.route('/community/<int:content_id>')
+def community_detail(content_id):
+    return render_template('community_detail.html', content_id=content_id)
+
+@app.route('/question/<int:content_id>')
+def question_detail(content_id):
+    return render_template('question_detail.html', content_id=content_id)
 
 # ──────────────────────────────────────────
 # API 라우트
@@ -51,16 +75,13 @@ def api_search_suggest():
 
 
 # ──────────────────────────────────────────
+# 분석 페이지
+# ──────────────────────────────────────────
 
-
-
-
-# ── 분석 메인 ──
 @app.route('/analyze')
 def analyze():
     return render_template('analyze.html')
 
-# ── 기록 분석 ──
 @app.route('/analyze/record')
 def analyze_record():
     return render_template('analyze_record.html')
@@ -81,7 +102,6 @@ def analyze_record_balance():
 def analyze_record_strength():
     return render_template('analyze_record_strength.html')
 
-# ── 자세 분석 ──
 @app.route('/analyze/posture')
 def analyze_posture():
     return render_template('analyze_posture.html')
@@ -100,52 +120,51 @@ def analyze_posture_report():
     mode = request.args.get('mode', 'upload')
     return render_template('analyze_posture_report.html', mode=mode)
 
-# ── PT 메인 ──
+# ──────────────────────────────────────────
+# PT 페이지
+# ──────────────────────────────────────────
+
 @app.route('/pt')
 def pt():
     return render_template('pt.html')
 
-# ── 트레이너 라이브 ──
 @app.route('/pt/live')
 def pt_live():
     trainer_id = request.args.get('id', '1')
     return render_template('pt_live.html', trainer_id=trainer_id)
 
-# ── 그룹 목록/검색 ──
+# ──────────────────────────────────────────
+# 그룹 페이지
+# ──────────────────────────────────────────
+
 @app.route('/group')
 def group():
     return render_template('group.html')
 
-# ── 그룹 만들기 ──
 @app.route('/group/create')
 def group_create():
     return render_template('group_create.html')
 
-# ── 그룹 메인 ──
 @app.route('/group/main')
 def group_main():
     group_id = request.args.get('id', '1')
     return render_template('group_main.html', group_id=group_id)
 
-# ── 그룹 라이브 ──
 @app.route('/group/live')
 def group_live():
     live_id = request.args.get('id', '1')
     return render_template('group_live.html', live_id=live_id)
 
-# ── 그룹 라이브 만들기 ──
 @app.route('/group/live/create')
 def group_live_create():
     group_id = request.args.get('group_id', '1')
     return render_template('group_live_create.html', group_id=group_id)
 
-# ── 그룹 라이브 저장소 ──
 @app.route('/group/storage')
 def group_storage():
     group_id = request.args.get('group_id', '1')
     return render_template('group_storage.html', group_id=group_id)
 
-# ── 그룹 채팅 ──
 @app.route('/group/chat')
 def group_chat():
     group_id = request.args.get('group_id', '1')

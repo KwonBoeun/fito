@@ -142,6 +142,24 @@ function init() {
     this.classList.toggle('liked', liked);
   });
 
+  /* 북마크 */
+  let bookmarked = false;
+  document.getElementById('bookmark-btn').addEventListener('click', function() {
+    bookmarked = !bookmarked;
+    post.bookmarks += bookmarked ? 1 : -1;
+    document.getElementById('bookmark-cnt').textContent = fmt(post.bookmarks);
+    this.classList.toggle('bookmarked', bookmarked);
+  });
+
+  /* 구독 토글 */
+  const subBtn = document.getElementById('sub-btn');
+  let subscribed = false;
+  subBtn.addEventListener('click', () => {
+    subscribed = !subscribed;
+    subBtn.textContent = subscribed ? '구독 중' : '구독';
+    subBtn.style.background = subscribed ? 'var(--black)' : 'var(--white)';
+    subBtn.style.color = subscribed ? 'var(--white)' : 'var(--black)';
+  });
   /* 댓글 작성 */
   const input = document.getElementById('comment-input');
   document.getElementById('comment-send').addEventListener('click', () => {
@@ -159,16 +177,6 @@ function init() {
     document.getElementById('more-popup').classList.add('open'));
   document.getElementById('more-bg').addEventListener('click', () =>
     document.getElementById('more-popup').classList.remove('open'));
-
-  /* 구독 토글 */
-  const subBtn = document.getElementById('sub-btn');
-  let subscribed = false;
-  subBtn.addEventListener('click', () => {
-    subscribed = !subscribed;
-    subBtn.textContent = subscribed ? '구독 중' : '구독';
-    subBtn.style.background = subscribed ? 'var(--black)' : 'var(--white)';
-    subBtn.style.color = subscribed ? 'var(--white)' : 'var(--black)';
-  });
 }
 
 document.addEventListener('DOMContentLoaded', init);
