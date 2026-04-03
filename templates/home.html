@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FITO - 라이브 피트니스</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="screen">
+
+    <div class="mesh-bg">
+      <div class="mesh-blob b1"></div>
+      <div class="mesh-blob b2"></div>
+      <div class="mesh-blob b3"></div>
+    </div>
+
+    <!-- ── TOP BAR ── -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="icon-btn" id="btnAlarm">
+          <i class="fa-regular fa-bell"></i>
+          <div class="notif-dot"></div>
+        </div>
+        <div class="icon-btn" id="btnUpload">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+      </div>
+      <div class="logo">FITO</div>
+      <div class="search-pill" id="btnSearch">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>검색</span>
+      </div>
+    </div>
+
+    <!-- ── CATEGORY TAB ── -->
+    <div class="category-tab" id="categoryTab">
+      <button class="cat-btn active" data-cat="all">전체</button>
+      <button class="cat-btn" data-cat="live">라이브</button>
+      <button class="cat-btn" data-cat="vod">VOD</button>
+      <button class="cat-btn" data-cat="fits">FITS</button>
+      <button class="cat-btn" data-cat="community">커뮤니티</button>
+      <button class="cat-btn" data-cat="question">질문</button>
+    </div>
+
+    <!-- ── SCROLL AREA ── -->
+    <div class="scroll-area" id="scrollArea">
+
+      <!-- ALL -->
+      <div class="screen-panel active" id="panel-all">
+        <div class="section-label">🔥 <span>인기</span></div>
+        <div class="popular-swipe">
+          <div class="swipe-track" id="popAll"></div>
+          <div class="swipe-dots" id="dotsAll"></div>
+        </div>
+        <div class="section-label">✨ <span>추천</span></div>
+        <div class="feed-section" id="feedAll"></div>
+      </div>
+
+      <!-- LIVE -->
+      <div class="screen-panel" id="panel-live">
+        <div class="section-label">🔴 <span>인기</span> 라이브</div>
+        <div class="popular-swipe">
+          <div class="swipe-track" id="popLive"></div>
+          <div class="swipe-dots" id="dotsLive"></div>
+        </div>
+        <div class="section-label">💡 <span>추천</span> 라이브</div>
+        <div class="feed-section" id="feedLive"></div>
+      </div>
+
+      <!-- VOD -->
+      <div class="screen-panel" id="panel-vod">
+        <div class="section-label">🎬 <span>인기</span> VOD</div>
+        <div class="popular-swipe">
+          <div class="swipe-track" id="popVod"></div>
+          <div class="swipe-dots" id="dotsVod"></div>
+        </div>
+        <div class="section-label">💡 <span>추천</span> VOD</div>
+        <div class="feed-section" id="feedVod"></div>
+      </div>
+
+      <!-- FITS -->
+      <div class="screen-panel" id="panel-fits">
+        <div class="section-label">⚡ <span>인기</span> FITS</div>
+        <div class="popular-swipe">
+          <div class="swipe-track" id="popFits"></div>
+          <div class="swipe-dots" id="dotsFits"></div>
+        </div>
+        <div class="section-label">💡 <span>추천</span> FITS</div>
+        <div class="feed-section" id="feedFits"></div>
+      </div>
+
+      <!-- COMMUNITY -->
+      <div class="screen-panel" id="panel-community">
+        <div class="section-label">🤝 <span>인기</span> 커뮤니티</div>
+        <div class="popular-swipe">
+          <div class="swipe-track" id="popCommunity"></div>
+          <div class="swipe-dots" id="dotsCommunity"></div>
+        </div>
+        <div class="section-label">💡 <span>추천</span> 커뮤니티</div>
+        <div class="feed-section" id="feedCommunity"></div>
+      </div>
+
+      <!-- QUESTION -->
+      <div class="screen-panel" id="panel-question">
+        <div class="section-label">❓ <span>인기</span> 질문</div>
+        <div class="popular-swipe">
+          <div class="swipe-track" id="popQuestion"></div>
+          <div class="swipe-dots" id="dotsQuestion"></div>
+        </div>
+        <div class="section-label">💡 <span>추천</span> 질문</div>
+        <div class="feed-section" id="feedQuestion"></div>
+      </div>
+
+    </div><!-- /scroll-area -->
+
+    <!-- ── BOTTOM NAV ── -->
+    <nav class="bottom-nav">
+      <div class="nav-item active" data-nav="all">
+        <i class="fa-solid fa-house nav-icon"></i>
+        <span class="nav-label">홈</span>
+      </div>
+      <div class="nav-item" data-nav="workout">
+        <i class="fa-solid fa-dumbbell nav-icon"></i>
+        <span class="nav-label">운동</span>
+      </div>
+      <div class="nav-upload">
+        <div class="nav-upload-btn" id="navUpload">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+      </div>
+      <div class="nav-item" data-nav="group">
+        <i class="fa-solid fa-users nav-icon"></i>
+        <span class="nav-label">그룹</span>
+      </div>
+      <div class="nav-item" data-nav="my">
+        <i class="fa-solid fa-user nav-icon"></i>
+        <span class="nav-label">MY</span>
+      </div>
+    </nav>
+
+    <!-- ── SEARCH OVERLAY ── -->
+    <div class="search-overlay" id="searchOverlay">
+      <div class="search-header">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input class="search-input" id="searchInput" type="text"
+            placeholder="운동, 트레이너, 해시태그 검색">
+        </div>
+        <div class="search-cancel" id="searchCancel">취소</div>
+      </div>
+      <div class="search-body">
+        <div id="recentSection">
+          <div class="search-section-title">최근 검색</div>
+          <div class="recent-tags" id="recentTags">
+            <div class="recent-tag"><i class="fa-solid fa-clock-rotate-left"></i>스쿼트</div>
+            <div class="recent-tag"><i class="fa-solid fa-clock-rotate-left"></i>홈트레이닝</div>
+            <div class="recent-tag"><i class="fa-solid fa-clock-rotate-left"></i>PT박코치</div>
+            <div class="recent-tag"><i class="fa-solid fa-clock-rotate-left"></i>하체운동</div>
+            <div class="recent-tag"><i class="fa-solid fa-clock-rotate-left"></i>#오운완</div>
+          </div>
+        </div>
+        <div class="suggest-list" id="suggestList">
+          <div class="search-section-title">연관 검색어</div>
+          <div id="suggestItems"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/render.js') }}"></script>
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+</body>
+</html>

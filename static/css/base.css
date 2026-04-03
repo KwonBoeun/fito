@@ -1,0 +1,140 @@
+/* =========================================
+   base.css  —  FITO 공통 CSS 변수 & 레이아웃
+   ========================================= */
+
+:root {
+  --primary:       #1A1A2E;
+  --accent:        #4F8EF7;
+  --accent2:       #A78BFA;
+  --hashtag:       rgb(75, 102, 139);
+  --live-red:      #FF4757;
+
+  --glass-bg:      rgba(255, 255, 255, 0.72);
+  --glass-border:  rgba(255, 255, 255, 0.90);
+  --glass-shadow:  0 8px 32px rgba(80, 120, 200, 0.10);
+
+  --surface:       #F4F6FB;
+  --surface2:      #EAF0FB;
+
+  --text-primary:   #181C2E;
+  --text-secondary: #6B7A99;
+  --text-muted:     #B0BAD3;
+
+  --radius-card:   18px;
+  --radius-pill:   50px;
+
+  --nav-height:    68px;
+  --topbar-height: 56px;
+  --tab-height:    44px;
+
+  --font: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font);
+  background: #E8EEF8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* ── 9:16 Phone Frame ── */
+.phone-frame {
+  width: 390px;
+  height: 844px;
+  background: var(--surface);
+  border-radius: 44px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 32px 80px rgba(30, 50, 120, 0.22),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+.screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+  position: relative;
+}
+
+/* ── Mesh background ── */
+.mesh-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.08;
+}
+.mesh-blob.b1 { width:200px; height:200px; background:#4F8EF7; top:-40px;  left:-60px;  }
+.mesh-blob.b2 { width:160px; height:160px; background:#A78BFA; top:100px;  right:-50px; }
+.mesh-blob.b3 { width:180px; height:180px; background:#4F8EF7; bottom:200px; left:-40px; }
+
+/* ── Skeleton shimmer ── */
+.skeleton {
+  background: linear-gradient(90deg, #e8eef8 25%, #d4dcf0 50%, #e8eef8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── LIVE dot blink ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Placeholder bg gradients ── */
+.bg-live1 { background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%); }
+.bg-live2 { background: linear-gradient(135deg, #0F3460 0%, #533483 100%); }
+.bg-vod1  { background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%); }
+.bg-vod2  { background: linear-gradient(135deg, #1A1A2E 0%, #4F1787 100%); }
+.bg-fits1 { background: linear-gradient(135deg, #FF6B35 0%, #F7C59F 100%); }
+.bg-fits2 { background: linear-gradient(135deg, #4F8EF7 0%, #A78BFA 100%); }
+.bg-fits3 { background: linear-gradient(135deg, #FF4757 0%, #FF6B8A 100%); }
+.bg-comm1 { background: linear-gradient(135deg, #2D6A4F 0%, #74C69D 100%); }
+.bg-comm2 { background: linear-gradient(135deg, #0F3460 0%, #4F8EF7 100%); }
+
+/* ── Coming soon ── */
+.coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 14px;
+  padding: 40px;
+  text-align: center;
+}
+.coming-soon .cs-icon {
+  font-size: 52px;
+  background: linear-gradient(135deg, #4F8EF7, #A78BFA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.coming-soon h3 { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+.coming-soon p  { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
