@@ -8,10 +8,8 @@ app = Flask(__name__)
 # ──────────────────────────────────────────
 
 @app.route('/')
-def home():
-    """메인 홈 화면"""
-    return render_template('home.html')
-
+def main():
+    return render_template('main.html')
 
 # ──────────────────────────────────────────
 # API 라우트
@@ -54,15 +52,8 @@ def api_search_suggest():
 
 # ──────────────────────────────────────────
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
-from flask import Flask, render_template, request
 
-app = Flask(__name__)
 
-@app.route('/')
-def main():
-    return render_template('main.html')
 
 # ── 분석 메인 ──
 @app.route('/analyze')
@@ -162,4 +153,4 @@ def group_chat():
     return render_template('group_chat.html', group_id=group_id, chat_type=chat_type)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
