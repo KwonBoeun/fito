@@ -283,3 +283,59 @@ function togglePause() {
     icon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
   }
 }
+
+function handleExit() {
+  if (!analysisStarted) return;
+
+  // ✅ confirm 딱 한 번만
+  const ok = confirm("아직 운동이 끝나지 않았어요.\n지금 종료하시겠습니까?");
+  if (!ok) return;
+
+  // 타이머 종료
+  clearInterval(scoreTimer);
+  clearInterval(exerciseTimer);
+
+  const progress = elapsed / TOTAL_DURATION;
+
+  // ✅ 1/4 이상
+  if (progress >= 0.25) {
+    const modal = document.getElementById('resultModal');
+    modal.classList.add('open');
+
+  } else {
+    // ✅ 스낵바 느낌 (alert 대신 간단 처리)
+    alert("운동량이 충분하지 않아 분석 결과가 제공되지 않습니다.");
+
+    goToMain(); 
+  }
+}
+function exitWithoutResult() {
+  goToMain();
+}
+function tapScreen() {
+  const bar = document.getElementById('exitBar');
+
+  bar.classList.add('show');
+
+  clearTimeout(tapTimeout);
+  tapTimeout = setTimeout(() => {
+    bar.classList.remove('show');
+  }, 3000);
+}
+
+// 👉 이거 반드시 있어야 함
+document.getElementById('splitWrap').addEventListener('click', (e) => {
+  if (e.target.closest('.rt-exit-btn')) return;
+  tapScreen();
+});
+
+function goToMain() {
+  window.location.href = window.RT_URL_POSTURE;
+}
+function goReport() {
+  window.location.href = window.RT_URL_REPORT;
+}
+
+function noResult() {
+  goToMain();
+}
