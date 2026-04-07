@@ -124,6 +124,10 @@ def group_chat():
     chat_type = request.args.get('type', 'all')
     return render_template('group_chat.html', group_id=group_id, chat_type=chat_type)
 
+@app.route('/notification')
+def notification():
+    return render_template('notification.html')
+
 # ── MY 페이지 ──
 @app.route('/mypage')
 def mypage():
