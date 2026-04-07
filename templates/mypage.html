@@ -48,8 +48,8 @@
             <span class="profile-stat-label">게시물</span>
           </div>
           <div class="profile-stat">
-            <span class="profile-stat-value">00</span>
-            <span class="profile-stat-label">친구</span>
+            <span class="profile-stat-value" style="cursor:pointer" onclick="goFriends()">00</span>
+            <span class="profile-stat-label" style="cursor:pointer" onclick="goFriends()">친구</span>
           </div>
           <div class="profile-stat">
             <span class="profile-stat-value">00</span>
@@ -72,7 +72,7 @@
     <!-- 버튼 -->
     <div class="profile-btns">
       <button class="profile-btn" onclick="alert('프로필 수정')">프로필 수정</button>
-      <button class="profile-btn" onclick="alert('친구 요청 수락')">친구 요청 수락</button>
+      <button class="profile-btn" onclick="goFriendRequest()">친구 요청 수락</button>
     </div>
 
     <!-- 콘텐츠 탭 -->
@@ -95,6 +95,7 @@
     <div class="profile-grid" id="profileGrid">
       <!-- JS로 채움 -->
     </div>
+    <div style="height:20px"></div><!-- 스크롤 여유 -->
 
   </div>
 
@@ -194,7 +195,7 @@
     <span class="nav-label">홈</span>
   </a>
   <a href="{{ url_for('pt') }}" class="nav-item">
-    <div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="6" y1="12" x2="18" y2="12"/><line x1="3" y1="8" x2="6" y2="8"/><line x1="3" y1="16" x2="6" y2="16"/><line x1="18" y1="8" x2="21" y2="8"/><line x1="18" y1="16" x2="21" y2="16"/></svg></div>
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
     <span class="nav-label">운동</span>
   </a>
   <a href="{{ url_for('group') }}" class="nav-item">

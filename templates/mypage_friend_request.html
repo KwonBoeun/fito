@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 친구 요청</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mypage.css') }}"/>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<header class="friend-header">
+  <a href="{{ url_for('mypage') }}" class="friend-back">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="friend-header-title">친구</span>
+  <div style="width:32px"></div>
+</header>
+
+<div class="friend-content">
+
+  <!-- 검색바 -->
+  <div class="friend-search">
+    <input class="friend-search-input" placeholder="검색 내용 어쩌고" type="text"/>
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+  </div>
+
+  <!-- 카카오톡 친구 동기화 -->
+  <div class="friend-sync-row">
+    <div class="friend-sync-icon">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <span class="friend-sync-label">카카오톡 친구 동기화</span>
+    <button class="friend-sync-btn">동기화</button>
+  </div>
+
+  <!-- 친구 요청 -->
+  <div class="friend-section-title">친구 요청</div>
+  <div class="friend-item">
+    <div class="friend-avatar">A</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">수락하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar online">B</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">수락하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar online">C</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">수락하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar">D</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">수락하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar">E</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">수락하기</button>
+  </div>
+
+  <!-- 추천 친구 -->
+  <div class="friend-section-title">추천 친구</div>
+  <div class="friend-recommend-grid">
+    <div class="friend-recommend-card">
+      <div class="friend-recommend-avatar">F</div>
+      <div class="friend-recommend-name">이름</div>
+      <div class="friend-recommend-desc">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        00그룹에 같이 참여 중입니다
+      </div>
+    </div>
+    <div class="friend-recommend-card">
+      <div class="friend-recommend-avatar">G</div>
+      <div class="friend-recommend-name">이름</div>
+      <div class="friend-recommend-desc">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        000 외 n명과 친구입니다
+      </div>
+    </div>
+    <div class="friend-recommend-card">
+      <div class="friend-recommend-avatar">H</div>
+      <div class="friend-recommend-name">이름</div>
+      <div class="friend-recommend-desc">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        00그룹에 같이 참여 중입니다
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── 하단 네비 ── -->
+<nav class="bottom-nav">
+  <a href="{{ url_for('main') }}" class="nav-item">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+    <span class="nav-label">홈</span>
+  </a>
+  <a href="{{ url_for('pt') }}" class="nav-item">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+    <span class="nav-label">운동</span>
+  </a>
+  <a href="{{ url_for('group') }}" class="nav-item">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    <span class="nav-label">그룹</span>
+  </a>
+  <a href="{{ url_for('analyze') }}" class="nav-item">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+    <span class="nav-label">분석</span>
+  </a>
+  <a href="{{ url_for('mypage') }}" class="nav-item active">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    <span class="nav-label">MY</span>
+  </a>
+</nav>
+
+</body>
+</html>
