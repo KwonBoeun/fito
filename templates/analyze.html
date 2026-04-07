@@ -17,7 +17,7 @@
 <div class="az-content">
 
   <!-- ── 날짜 & 기본 스탯 ── -->
-  <div class="az-stat-bar">
+  <a href="{{ url_for('analyze_record_history') }}" class="az-stat-bar" style="text-decoration:none;color:inherit;display:block;cursor:pointer">
     <div class="az-date" id="az-date">2025.00.00 (금)</div>
     <div class="az-stats">
       <div class="az-stat-item">
@@ -37,7 +37,7 @@
         <span class="az-stat-value" id="stat-kcal">0420kcal</span>
       </div>
     </div>
-  </div>
+  </a>
 
   <!-- ════════════════════════
        기록 분석
@@ -53,15 +53,15 @@
 
     <div class="az-record-cards">
 
-      <!-- 오늘 운동 분석 -->
-      <div class="az-record-card">
+      <!-- 오늘 운동 분석 → analyze_record_workout -->
+      <a href="{{ url_for('analyze_record_workout') }}" class="az-record-card" style="text-decoration:none;display:block">
         <div class="az-record-card-title">오늘 운동 분석</div>
         <div id="today-chart" class="az-today-chart"></div>
         <div id="today-info"></div>
-      </div>
+      </a>
 
-      <!-- 운동 균형도 -->
-      <div class="az-record-card">
+      <!-- 운동 균형도 → analyze_record_balance -->
+      <a href="{{ url_for('analyze_record_balance') }}" class="az-record-card" style="text-decoration:none;display:block">
         <div class="az-record-card-title">운동 균형도</div>
         <div class="az-balance-wrap">
           <div id="balance-radar"></div>
@@ -75,16 +75,16 @@
             </div>
           </div>
         </div>
-      </div>
+      </a>
 
-      <!-- 내 강점과 취약점 -->
-      <div class="az-record-card">
+      <!-- 내 강점과 취약점 → analyze_record_strength -->
+      <a href="{{ url_for('analyze_record_strength') }}" class="az-record-card" style="text-decoration:none;display:block">
         <div class="az-record-card-title">내 강점과 취약점</div>
         <div class="az-strength-wrap">
           <div class="az-strength-col" id="strength-good"></div>
           <div class="az-strength-col" id="strength-weak"></div>
         </div>
-      </div>
+      </a>
 
     </div>
   </section>
@@ -106,7 +106,6 @@
       <!-- 영상 업로드 분석 -->
       <a href="{{ url_for('analyze_posture') }}?mode=upload" class="az-posture-btn">
         <div class="az-posture-btn-icon">
-          <!-- 업로드 아이콘 (트레이 + 화살표 위) -->
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="15" width="18" height="6" rx="1" ry="1"/>
             <polyline points="16 6 12 2 8 6"/>
@@ -119,7 +118,6 @@
       <!-- 실시간 분석 -->
       <a href="{{ url_for('analyze_posture') }}?mode=realtime" class="az-posture-btn">
         <div class="az-posture-btn-icon">
-          <!-- 실시간 웨이브 아이콘 -->
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2a10 10 0 0 1 0 20"/>
             <path d="M12 6a6 6 0 0 1 0 12"/>
