@@ -160,5 +160,10 @@ def mypage_friends():
 def mypage_friend_request():
     return render_template('mypage_friend_request.html')
 
+@app.route('/trainer_home')
+def trainer_home():
+    trainer_id = request.args.get('id')
+    return render_template('trainer_home.html', trainer_id=trainer_id)
+
 if __name__ == '__main__':
     app.run(debug=True)

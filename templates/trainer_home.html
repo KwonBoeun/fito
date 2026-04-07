@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>트레이너 홈</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/trainer_home.css') }}"/>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<header class="trainer-header">
+  <div class="hdr-left" onclick="history.back()">
+    <svg viewBox="0 0 24 24">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+  </div>
+
+  <div class="hdr-title">김트레 트레이너</div>
+
+  <div class="hdr-right">
+    <svg viewBox="0 0 24 24">
+      <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+    </svg>
+  </div>
+</header>
+
+
+<div class="trainer-content">
+
+  <!-- 진행중 라이브 -->
+  <section class="section">
+    <div class="section-title">진행중인 라이브</div>
+
+    <div class="live-card">
+      <div class="live-info">
+        <div class="live-title">하체 운동 하는 날이에요 지각 금지</div>
+        <div class="live-meta">
+          <span>2인 참여중</span>
+          <span>55:55</span>
+        </div>
+      </div>
+
+      <div class="live-join">참여하기</div>
+    </div>
+  </section>
+
+
+  <!-- 진행 예정 -->
+  <section class="section">
+    <div class="section-title">진행예정 라이브</div>
+
+    <div class="schedule-row">
+      <div class="schedule-card">
+        <div class="schedule-title">한달 운동 상태 확인</div>
+        <div class="schedule-time">26.12.30(수) 18:00 예정</div>
+      </div>
+
+      <div class="schedule-card">
+        <div class="schedule-title">코어 운동 하는날</div>
+        <div class="schedule-time">26.12.30(수) 18:00 예정</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 공지 -->
+  <section class="section">
+    <div class="section-title">공지</div>
+
+    <div class="notice-box">
+      다들 식사한 사진 찍어서 채팅에 보내주세요!!!<br/>
+      안 보내면 다음번 운동 더 어렵게 할게요
+    </div>
+    <!-- 댓글 리스트 -->
+    <div class="comment-list" id="commentList">
+
+    <div class="comment-item">
+        <div class="comment-avatar">사</div>
+
+        <div class="comment-body">
+        <div class="comment-top">
+            <span class="comment-name">사용자 1</span>
+            <span class="comment-time">방금</span>
+        </div>
+        <div class="comment-text">싫어요</div>
+        </div>
+    </div>
+
+    <div class="comment-item">
+        <div class="comment-avatar">사</div>
+
+        <div class="comment-body">
+        <div class="comment-top">
+            <span class="comment-name">사용자 2</span>
+            <span class="comment-time">1분 전</span>
+        </div>
+        <div class="comment-text">싫어요</div>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- 댓글 입력창 -->
+    <div class="comment-input-wrap">
+        <input type="text" id="commentInput" placeholder="댓글을 입력하세요"/>
+        <button onclick="addComment()">등록</button>
+    </div>
+  </section>
+
+</div>
+<script src="{{ url_for('static', filename='js/trainer_home.js') }}"></script>
+</body>
+</html>
