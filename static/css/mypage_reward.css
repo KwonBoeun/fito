@@ -1,0 +1,210 @@
+/* ===========================
+   FITO - 리워드 CSS (mypage 기준)
+   =========================== */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
+
+:root {
+  --black: #000; --white: #fff;
+  --gray-50: #f9f9f9; --gray-100: #f2f2f2;
+  --gray-200: #e5e5e5; --gray-300: #ccc;
+  --gray-400: #999; --gray-500: #666; --gray-700: #333;
+  --plus-color: #e05c4b;
+  --minus-color: #3a7bd5;
+  --r-sm: 6px; --r-md: 12px; --r-lg: 18px; --r-full: 999px;
+  --nav-h: 60px;
+  --header-h: 52px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--white); color: var(--black);
+  font-size: 14px; line-height: 1.5;
+  max-width: 390px; margin: 0 auto;
+  overflow-x: hidden; -webkit-font-smoothing: antialiased;
+}
+
+/* ── 헤더 ── */
+.rw-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  height: var(--header-h);
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 16px;
+}
+
+.rw-back {
+  position: absolute; left: 16px;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; text-decoration: none; color: var(--black);
+}
+.rw-back svg {
+  width: 22px; height: 22px;
+  stroke: var(--black); stroke-width: 2;
+  fill: none; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.rw-header-title {
+  font-size: 16px; font-weight: 700;
+  text-align: center;
+}
+
+/* ── 콘텐츠 ── */
+.rw-content {
+  padding-bottom: calc(var(--nav-h) + 16px);
+}
+
+/* ── 포인트 박스 ── */
+.rw-point-box {
+  padding: 32px 0 28px;
+  text-align: center;
+  border-bottom: 8px solid var(--gray-100);
+}
+.rw-point-value {
+  font-size: 36px; font-weight: 700; letter-spacing: -0.5px;
+}
+
+/* ── 섹션 공통 ── */
+.rw-section {
+  border-bottom: 8px solid var(--gray-100);
+  padding: 18px 16px 16px;
+}
+.rw-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.rw-section-title { font-size: 15px; font-weight: 700; }
+.rw-more-btn {
+  font-size: 13px; color: var(--gray-500);
+  background: none; border: none; cursor: pointer; padding: 0;
+  font-family: inherit;
+}
+
+/* ── 얻을 수 있는 리워드 리스트 ── */
+.rw-earn-list {
+  background: var(--gray-100);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.rw-earn-item {
+  display: flex; align-items: center;
+  padding: 14px 16px; cursor: pointer;
+  border-bottom: 1px solid var(--gray-200);
+}
+.rw-earn-item:last-child { border-bottom: none; }
+.rw-earn-item:active { background: var(--gray-200); }
+.rw-earn-label { flex: 1; font-size: 14px; }
+.rw-earn-point { font-size: 14px; font-weight: 600; margin-right: 12px; }
+.rw-earn-arrow { font-size: 14px; color: var(--gray-400); }
+
+/* ── 리워드 내역 리스트 ── */
+.rw-history-list {
+  background: var(--gray-100);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.rw-history-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--gray-200);
+}
+.rw-history-item:last-child { border-bottom: none; }
+.rw-history-info { display: flex; flex-direction: column; gap: 3px; }
+.rw-history-label { font-size: 14px; font-weight: 500; }
+.rw-history-date { font-size: 12px; color: var(--gray-400); }
+.rw-history-point { font-size: 15px; font-weight: 700; }
+.rw-history-point.plus  { color: var(--plus-color); }
+.rw-history-point.minus { color: var(--minus-color); }
+
+/* ── 상점 그리드 ── */
+.rw-shop-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+}
+.rw-shop-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.rw-shop-thumb { width: 100%; aspect-ratio: 1; background: var(--gray-200); border-radius: var(--r-sm); }
+.rw-shop-name { font-size: 12px; font-weight: 500; }
+.rw-shop-desc { font-size: 11px; color: var(--gray-400); }
+
+/* ── 얻을 수 있는 리워드 더보기 카드 ── */
+.rw-earn-full-list {
+  padding: 0 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  margin-top: 8px;
+}
+.rw-earn-card {
+  display: flex; align-items: stretch;
+  background: var(--gray-100);
+  border-radius: var(--r-md);
+  overflow: hidden; cursor: pointer;
+}
+.rw-earn-card:active { background: var(--gray-200); }
+.rw-earn-card-body {
+  flex: 1; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.rw-earn-card-title { font-size: 15px; font-weight: 600; }
+.rw-earn-card-desc { font-size: 13px; color: var(--gray-500); line-height: 1.4; }
+.rw-earn-card-btn {
+  background: var(--gray-300); border: none;
+  padding: 0 16px; font-size: 13px; font-weight: 500;
+  cursor: pointer; text-align: center; line-height: 1.4;
+  color: var(--black); font-family: inherit;
+}
+
+/* ── 기간 필터 ── */
+.rw-period-btns {
+  display: flex; gap: 8px;
+  padding: 16px 16px 0;
+}
+.rw-period-btn {
+  flex: 1; padding: 8px 4px;
+  border: 1.5px solid var(--gray-200); border-radius: var(--r-full);
+  background: var(--white); font-size: 13px; font-weight: 500;
+  color: var(--gray-500); cursor: pointer; transition: all 0.15s;
+  font-family: inherit;
+}
+.rw-period-btn.active {
+  background: var(--black); border-color: var(--black);
+  color: var(--white); font-weight: 700;
+}
+
+/* ── 날짜 범위 ── */
+.rw-date-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--gray-200);
+  margin-top: 12px;
+}
+.rw-date-range { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray-500); }
+.rw-cal-icon { width: 16px; height: 16px; stroke: var(--gray-500); stroke-width: 1.8; fill: none; stroke-linecap: round; }
+.rw-all-btn { font-size: 13px; color: var(--gray-500); background: none; border: none; cursor: pointer; font-family: inherit; }
+
+/* ── 리워드 내역 전체 리스트 ── */
+.rw-history-full-list { margin: 0 16px; }
+.rw-history-full-list .rw-history-item {
+  border-bottom: 1px solid var(--gray-200);
+  padding: 16px 4px;
+}
+.rw-history-full-list .rw-history-item:last-child { border-bottom: none; }
+
+/* ── 하단 네비 ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 390px; height: var(--nav-h);
+  background: var(--white); border-top: 1px solid var(--gray-200);
+  display: flex; align-items: center; z-index: 100;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; cursor: pointer; padding: 6px 0;
+  text-decoration: none;
+}
+.nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+.nav-icon svg { width: 22px; height: 22px; stroke: var(--gray-400); fill: none; stroke-width: 1.8; }
+.nav-label { font-size: 10px; color: var(--gray-400); font-weight: 500; }
+.nav-item.active .nav-icon svg { stroke: var(--black); }
+.nav-item.active .nav-label { color: var(--black); font-weight: 700; }
