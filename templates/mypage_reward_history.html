@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 리워드 내역</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mypage_reward.css') }}"/>
+</head>
+<body>
+
+<header class="rw-header">
+  <a class="rw-back" onclick="finish()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="rw-header-title">리워드 내역</span>
+</header>
+
+<div class="rw-content">
+
+  <div class="rw-point-box">
+    <span class="rw-point-value">1530P</span>
+  </div>
+
+  <!-- 기간 필터 -->
+  <div class="rw-period-btns">
+    <button class="rw-period-btn" onclick="selectPeriod(this, '1주일')">1주일</button>
+    <button class="rw-period-btn" onclick="selectPeriod(this, '1개월')">1개월</button>
+    <button class="rw-period-btn active" onclick="selectPeriod(this, '3개월')">3개월</button>
+    <button class="rw-period-btn" onclick="selectPeriod(this, '6개월')">6개월</button>
+    <button class="rw-period-btn" onclick="selectPeriod(this, '1년')">1년</button>
+  </div>
+
+  <!-- 날짜 범위 + 전체 -->
+  <div class="rw-date-row">
+    <div class="rw-date-range">
+      <svg viewBox="0 0 24 24" class="rw-cal-icon"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span id="dateRangeText">2025.08.01 ~ 2025.08.13</span>
+    </div>
+    <button class="rw-all-btn">전체</button>
+  </div>
+
+  <!-- 내역 리스트 -->
+  <div class="rw-history-full-list" id="historyFullList">
+    <div class="rw-history-item">
+      <div class="rw-history-info">
+        <span class="rw-history-label">답변 채택</span>
+        <span class="rw-history-date">2025-07-05</span>
+      </div>
+      <span class="rw-history-point plus">+10P</span>
+    </div>
+    <div class="rw-history-item">
+      <div class="rw-history-info">
+        <span class="rw-history-label">구매</span>
+        <span class="rw-history-date">2025-07-02</span>
+      </div>
+      <span class="rw-history-point minus">-15P</span>
+    </div>
+    <div class="rw-history-item">
+      <div class="rw-history-info">
+        <span class="rw-history-label">구매</span>
+        <span class="rw-history-date">2025-07-01</span>
+      </div>
+      <span class="rw-history-point minus">-15P</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── BOTTOM NAV ── -->
+<nav class="bottom-nav" id="bottom-nav"></nav>
+<script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mypage_reward.js') }}"></script>
+</body>
+</html>

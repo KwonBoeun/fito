@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 얻을 수 있는 리워드</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mypage_reward.css') }}"/>
+</head>
+<body>
+
+<header class="rw-header">
+  <a class="rw-back" onclick="finish()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="rw-header-title">얻을 수 있는 리워드</span>
+</header>
+
+<div class="rw-content">
+
+  <div class="rw-point-box">
+    <span class="rw-point-value">1530P</span>
+  </div>
+
+  <div class="rw-earn-full-list">
+    <div class="rw-earn-card" onclick="alert('이동')">
+      <div class="rw-earn-card-body">
+        <span class="rw-earn-card-title">제목</span>
+        <span class="rw-earn-card-desc">내용내용내용내용내용내용내용내용내용</span>
+      </div>
+      <button class="rw-earn-card-btn">바로<br>가기</button>
+    </div>
+    <div class="rw-earn-card" onclick="alert('이동')">
+      <div class="rw-earn-card-body">
+        <span class="rw-earn-card-title">제목</span>
+        <span class="rw-earn-card-desc">내용내용내용내용내용내용내용내용내용</span>
+      </div>
+      <button class="rw-earn-card-btn">바로<br>가기</button>
+    </div>
+    <div class="rw-earn-card" onclick="alert('이동')">
+      <div class="rw-earn-card-body">
+        <span class="rw-earn-card-title">제목</span>
+        <span class="rw-earn-card-desc">내용내용내용내용내용내용내용내용내용</span>
+      </div>
+      <button class="rw-earn-card-btn">바로<br>가기</button>
+    </div>
+    <div class="rw-earn-card" onclick="alert('이동')">
+      <div class="rw-earn-card-body">
+        <span class="rw-earn-card-title">제목</span>
+        <span class="rw-earn-card-desc">내용내용내용내용내용내용내용내용내용</span>
+      </div>
+      <button class="rw-earn-card-btn">바로<br>가기</button>
+    </div>
+    <div class="rw-earn-card" onclick="alert('이동')">
+      <div class="rw-earn-card-body">
+        <span class="rw-earn-card-title">제목</span>
+        <span class="rw-earn-card-desc">내용내용내용내용내용내용내용내용내용</span>
+      </div>
+      <button class="rw-earn-card-btn">바로<br>가기</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── BOTTOM NAV ── -->
+<nav class="bottom-nav" id="bottom-nav"></nav>
+<script src="{{ url_for('static', filename='js/nav.js') }}"></script> 
+
+<script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mypage_reward.js') }}"></script>
+</body>
+</html>

@@ -174,5 +174,17 @@ def trainer_home():
 def trainer_chat():
     return render_template('trainer_chat.html')
 
+@app.route('/reward')
+def reward():
+    return render_template('mypage_reward.html')
+ 
+@app.route('/reward/earn')
+def reward_earn():
+    return render_template('mypage_reward_earn.html')
+ 
+@app.route('/reward/history')
+def reward_history():
+    return render_template('mypage_reward_history.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

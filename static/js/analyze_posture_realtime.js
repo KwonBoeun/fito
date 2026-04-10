@@ -129,20 +129,23 @@ function loadRefVideo() {
 
   if (refType === 'youtube' && embedUrl) {
     const wrap = document.createElement('div');
+    wrap.id = 'refVideoWrap';
     wrap.style.cssText = 'position:absolute;inset:0;';
-    wrap.innerHTML = `<iframe src="${embedUrl}&autoplay=1&mute=1" style="width:100%;height:100%;border:none" allowfullscreen allow="autoplay"></iframe>`;
+    // enablejsapi=1 포함, autoplay=0으로 로드 준비
+    wrap.dataset.embedBase = embedUrl;  // 나중에 src 교체에 사용
+    wrap.innerHTML = '<iframe id="refIframe" src="' + embedUrl + '&autoplay=0&mute=1&enablejsapi=1" style="width:100%;height:100%;border:none" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
     refPane.insertBefore(wrap, scoreEl);
   } else {
-    // 직접 mp4 링크
+    // 직접 mp4 링크 — autoplay 없이 준비만
     const vid = document.createElement('video');
+    vid.id  = 'refVideoEl';
     vid.src = refLink;
-    vid.setAttribute('autoplay', '');
     vid.setAttribute('playsinline', '');
     vid.setAttribute('loop', '');
     vid.setAttribute('controls', '');
     vid.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
     refPane.insertBefore(vid, scoreEl);
-    vid.play().catch(() => {});
+    // 재생은 startRefVideo()에서
   }
 
   // 참고 영상 배지
@@ -150,6 +153,32 @@ function loadRefVideo() {
   badge.style.cssText = 'position:absolute;top:8px;left:8px;z-index:10;background:rgba(75,102,139,.85);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px';
   badge.textContent = refType === 'youtube' ? '▶ YouTube 참고 영상' : '▶ 참고 영상';
   refPane.appendChild(badge);
+}
+
+/* ════════════════════════════
+   참고 영상 재생 시작
+   ════════════════════════════ */
+function startRefVideo() {
+  // ① 직접 video 태그 (mp4)
+  var vid = document.getElementById('refVideoEl');
+  if (vid) {
+    vid.muted = false;
+    vid.play().catch(function() {
+      // 자동재생 차단 시 muted로 재시도
+      vid.muted = true;
+      vid.play().catch(function(){});
+    });
+    return;
+  }
+
+  // ② YouTube iframe — src를 autoplay=1&mute=1 로 교체 (가장 신뢰성 높음)
+  var wrap = document.getElementById('refVideoWrap');
+  var iframe = document.getElementById('refIframe');
+  if (iframe && wrap) {
+    var base = wrap.dataset.embedBase || iframe.src.split('&autoplay')[0];
+    // mute=1 필수 (Chrome 자동재생 정책)
+    iframe.src = base + '&autoplay=1&mute=1&enablejsapi=1';
+  }
 }
 
 /* ════════════════════════════
@@ -446,6 +475,7 @@ function confirmTypeAndStart() {
   setLayout(layout);
   startCountdown(() => {
     analysisStarted = true;
+    startRefVideo();       // 카운트다운 후 참고 영상 재생 시작
     startScoreLoop();
     startExerciseTimer();
   });
@@ -563,7 +593,7 @@ document.getElementById('splitWrap').addEventListener('click', e => {
 
 function showCenterSnackbar(msg) {
   const sb = document.getElementById('snackbar');
-  sb.textContent = msg;
+  sb.textContent = msg; 
   sb.classList.add('show');
   setTimeout(() => sb.classList.remove('show'), 1200);
 }

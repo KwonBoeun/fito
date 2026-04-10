@@ -179,39 +179,50 @@
   </div>
 </div>
 
-<!-- ── 영상 업로드 모달 ── -->
+<!-- ── 영상 업로드 모달 (중앙 모달 + 편집툴 구간 선택) ── -->
 <div class="upload-modal" id="uploadModal">
   <div class="upload-sheet">
-    <div class="upload-handle"></div>
-    <div class="upload-modal-title">분석 영상 업로드</div>
+    <div class="upload-modal-title" id="uploadModalTitle">분석 영상 업로드</div>
 
-    <div class="upload-video-area" onclick="document.getElementById('fileInput').click()">
-      <span class="upload-video-label" id="uploadModalLabel">영상 업로드</span>
+    <!-- 영상 플레이어 -->
+    <div class="upload-video-wrap" id="uploadVideoWrap" onclick="handleVideoWrapClick()">
+      <video id="uploadVideoEl" playsinline preload="metadata"></video>
+      <div class="upload-video-placeholder" id="uploadVideoPlaceholder">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span>영상을 선택하세요</span>
+        <span style="font-size:11px;color:#bbb">mp4 형식 지원</span>
+      </div>
     </div>
-    <input type="file" id="fileInput" accept="video/mp4" style="display:none" onchange="handleFileSelect(event)"/>
+    <input type="file" id="fileInput" accept="video/mp4,video/*" style="display:none" onchange="handleFileSelect(event)"/>
 
-    <!-- 타임라인 (영상 업로드 후 표시) -->
-    <div class="upload-timeline-wrap" id="timelineWrap" style="display:none">
-      <div class="upload-timeline-label">구간 선택 (분석 받을 구간을 선택하세요)</div>
-      <div class="upload-timeline-bar">
-        <div class="upload-timeline-fill" id="timelineFill"></div>
-        <div class="upload-timeline-handle left"></div>
-        <div class="upload-timeline-handle right"></div>
+    <!-- 재생 컨트롤 -->
+    <div class="upload-player-controls" id="playerControls">
+      <button class="upload-play-btn" id="playBtn" onclick="togglePlay()">
+        <svg id="playIcon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </button>
+      <div style="flex:1;position:relative">
+        <input type="range" id="seekBar" min="0" max="100" value="0" step="0.1"
+          style="width:100%;height:4px;accent-color:#000;cursor:pointer"
+          oninput="onSeekInput(this.value)" onchange="onSeekChange(this.value)"/>
+      </div>
+      <span class="upload-time-disp" id="timeDisp">0:00 / 0:00</span>
+    </div>
+
+    <!-- 타임라인 (편집툴) -->
+    <div class="upload-timeline-outer" id="timelineOuter">
+      <div class="upload-tl-label">
+        <span>구간 선택</span>
+        <button class="upload-tl-add-btn" id="tlAddBtn" onclick="addSegment()">+ 구간 추가</button>
+      </div>
+      <!-- 타임라인 바 -->
+      <div class="upload-tl-bar" id="tlBar" onclick="onTlBarClick(event)">
+        <div class="upload-tl-playhead" id="tlPlayhead"></div>
+        <!-- 구간 블록은 JS로 생성 -->
       </div>
     </div>
 
-    <!-- 구간 -->
-    <div class="upload-segments" id="segmentList">
-      <div class="upload-segment" id="seg-1">
-        <span class="upload-segment-label">구간 1</span>
-        <div class="upload-time-input" onclick="editTime('seg1-start')"><span id="seg1-start">00:00</span></div>
-        <span class="upload-segment-sep">~</span>
-        <div class="upload-time-input" onclick="editTime('seg1-end')"><span id="seg1-end">00:00</span></div>
-        <div class="upload-segment-spacer"></div>
-        <button class="upload-seg-add-btn" onclick="addSegment()" id="addSegBtn">+</button>
-        <button class="upload-seg-del-btn" disabled id="delSeg1Btn">-</button>
-      </div>
-    </div>
+    <!-- 구간 목록 -->
+    <div class="upload-segments" id="segmentList"></div>
 
     <div class="upload-modal-btns">
       <button class="upload-modal-btn cancel" onclick="closeUploadModal()">취소</button>
