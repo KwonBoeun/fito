@@ -56,10 +56,10 @@ html, body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: .5px;
+  
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
 }
 
 /* 오른쪽 영역 */
