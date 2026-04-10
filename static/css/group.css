@@ -228,8 +228,10 @@ html,body{font-family:'Noto Sans KR',sans-serif;background:var(--white);color:va
 .gc-msg-bubble.mine{background:var(--black);color:var(--white);border-top-right-radius:4px}
 .gc-msg-time{font-size:9px;color:var(--gray-400);margin-top:2px}
 .gc-msg.mine .gc-msg-time{text-align:right}
-.gc-msg-like{position:absolute;bottom:-10px;right:-4px;background:var(--white);border-radius:var(--r-full);padding:2px 8px;font-size:11px;box-shadow:0 1px 6px rgba(0,0,0,.12);display:flex;align-items:center;gap:3px;cursor:pointer;transition:transform .15s;user-select:none;z-index:5}
+.gc-msg-like{display:inline-flex;align-items:center;gap:3px;cursor:pointer;transition:transform .15s;user-select:none;font-size:11px;margin-left:6px}
 .gc-msg-like:active{transform:scale(1.2)}
+.gc-msg-time-row{display:flex;align-items:center;gap:4px;margin-top:2px}
+.gc-msg.mine .gc-msg-time-row{justify-content:flex-end}
 .gc-msg-date-divider{text-align:center;font-size:11px;color:var(--gray-400);padding:8px 0;position:relative}
 .gc-msg-date-divider::before,.gc-msg-date-divider::after{content:'';position:absolute;top:50%;width:calc(50% - 50px);height:1px;background:var(--gray-100)}
 .gc-msg-date-divider::before{left:0}

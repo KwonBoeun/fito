@@ -13,21 +13,36 @@ let liveChatMessages=[{author:'핏걸_나연',text:'다들 준비됐나요?',tim
 
 /* ── 대기/라이브 화면 분기 ── */
 function initLiveScreen(){
-  const status=new URLSearchParams(location.search).get('status')||'live';
+  const params=new URLSearchParams(location.search);
+  const status=params.get('status')||'live';
+  const startTimeStr=params.get('time')||'';
+
   if(status==='scheduled'||status==='soon'){
-    // 대기 화면 표시
     document.getElementById('liveContent').style.display='none';
     document.getElementById('waitingScreen').style.display='flex';
-    const startTime=new URLSearchParams(location.search).get('time')||'';
-    document.getElementById('waitStartTime').textContent=startTime||'곧 시작';
-    // 카운트다운 (mock)
-    let cnt=status==='soon'?30:300;
-    const ti=setInterval(()=>{
-      cnt--;
-      const m=Math.floor(cnt/60),s=cnt%60;
-      document.getElementById('waitCountdown').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-      if(cnt<=0){clearInterval(ti);document.getElementById('liveContent').style.display='block';document.getElementById('waitingScreen').style.display='none';renderParticipants();}
-    },1000);
+    document.getElementById('waitLiveTitle').textContent=status==='soon'?'곧 시작합니다':'라이브 대기 중';
+    document.getElementById('waitStartTime').textContent=startTimeStr||'예정';
+
+    // 실제 남은 시간 계산
+    if(startTimeStr&&startTimeStr.includes(':')){
+      const parts=startTimeStr.split(':');
+      const targetH=parseInt(parts[0]),targetM=parseInt(parts[1]);
+      const updateCountdown=()=>{
+        const now=new Date();
+        const target=new Date();target.setHours(targetH,targetM,0,0);
+        if(target<=now)target.setDate(target.getDate()+1); // 내일
+        let diff=Math.max(0,Math.floor((target-now)/1000));
+        const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60),s=diff%60;
+        document.getElementById('waitCountdown').textContent=
+          h>0?`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+              :`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        if(diff<=0){clearInterval(cdTimer);document.getElementById('liveContent').style.display='block';document.getElementById('waitingScreen').style.display='none';renderParticipants();}
+      };
+      updateCountdown();
+      const cdTimer=setInterval(updateCountdown,1000);
+    } else {
+      document.getElementById('waitCountdown').textContent='--:--';
+    }
   } else {
     document.getElementById('waitingScreen').style.display='none';
     renderParticipants();

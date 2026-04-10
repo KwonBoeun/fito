@@ -12,6 +12,9 @@
 <body>
 <header class="gp-header"><span class="gp-header-title">그룹</span></header>
 <div class="gp-search-bar">
+  <div id="searchBackBtn" style="display:none;cursor:pointer;padding:4px;flex-shrink:0" onclick="clearSearch()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+  </div>
   <div class="gp-search-wrap">
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="groupSearchInput" type="text" placeholder="그룹 검색" maxlength="50" autocomplete="off"/>
