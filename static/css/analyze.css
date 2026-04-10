@@ -138,6 +138,8 @@ html, body {
   padding: 14px 16px;
   min-height: 110px;
   cursor: pointer;
+  color: inherit;
+  transition: background .15s;
   transition: background .15s;
   position: relative;
   overflow: hidden;

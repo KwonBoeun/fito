@@ -4,87 +4,9 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
   <title>FITO - VOD</title>
+
   <link rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}"/>
-  <style>
-    /* ── VOD 플레이어 래퍼 ── */
-    .vod-player-wrap{width:100%;aspect-ratio:16/9;background:#111;position:relative;
-      overflow:hidden;cursor:pointer}
-    /* 썸네일 배경 */
-    .vod-player-bg{position:absolute;inset:0;background:var(--gray-200)}
-    /* 컨트롤 오버레이 */
-    .vod-controls{position:absolute;inset:0;display:flex;flex-direction:column;
-      justify-content:flex-end;background:linear-gradient(transparent 40%,rgba(0,0,0,.7));
-      opacity:1;transition:opacity .3s}
-    .vod-controls.hidden{opacity:0;pointer-events:none}
-    /* 중앙 재생 버튼 */
-    .vod-center-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-      width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.25);
-      backdrop-filter:blur(4px);border:none;cursor:pointer;
-      display:flex;align-items:center;justify-content:center}
-    .vod-center-btn svg{width:26px;height:26px;fill:#fff;stroke:none}
-    /* 하단 컨트롤 바 */
-    .vod-ctrl-bar{padding:0 12px 10px;display:flex;flex-direction:column;gap:6px}
-    /* 진행 바 */
-    .vod-seek-wrap{position:relative;height:18px;display:flex;align-items:center;cursor:pointer}
-    .vod-seek-track{position:absolute;left:0;right:0;height:3px;background:rgba(255,255,255,.3);
-      border-radius:2px}
-    .vod-seek-fill{height:3px;background:#fff;border-radius:2px;position:absolute;left:0;
-      transition:width .2s linear}
-    .vod-seek-thumb{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;
-      top:50%;transform:translate(-50%,-50%);transition:left .2s linear;box-shadow:0 1px 4px rgba(0,0,0,.4)}
-    .vod-seek-input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;margin:0}
-    /* 하단 버튼 열 */
-    .vod-ctrl-row{display:flex;align-items:center;gap:4px}
-    .vod-ctrl-btn{background:none;border:none;cursor:pointer;padding:4px;
-      display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .vod-ctrl-btn svg{width:18px;height:18px;fill:#fff;stroke:none}
-    .vod-ctrl-btn.stroke svg{fill:none;stroke:#fff;stroke-width:2}
-    .vod-time{color:#fff;font-size:11px;font-weight:500;white-space:nowrap;margin:0 4px}
-    .vod-ctrl-right{margin-left:auto;display:flex;align-items:center;gap:2px}
-    /* 속도/화질 팝업 */
-    .vod-popup{position:absolute;bottom:52px;background:rgba(20,20,20,.95);
-      border-radius:var(--r-md);padding:6px 0;min-width:100px;display:none;z-index:10}
-    .vod-popup.open{display:block}
-    .vod-popup-item{padding:10px 16px;font-size:13px;color:#fff;cursor:pointer;
-      display:flex;align-items:center;justify-content:space-between}
-    .vod-popup-item:active{background:rgba(255,255,255,.1)}
-    .vod-popup-item.active{color:#4b9eff}
-    .vod-popup-check{font-size:12px}
-    /* 풀스크린 모드 */
-    .vod-player-wrap.fullscreen{position:fixed;inset:0;z-index:1000;
-      aspect-ratio:unset;width:100%;height:100%;max-width:none}
-    /* VOD 정보 */
-    .vod-info-section{padding:14px 16px 12px}
-    .vod-title{font-size:17px;font-weight:700;margin-bottom:8px;line-height:1.4}
-    .vod-meta-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-    .vod-meta-l{font-size:12px;color:var(--gray-500)}
-    .vod-author-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-    .vod-author-pic{width:36px;height:36px;border-radius:50%;background:var(--gray-200);flex-shrink:0}
-    .vod-author-name{font-size:14px;font-weight:600;flex:1}
-    .vod-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
-    .vod-desc-toggle{font-size:12px;color:var(--gray-500);background:none;border:none;cursor:pointer;padding:2px 0}
-    .vod-desc{font-size:13px;color:#555;line-height:1.6;margin-top:6px;
-      overflow:hidden;max-height:0;transition:max-height .3s ease}
-    .vod-desc.open{max-height:200px}
-    /* 댓글 */
-    .vod-comment-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
-    .vod-comment-hdr span{font-size:14px;font-weight:700}
-    .vod-comment-hdr a{font-size:12px;color:var(--gray-500);text-decoration:none}
-    /* 추천 영상 */
-    .rec-section{padding:14px 16px 0}
-    .rec-section-title{font-size:14px;font-weight:700;margin-bottom:12px}
-    .rec-card{display:flex;gap:12px;margin-bottom:14px;cursor:pointer}
-    .rec-thumb{width:120px;height:68px;border-radius:var(--r-sm);background:var(--gray-200);
-      flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;
-      font-size:10px;color:var(--gray-400)}
-    /* 추천 썸네일 시간 뱃지 */
-    .rec-dur{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.75);
-      color:#fff;font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px}
-    .rec-info{flex:1;min-width:0}
-    .rec-title{font-size:13px;font-weight:600;overflow:hidden;display:-webkit-box;
-      -webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.4;margin-bottom:4px}
-    .rec-meta{font-size:11px;color:var(--gray-500)}
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vod_detail.css') }}">
 </head>
 <body>
 
@@ -193,9 +115,27 @@
 <!-- 댓글 미리보기 -->
 <div class="vod-comment-hdr">
   <span id="comment-cnt-label">댓글</span>
-  <a href="#">전체보기</a>
+  <a id="view-all-comments">전체보기</a>
 </div>
-<div style="padding:0 16px 12px" id="comment-preview"></div>
+<div id="comment-preview">
+  <!-- 댓글 미리보기 2-3개 -->
+  <div class="comment-item">
+    <div class="comment-pic"></div>
+    <div class="comment-body">
+      <div class="comment-author">pilates_j</div>
+      <div class="comment-text">정말 도움이 많이 됐어요! 자세가 많이 나아진 것 같아요 😊</div>
+      <div class="comment-meta">2시간 전</div>
+    </div>
+  </div>
+  <div class="comment-item">
+    <div class="comment-pic"></div>
+    <div class="comment-body">
+      <div class="comment-author">homefit</div>
+      <div class="comment-text">이걸 보고 따라했는데 확실히 다르네요 ㅎㅎ</div>
+      <div class="comment-meta">3시간 전</div>
+    </div>
+  </div>
+</div>
 
 <div class="divider"></div>
 
@@ -207,17 +147,6 @@
 
 <div class="scroll-pad"></div>
 
-<!-- 댓글 입력창 -->
-<div class="comment-input-bar">
-  <div class="comment-input-pic"></div>
-  <div class="comment-input-wrap">
-    <input type="text" placeholder="댓글을 입력하세요" id="comment-input"/>
-  </div>
-  <button class="comment-send" id="comment-send">
-    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-  </button>
-</div>
-
 <!-- 더보기 팝업 -->
 <div class="more-popup" id="more-popup">
   <div class="more-popup-bg" id="more-bg"></div>
@@ -227,6 +156,145 @@
   </div>
 </div>
 
+<!-- ── 댓글 바텀시트 ── -->
+<div class="comment-sheet-overlay" id="comment-overlay">
+  <div class="comment-sheet" id="comment-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title" id="sheet-comment-title">댓글</span>
+    <button class="sheet-close" id="sheet-close">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sheet-comments" id="sheet-comments">
+    <!-- 댓글 목록 -->
+    <div class="sheet-comment-item">
+      <div class="sheet-comment-pic"></div>
+      <div class="sheet-comment-body">
+        <div class="sheet-comment-author">pilates_j</div>
+        <div class="sheet-comment-text">정말 도움이 많이 됐어요! 자세가 많이 나아진 것 같아요 😊</div>
+        <div class="sheet-comment-meta">
+          <span>2시간 전</span>
+          <span class="sheet-comment-action">좋아요</span>
+          <span class="sheet-comment-action">답글</span>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-comment-item">
+      <div class="sheet-comment-pic"></div>
+      <div class="sheet-comment-body">
+        <div class="sheet-comment-author">homefit</div>
+        <div class="sheet-comment-text">이걸 보고 따라했는데 확실히 다르네요 ㅎㅎ</div>
+        <div class="sheet-comment-meta">
+          <span>3시간 전</span>
+          <span class="sheet-comment-action">좋아요</span>
+          <span class="sheet-comment-action">답글</span>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-comment-item">
+      <div class="sheet-comment-pic"></div>
+      <div class="sheet-comment-body">
+        <div class="sheet-comment-author">squat_q</div>
+        <div class="sheet-comment-text">발 너비 부분 설명이 제일 이해가 잘 됐어요</div>
+        <div class="sheet-comment-meta">
+          <span>5시간 전</span>
+          <span class="sheet-comment-action">좋아요</span>
+          <span class="sheet-comment-action">답글</span>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-comment-item">
+      <div class="sheet-comment-pic"></div>
+      <div class="sheet-comment-body">
+        <div class="sheet-comment-author">yoga_master</div>
+        <div class="sheet-comment-text">초보자도 쉽게 따라할 수 있겠어요 👍</div>
+        <div class="sheet-comment-meta">
+          <span>7시간 전</span>
+          <span class="sheet-comment-action">좋아요</span>
+          <span class="sheet-comment-action">답글</span>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-comment-item">
+      <div class="sheet-comment-pic"></div>
+      <div class="sheet-comment-body">
+        <div class="sheet-comment-author">fitness_lover</div>
+        <div class="sheet-comment-text">매일 이 영상 보면서 운동하고 있습니다!</div>
+        <div class="sheet-comment-meta">
+          <span>1일 전</span>
+          <span class="sheet-comment-action">좋아요</span>
+          <span class="sheet-comment-action">답글</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sheet-input-wrap">
+    <div class="sheet-input-pic"></div>
+    <div class="sheet-input-field">
+      <input type="text" placeholder="댓글을 입력하세요" id="sheet-comment-input"/>
+    </div>
+    <button class="sheet-send-btn" id="sheet-send-btn" >
+      <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+    </button>
+  </div>
+</div>
+
 <script src="{{ url_for('static', filename='js/vod_detail.js') }}"></script>
-</body>
-</html>
+<script>
+// 댓글 바텀시트 관련 스크립트
+(function() {
+  const viewAllBtn = document.getElementById('view-all-comments');
+  const overlay = document.getElementById('comment-overlay');
+  const sheet = document.getElementById('comment-sheet');
+  const closeBtn = document.getElementById('sheet-close');
+  const input = document.getElementById('sheet-comment-input');
+  const sendBtn = document.getElementById('sheet-send-btn');
+
+  let scrollY = 0;
+
+function openSheet() {
+  scrollY = window.scrollY;
+
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollY}px`;
+
+  overlay.classList.add('open');
+  sheet.classList.add('open');
+}
+
+function closeSheet() {
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+
+  window.scrollTo(0, scrollY);
+
+  overlay.classList.remove('open');
+  sheet.classList.remove('open');
+}
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeSheet();
+  });
+
+  // 이벤트 리스너
+  viewAllBtn.addEventListener('click', openSheet);
+  closeBtn.addEventListener('click', closeSheet);
+
+  // 댓글 입력 활성화/비활성화
+  input.addEventListener('input', function() {
+    sendBtn.disabled = this.value.trim() === '';
+  });
+
+  // 댓글 전송 (임시)
+  sendBtn.addEventListener('click', function() {
+    if (input.value.trim()) {
+      console.log('댓글 전송:', input.value);
+      input.value = '';
+      sendBtn.disabled = true;
+    }
+  });
+})();
+</script>
+</body></html>

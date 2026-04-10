@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - MY 게시물</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mypage.css') }}"/>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<header class="detail-header">
+  <a href="{{ url_for('mypage') }}" class="detail-back">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="detail-header-title">MY 게시물</span>
+  <div class="detail-header-icon">
+    <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+  </div>
+</header>
+
+<div class="detail-content">
+
+  <!-- ── 게시물 1: VOD 타입 ── -->
+  <div class="post-card">
+    <div class="post-header">
+      <div class="post-avatar">김</div>
+      <span class="post-name">이름</span>
+      <div class="post-more">···</div>
+    </div>
+    <div class="post-reactions">
+      <div class="post-reaction">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        212
+      </div>
+      <div class="post-reaction">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        8
+      </div>
+      <div class="post-reaction">
+        <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        3
+      </div>
+    </div>
+    <div class="post-thumbnail">
+      <div class="post-thumbnail-img"></div>
+    </div>
+    <div class="post-caption">영상 제목</div>
+    <div class="post-caption-sub">조회수 000회</div>
+  </div>
+
+  <!-- ── 게시물 2: 커뮤니티 타입 ── -->
+  <div class="post-card">
+    <div class="post-header">
+      <div class="post-avatar">김</div>
+      <span class="post-name">이름</span>
+      <div class="post-more">···</div>
+    </div>
+    <div class="post-reactions">
+      <div class="post-reaction">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        212
+      </div>
+      <div class="post-reaction">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        8
+      </div>
+      <div class="post-reaction">
+        <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        3
+      </div>
+    </div>
+    <div class="post-thumbnail">
+      <div class="post-thumbnail-img"></div>
+    </div>
+    <div class="post-caption">커뮤니티 글 내용</div>
+  </div>
+
+  <!-- ── 게시물 3: 사진+텍스트 타입 ── -->
+  <div class="post-card">
+    <div class="post-header">
+      <div class="post-avatar">김</div>
+      <span class="post-name">이름</span>
+      <div class="post-more">···</div>
+    </div>
+    <div class="post-reactions">
+      <div class="post-reaction">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        212
+      </div>
+      <div class="post-reaction">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        8
+      </div>
+      <div class="post-reaction">
+        <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        3
+      </div>
+    </div>
+    <div class="post-community">
+      <div class="post-community-thumb"></div>
+      <div class="post-community-text">커뮤니티 글 내용이 여기에 표시됩니다. 최대 3줄까지 미리보기로 보여요.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav" id="bottom-nav"></nav>
+<script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+
+</body>
+</html>

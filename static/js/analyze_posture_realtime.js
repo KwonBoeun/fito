@@ -283,3 +283,94 @@ function togglePause() {
     icon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
   }
 }
+
+function handleExit() {
+  if (!analysisStarted) return;
+
+  // ❌ confirm 제거
+  // 👉 우리가 만든 모달 띄움
+  document.getElementById('exitModal').classList.add('open');
+}
+
+
+// 👉 "지금 종료할래요" 버튼 눌렀을 때 실행
+function forceExit() {
+  document.getElementById('exitModal').classList.remove('open');
+
+  // 타이머 종료
+  clearInterval(scoreTimer);
+  clearInterval(exerciseTimer);
+
+  const progress = elapsed / TOTAL_DURATION;
+
+  // ✅ 1/4 이상 → 결과 준비 모달
+  if (progress >= 0.25) {
+    document.getElementById('resultModal').classList.add('open');
+  } 
+  // ✅ 1/4 미만 → 중앙 스낵바 + 이동
+  else {
+    showCenterSnackbar("운동량이 충분하지 않아 분석 결과가 제공되지 않습니다.");
+
+    setTimeout(() => {
+      goToMain();
+    }, 1200);
+  }
+}
+
+
+// 👉 "계속 할래요"
+function closeExitModal() {
+  document.getElementById('exitModal').classList.remove('open');
+}
+
+
+// 👉 중앙 스낵바
+function showCenterSnackbar(msg) {
+  const sb = document.getElementById('snackbar');
+
+  sb.textContent = msg;
+  sb.classList.add('show');
+
+  setTimeout(() => {
+    sb.classList.remove('show');
+  }, 1200);
+}
+
+
+function exitWithoutResult() {
+  goToMain();
+}
+
+
+// 👉 화면 터치 시 나가기 버튼 표시
+function tapScreen() {
+  const bar = document.getElementById('exitBar');
+
+  bar.classList.add('show');
+
+  clearTimeout(tapTimeout);
+  tapTimeout = setTimeout(() => {
+    bar.classList.remove('show');
+  }, 3000);
+}
+
+
+// 👉 클릭 이벤트
+document.getElementById('splitWrap').addEventListener('click', (e) => {
+  if (e.target.closest('.rt-exit-btn')) return;
+  tapScreen();
+});
+
+
+// 👉 이동 함수
+function goToMain() {
+  window.location.href = window.RT_URL_POSTURE;
+}
+
+function goReport() {
+  window.location.href = window.RT_URL_REPORT;
+}
+
+function noResult() {
+  goToMain();
+}

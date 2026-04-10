@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 친구</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mypage.css') }}"/>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<header class="friend-header">
+  <a href="{{ url_for('mypage') }}" class="friend-back">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="friend-header-title">친구</span>
+  <div style="width:32px"></div>
+</header>
+
+<div class="friend-content">
+
+  <!-- 검색바 -->
+  <div class="friend-search">
+    <input class="friend-search-input" placeholder="검색 내용 어쩌고" type="text"/>
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+  </div>
+
+  <!-- 카카오톡 친구 동기화 -->
+  <div class="friend-sync-row">
+    <div class="friend-sync-icon">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <span class="friend-sync-label">카카오톡 친구 동기화</span>
+    <button class="friend-sync-btn">동기화</button>
+  </div>
+
+  <!-- 새로운 친구 요청 배너 -->
+  <div class="friend-req-banner" onclick="location.href='{{ url_for('mypage_friend_request') }}'">
+    <div class="friend-req-banner-icon">
+      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    </div>
+    <span class="friend-req-banner-label">새로운 친구 요청</span>
+    <button class="friend-req-banner-btn">수락하기</button>
+  </div>
+
+  <!-- 즐겨 찾는 친구 -->
+  <div class="friend-section-title">즐겨 찾는 친구</div>
+  <div class="friend-item">
+    <div class="friend-avatar online">A</div>
+    <div class="friend-info">
+      <div class="friend-name">이름</div>
+      <div class="friend-time">00H 00M</div>
+    </div>
+    <button class="friend-action-btn">채팅하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar">B</div>
+    <div class="friend-info">
+      <div class="friend-name">이름</div>
+      <div class="friend-time">00H 00M</div>
+    </div>
+    <button class="friend-action-btn">채팅하기</button>
+  </div>
+
+  <!-- 친구 -->
+  <div class="friend-section-title">친구</div>
+  <div class="friend-item">
+    <div class="friend-avatar">C</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">채팅하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar online">D</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">채팅하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar online">E</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">채팅하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar">F</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">채팅하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar">G</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">채팅하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar online">H</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">채팅하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar online">I</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">채팅하기</button>
+  </div>
+  <div class="friend-item">
+    <div class="friend-avatar">J</div>
+    <div class="friend-info"><div class="friend-name">이름</div><div class="friend-time">00H 00M</div></div>
+    <button class="friend-action-btn">채팅하기</button>
+  </div>
+
+</div>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav" id="bottom-nav"></nav>
+<script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+
+</body>
+</html>

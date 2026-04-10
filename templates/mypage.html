@@ -48,8 +48,8 @@
             <span class="profile-stat-label">게시물</span>
           </div>
           <div class="profile-stat">
-            <span class="profile-stat-value">00</span>
-            <span class="profile-stat-label">친구</span>
+            <span class="profile-stat-value" style="cursor:pointer" onclick="goFriends()">00</span>
+            <span class="profile-stat-label" style="cursor:pointer" onclick="goFriends()">친구</span>
           </div>
           <div class="profile-stat">
             <span class="profile-stat-value">00</span>
@@ -72,7 +72,7 @@
     <!-- 버튼 -->
     <div class="profile-btns">
       <button class="profile-btn" onclick="alert('프로필 수정')">프로필 수정</button>
-      <button class="profile-btn" onclick="alert('친구 요청 수락')">친구 요청 수락</button>
+      <button class="profile-btn" onclick="goFriendRequest()">친구 요청 수락</button>
     </div>
 
     <!-- 콘텐츠 탭 -->
@@ -95,6 +95,7 @@
     <div class="profile-grid" id="profileGrid">
       <!-- JS로 채움 -->
     </div>
+    <div style="height:20px"></div><!-- 스크롤 여유 -->
 
   </div>
 
@@ -187,29 +188,9 @@
 
 </div><!-- /my-content -->
 
-<!-- ── 하단 네비 ── -->
-<nav class="bottom-nav">
-  <a href="{{ url_for('main') }}" class="nav-item">
-    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-    <span class="nav-label">홈</span>
-  </a>
-  <a href="{{ url_for('pt') }}" class="nav-item">
-    <div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="6" y1="12" x2="18" y2="12"/><line x1="3" y1="8" x2="6" y2="8"/><line x1="3" y1="16" x2="6" y2="16"/><line x1="18" y1="8" x2="21" y2="8"/><line x1="18" y1="16" x2="21" y2="16"/></svg></div>
-    <span class="nav-label">운동</span>
-  </a>
-  <a href="{{ url_for('group') }}" class="nav-item">
-    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-    <span class="nav-label">그룹</span>
-  </a>
-  <a href="{{ url_for('analyze') }}" class="nav-item">
-    <div class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-    <span class="nav-label">분석</span>
-  </a>
-  <a href="{{ url_for('mypage') }}" class="nav-item active">
-    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-    <span class="nav-label">MY</span>
-  </a>
-</nav>
+<!-- Bottom Navigation -->
+<nav class="bottom-nav" id="bottom-nav"></nav>
+<script src="{{ url_for('static', filename='js/nav.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/mypage.js') }}"></script>
 </body>

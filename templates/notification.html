@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 알림</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/notification.css') }}"/>
+</head>
+<body>
+<div style="display:flex;flex-direction:column;height:100vh;max-width:390px;margin:0 auto;overflow:hidden">
+
+<!-- ── 헤더 ── -->
+<header class="noti-header" id="noti-header">
+  <a href="{{ url_for('main') }}" class="noti-back">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="noti-title">알림</span>
+  <div class="noti-header-right">
+    <!-- 일반 모드: 휴지통 아이콘 -->
+    <button class="noti-btn-icon" id="btn-delete-mode" title="삭제 모드">
+      <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    </button>
+    <!-- 삭제 모드: 전체 선택 체크박스 -->
+    <button class="noti-btn-icon hidden" id="btn-select-all" title="전체 선택">
+      <svg id="icon-select-all" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+    </button>
+    <!-- 삭제 모드: 삭제 실행 버튼 -->
+    <button class="noti-btn-icon hidden" id="btn-delete-confirm" title="삭제">
+      <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ── 알림 목록 ── -->
+<main class="noti-list" id="noti-list"></main>
+
+<!-- ── 삭제 확인 팝업 ── -->
+<div class="noti-dialog-ov" id="dialog-ov">
+  <div class="noti-dialog">
+    <div class="noti-dialog-title">알림을 삭제할까요?</div>
+    <div class="noti-dialog-sub" id="dialog-sub">선택한 알림이 삭제됩니다.</div>
+    <div class="noti-dialog-btns">
+      <button class="noti-dialog-btn cancel" id="dialog-cancel">취소</button>
+      <button class="noti-dialog-btn confirm" id="dialog-ok">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 알림 상세 오버레이 ── -->
+<div class="noti-detail-ov" id="detail-ov">
+  <header class="noti-header">
+    <button class="noti-back" id="detail-back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="noti-title" id="detail-type-label">알림 상세</span>
+    <div class="noti-header-right"></div>
+  </header>
+  <div class="noti-detail-body" id="detail-body"></div>
+</div>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav" id="bottom-nav"></nav>
+<script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/notification.js') }}"></script>
+</div><!-- /flex wrapper -->
+</body>
+</html>

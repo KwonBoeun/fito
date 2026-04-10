@@ -285,23 +285,12 @@ function init() {
   });
 
   /* 댓글 작성 */
-  const input = document.getElementById('comment-input');
-  document.getElementById('comment-send').addEventListener('click', () => {
-    if (!input.value.trim()) return;
-    preview.innerHTML += `
-      <div class="comment-item">
-        <div class="comment-pic"></div>
-        <div class="comment-body">
-          <div class="comment-author">나</div>
-          <div class="comment-text">${input.value.trim()}</div>
-          <div class="comment-meta"><span>방금 전</span></div>
-        </div>
-      </div>`;
-    input.value = '';
-  });
+  const input = document.getElementById('sheet-comment-input');
+  const sendBtn = document.getElementById('sheet-send-btn');
+  
   input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('comment-send').click();
-  });
+  if (e.key === 'Enter') sendBtn.click();
+});
 
   /* 더보기 팝업 */
   document.getElementById('more-btn').addEventListener('click', () =>

@@ -26,14 +26,25 @@ function switchProfileTab(idx, el) {
 }
 
 /* ── 프로필 그리드 렌더링 ── */
+const PROFILE_DETAIL_URL = '{{ url_for_placeholder_profile_detail }}';
+const FRIENDS_URL        = '{{ url_for_placeholder_friends }}';
+const FRIEND_REQ_URL     = '{{ url_for_placeholder_friend_req }}';
+
+const GRID_LABELS = ['VOD', 'VOD', 'FITS', 'VOD', 'FITS', 'VOD', 'VOD', 'FITS', 'VOD',
+                     'VOD', 'FITS', 'VOD', 'VOD', 'FITS', 'VOD', 'VOD', 'FITS', 'VOD'];
+
 function renderProfileGrid(tabIdx) {
   const grid = document.getElementById('profileGrid');
-  // 빈 그리드 9칸 (실제 콘텐츠 없는 상태)
-  const count = 9;
+  const count = 18; // 6행 × 3열
   grid.innerHTML = Array.from({ length: count }, (_, i) => `
-    <div class="profile-grid-item" onclick="alert('콘텐츠 ${i+1}')">
+    <div class="profile-grid-item" onclick="goProfileDetail(${i})">
+      <div class="profile-grid-item-label">${GRID_LABELS[i] || ''}</div>
     </div>
   `).join('');
+}
+
+function goProfileDetail(idx) {
+  window.location.href = '/mypage/profile/detail?idx=' + idx;
 }
 
 /* ── 프로필 정보 초기화 ── */
@@ -42,6 +53,10 @@ function initProfile() {
   document.getElementById('profileName').textContent    = name;
   document.getElementById('profileAvatar').textContent  = name[0];
 }
+
+/* ── 페이지 이동 ── */
+function goFriends()      { window.location.href = '/mypage/friends'; }
+function goFriendRequest(){ window.location.href = '/mypage/friend-request'; }
 
 /* ── 초기화 ── */
 document.addEventListener('DOMContentLoaded', () => {

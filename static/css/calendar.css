@@ -1,0 +1,180 @@
+/* ===========================
+   FITO - 공용 캘린더 모달 CSS
+   (모든 기간 설정 화면에서 사용)
+   =========================== */
+
+:root {
+  --cal-green:    #3d8b37;
+  --cal-green-lt: #e8f5e9;
+  --cal-gray:     #e0e0e0;
+  --cal-text:     #222;
+  --cal-sub:      #999;
+}
+
+/* ── 오버레이 ── */
+.cal-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 500; display: none;
+}
+.cal-modal-overlay.open { display: block; }
+
+/* ── 모달 박스 (이미지2 기준) ── */
+.cal-modal {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -55%) scale(.95);
+  width: calc(100% - 48px); max-width: 340px;
+  background: #fff; border-radius: 18px;
+  padding: 20px 16px 16px;
+  z-index: 501;
+  display: none;
+  opacity: 0;
+  transition: transform .22s ease, opacity .22s ease;
+  max-height: 90vh; overflow-y: auto;
+}
+.cal-modal.open {
+  display: block;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* ── 기간 탭 ── */
+.cal-period-row {
+  display: flex; gap: 6px;
+  margin-bottom: 18px; flex-wrap: nowrap;
+  overflow-x: auto; scrollbar-width: none;
+}
+.cal-period-row::-webkit-scrollbar { display: none; }
+.cal-period-tab {
+  flex-shrink: 0;
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid var(--cal-gray);
+  background: #fff; color: #555;
+  font-family: inherit; transition: all .15s;
+}
+.cal-period-tab.active {
+  background: var(--cal-green); color: #fff;
+  border-color: var(--cal-green);
+}
+
+/* ── 월 네비 ── */
+.cal-month-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.cal-nav-arrow {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border-radius: 50%;
+  transition: background .1s;
+}
+.cal-nav-arrow:active { background: #f0f0f0; }
+.cal-nav-arrow svg {
+  width: 18px; height: 18px;
+  stroke: #555; fill: none; stroke-width: 2.5;
+}
+.cal-month-btn {
+  font-size: 16px; font-weight: 700; color: var(--cal-text);
+  cursor: pointer; padding: 4px 8px; border-radius: 6px;
+  transition: background .1s; border: none; background: none;
+  font-family: inherit;
+}
+.cal-month-btn:active { background: #f0f0f0; }
+
+/* ── 요일 헤더 ── */
+.cal-day-labels {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+.cal-day-lbl {
+  text-align: center; font-size: 12px;
+  font-weight: 600; color: var(--cal-sub);
+  padding: 4px 0;
+}
+
+/* ── 날짜 그리드 ── */
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 2px 0;
+}
+.cal-cell {
+  position: relative; text-align: center;
+  padding: 7px 0; font-size: 14px; font-weight: 500;
+  color: var(--cal-text); cursor: pointer;
+  user-select: none;
+}
+.cal-cell.other-month { color: #ccc; }
+.cal-cell.today { font-weight: 900; }
+
+/* 주 범위 하이라이트 */
+.cal-cell.in-range::before {
+  content: '';
+  position: absolute; inset: 3px 0;
+  background: var(--cal-green);
+  z-index: 0;
+}
+.cal-cell.range-start::before { border-radius: 999px 0 0 999px; }
+.cal-cell.range-end::before   { border-radius: 0 999px 999px 0; }
+.cal-cell.range-single::before { border-radius: 999px; }
+
+/* 단일 날짜 선택 (원) */
+.cal-cell.selected::after {
+  content: '';
+  position: absolute; inset: 3px;
+  border-radius: 50%;
+  background: var(--cal-green);
+  z-index: 0;
+}
+.cal-cell span {
+  position: relative; z-index: 1;
+}
+.cal-cell.in-range span,
+.cal-cell.selected span { color: #fff; }
+
+/* ── 하단 버튼 ── */
+.cal-footer {
+  display: flex; gap: 10px; margin-top: 16px;
+}
+.cal-cancel-btn, .cal-confirm-btn {
+  flex: 1; padding: 13px;
+  border-radius: var(--r-md, 12px);
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; border: none; font-family: inherit;
+  transition: opacity .15s;
+}
+.cal-cancel-btn  { background: #f0f0f0; color: #555; }
+.cal-confirm-btn { background: var(--cal-green); color: #fff; }
+.cal-cancel-btn:active,
+.cal-confirm-btn:active { opacity: .8; }
+
+/* ── 월 선택 뷰 (이미지3) ── */
+.cal-month-picker {
+  display: none;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px; padding: 8px 0;
+}
+.cal-month-picker.open { display: grid; }
+.cal-month-cell {
+  aspect-ratio: 1; border-radius: 50%;
+  background: var(--cal-gray);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600; color: var(--cal-text);
+  cursor: pointer; transition: background .15s;
+}
+.cal-month-cell:active   { opacity: .8; }
+.cal-month-cell.selected { background: var(--cal-green); color: #fff; }
+
+/* ── 스탯바 캘린더 아이콘 버튼 ── */
+.stat-cal-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; cursor: pointer;
+  border-radius: 8px; transition: background .1s;
+  flex-shrink: 0;
+}
+.stat-cal-icon:active { background: rgba(0,0,0,.06); }
+.stat-cal-icon svg {
+  width: 22px; height: 22px;
+  stroke: #555; fill: none; stroke-width: 1.8;
+}

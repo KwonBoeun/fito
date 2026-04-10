@@ -112,8 +112,15 @@ function renderSubscribeBanner() {
       <div class="subscribe-slide">
         <div class="subscribe-slide-top">
           ${statusBadge}
-          <span class="subscribe-trainer-name">${t.name}</span>
-          <svg class="subscribe-home-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="subscribe-trainer-name"
+                onclick="${t.isLive ? `joinLiveDirect(${t.id})` : `goTrainerHome(${t.id})`}">
+            ${t.name}
+          </span>
+          <svg class="subscribe-home-icon" viewBox="0 0 24 24"
+              onclick="goTrainerHome(${t.id})">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
         </div>
         ${bottomBar}
       </div>`;
@@ -337,3 +344,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRoutineSection();
   renderVodSection();
 });
+
+function goTrainerHome(trainerId) {
+  window.location.href = `/trainer_home?id=${trainerId}`;
+}
+

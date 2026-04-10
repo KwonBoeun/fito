@@ -1,0 +1,241 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+
+:root{
+  --black:#000;
+  --white:#fff;
+  --gray-100:#f2f2f2;
+  --gray-200:#e5e5e5;
+  --gray-400:#999;
+  --red:#c40000;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  max-width:390px;
+  margin:0 auto;
+  background:#fff;
+}
+
+/* ── 헤더 ── */
+.trainer-header{
+  height:52px;
+  border-bottom:1px solid var(--gray-200);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  position:sticky;
+  top:0;
+  background:#fff;
+}
+
+.hdr-title{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  font-weight:700;
+  font-size:17px;
+}
+
+.hdr-left, .hdr-right{
+  width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.hdr-left svg,
+.hdr-right svg{
+  width:22px;height:22px;
+  stroke:var(--black);
+  fill:none;
+  stroke-width:2;
+}
+
+/* ── 공통 ── */
+.section{
+  padding:20px 16px;
+}
+
+.section-title{
+  font-weight:700;
+  font-size:16px;
+  margin-bottom:12px;
+}
+
+/* ── 라이브 카드 ── */
+.live-card{
+  border:1.5px solid var(--gray-200);
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.live-info{
+  padding:16px;
+}
+
+.live-title{
+  font-size:15px;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+.live-meta{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  color:var(--gray-400);
+}
+
+.live-join{
+  background:var(--red);
+  color:#fff;
+  text-align:center;
+  padding:14px;
+  font-weight:700;
+  font-size:15px;
+}
+
+/* ── 예정 카드 ── */
+.schedule-row{
+  display:flex;
+  gap:10px;
+}
+
+.schedule-card{
+  flex:1;
+  border:1.5px solid var(--gray-200);
+  border-radius:10px;
+  padding:14px;
+}
+
+.schedule-title{
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+.schedule-time{
+  font-size:13px;
+  color:var(--gray-400);
+}
+
+/* ── 공지 ── */
+.notice-box{
+  border:1.5px solid var(--gray-200);
+  border-radius:10px;
+  padding:16px;
+  line-height:1.6;
+  margin-bottom:16px;
+}
+
+/* 댓글 리스트 */
+.comment-list{
+  margin-top:12px;
+}
+
+/* 댓글 하나 */
+.comment-item{
+  display:flex;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid #f2f2f2;
+}
+
+/* 마지막 줄 */
+.comment-item:last-child{
+  border-bottom:none;
+}
+
+/* 프로필 */
+.comment-avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:#ddd;
+  font-size:14px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* 오른쪽 영역 */
+.comment-body{
+  flex:1;
+}
+
+/* 닉네임 + 시간 */
+.comment-top{
+  display:flex;
+  gap:6px;
+  margin-bottom:2px;
+}
+
+.comment-name{
+  font-size:13px;
+  font-weight:600;
+}
+
+.comment-time{
+  font-size:12px;
+  color:#999;
+}
+
+/* 댓글 내용 */
+.comment-text{
+  font-size:14px;
+  line-height:1.4;
+}
+
+/* ── 댓글 입력창 ── */
+.comment-input-wrap{
+  width: 100%;
+  max-width: 390px;
+
+  display: flex;
+  gap: 8px;
+
+  padding: 10px 12px;
+  background: var(--white);
+  border-top:1px solid #eee;
+  margin-top: 12px;
+  
+  padding-top:10px;
+}
+
+.comment-input-wrap input{
+  flex: 1;
+  height: 38px;
+  border-radius: 999px;
+  border: 1.5px solid var(--gray-200);
+  padding: 0 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+.comment-input-wrap input:focus{
+  border-color: var(--black);
+}
+
+.comment-input-wrap button{
+  padding: 0 14px;
+  border-radius: 999px;
+  border: none;
+  background: var(--black);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.comment-input-wrap input::placeholder{
+  color: var(--gray-400);
+}
+
+.comment-item:last-child{
+  border-bottom:none;
+}
+
+.comment-item:hover{
+  background:#fafafa;
+}

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 라이브</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/upload_live.css') }}"/>
+</head>
+<body>
+
+<div class="live-wrap" id="live-wrap">
+
+  <!-- ── 카메라 프리뷰 ── -->
+  <video class="live-video" id="live-video" autoplay muted playsinline></video>
+  <!-- 카메라 미허용 시 대체 배경 -->
+  <div class="live-video-fallback" id="live-video-fallback">
+    <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    <p>카메라 권한이 필요합니다</p>
+  </div>
+
+  <!-- ── 상단 오버레이 ── -->
+  <div class="live-top" id="live-top">
+
+    <!-- 제목 행 -->
+    <div class="live-title-row">
+      <input class="live-title-input" id="live-title" type="text"
+             placeholder="라이브 제목을 입력하세요" maxlength="40"/>
+      <button class="live-icon-btn" id="privacy-btn" title="공개 설정">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </button>
+      <button class="live-icon-btn close-btn" onclick="history.back()">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- 설명 행 -->
+    <div class="live-desc-row" id="desc-row">
+      <input class="live-desc-input" id="live-desc" type="text"
+             placeholder="라이브 설명을 입력하세요" maxlength="80"/>
+    </div>
+
+    <!-- 라이브 상태 바 (방송 중에만 표시) -->
+    <div class="live-status-bar" id="status-bar">
+      <div class="live-badge-wrap">
+        <span class="live-dot-badge">LIVE</span>
+        <span class="live-timer" id="live-timer">00:00:00</span>
+      </div>
+      <button class="rec-btn" id="rec-btn">
+        <span class="rec-dot"></span>녹화하기
+      </button>
+      <button class="end-btn" id="end-btn">방송 종료</button>
+    </div>
+
+    <!-- 시청자 수 (방송 중에만 표시) -->
+    <div class="viewer-count-row" id="viewer-count-row">
+      <span class="viewer-dot"></span>
+      <span id="viewer-num">0</span>명 시청중
+    </div>
+
+  </div><!-- /live-top -->
+
+  <!-- ── 카메라 OFF 오버레이 ── -->
+  <div class="cam-off-overlay" id="cam-off-overlay"></div>
+
+  <!-- ── 라이브 화면 안내 (방송 전) ── -->
+  <div class="live-preview-hint" id="preview-hint">라이브 화면 미리 보기</div>
+
+  <!-- ── 우측 컨트롤 아이콘 ── -->
+  <div class="live-controls" id="live-controls">
+    <!-- 마이크 ON/OFF -->
+    <button class="ctrl-btn" id="mic-btn" title="마이크">
+      <svg id="mic-svg-on" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      <svg id="mic-svg-off" viewBox="0 0 24 24" style="display:none"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </button>
+    <!-- 카메라 ON/OFF -->
+    <button class="ctrl-btn" id="cam-btn" title="카메라">
+      <svg id="cam-svg-on" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <svg id="cam-svg-off" viewBox="0 0 24 24" style="display:none"><line x1="1" y1="1" x2="23" y2="23"/><path d="M21 21H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3m3-3h6l2 3h4a2 2 0 0 1 2 2v9.34"/><circle cx="12" cy="13" r="4" stroke-dasharray="1 3"/></svg>
+    </button>
+    <!-- 좌우 반전 -->
+    <button class="ctrl-btn" id="mirror-btn" title="좌우 반전">
+      <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/><line x1="12" y1="20" x2="12" y2="4"/></svg>
+    </button>
+    <!-- 필터/효과 -->
+    <button class="ctrl-btn" id="filter-btn" title="필터">
+      <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    </button>
+    <!-- 배경 -->
+    <button class="ctrl-btn" id="bg-btn" title="배경">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    </button>
+  </div>
+
+  <!-- ── 하단: 방송 전 컨트롤 ── -->
+  <div class="live-bottom-pre" id="bottom-pre">
+    <div class="rec-toggle-wrap">
+      <button class="rec-toggle-btn" id="rec-toggle-btn">
+        <span class="rec-toggle-dot"></span>
+        <span id="rec-toggle-label">녹화하기</span>
+        <svg width="12" height="12" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+    <button class="start-live-btn" id="start-live-btn">
+      <div class="start-live-icon">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/><circle cx="12" cy="12" r="4" fill="white"/><path d="M8 12 A4 4 0 0 1 12 8" stroke="white" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <span>라이브</span>
+    </button>
+  </div>
+
+  <!-- ── 하단: 방송 중 시청자 목록 ── -->
+  <div class="live-bottom-live" id="bottom-live">
+    <div class="viewer-list" id="viewer-list"></div>
+  </div>
+
+</div><!-- /live-wrap -->
+
+<!-- ── 필터 패널 ── -->
+<div class="live-panel" id="filter-panel">
+  <div class="panel-header">
+    <span class="panel-title">효과</span>
+    <button class="panel-confirm" id="filter-confirm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </button>
+  </div>
+  <div class="panel-tabs" id="filter-tabs">
+    <div class="panel-tab active" data-cat="all">전체</div>
+    <div class="panel-tab" data-cat="new">New</div>
+    <div class="panel-tab" data-cat="best">Best</div>
+    <div class="panel-tab" data-cat="makeup">메이크업</div>
+    <div class="panel-tab" data-cat="filter">필터</div>
+  </div>
+  <div class="panel-grid" id="filter-grid"></div>
+</div>
+
+<!-- ── 배경 패널 ── -->
+<div class="live-panel" id="bg-panel">
+  <div class="panel-header">
+    <span class="panel-title">배경</span>
+    <button class="panel-confirm" id="bg-confirm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </button>
+  </div>
+  <div class="panel-tabs" id="bg-tabs">
+    <div class="panel-tab active" data-cat="all">전체</div>
+    <div class="panel-tab" data-cat="new">New</div>
+    <div class="panel-tab" data-cat="best">Best</div>
+    <div class="panel-tab" data-cat="nature">풍경</div>
+    <div class="panel-tab" data-cat="solid">단색</div>
+  </div>
+  <div class="panel-grid" id="bg-grid"></div>
+</div>
+
+<!-- ── 패널 배경 딤 ── -->
+<div class="panel-dim" id="panel-dim"></div>
+
+<!-- ── 방송 종료 다이얼로그 ── -->
+<div class="end-overlay" id="end-overlay">
+  <div class="end-bg"></div><!-- 체커보드 -->
+  <div class="end-dialog">
+    <p class="end-msg">방송이 종료되었습니다.</p>
+    <button class="end-close-btn" onclick="location.href='/'">닫기</button>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/upload_live.js') }}"></script>
+</body>
+</html>

@@ -6,6 +6,11 @@ app = Flask(__name__)
 def main():
     return render_template('main.html')
 
+
+@app.route('/upload/live')
+def upload_live():
+    return render_template('upload_live.html')
+
 # ── 상세 페이지 ──
 @app.route('/live/<int:content_id>')
 def live_detail(content_id):
@@ -72,6 +77,17 @@ def analyze_posture_report():
     mode = request.args.get('mode', 'upload')
     return render_template('analyze_posture_report.html', mode=mode)
 
+# ── PT 메인 ──
+@app.route('/pt')
+def pt():
+    return render_template('pt.html')
+
+# ── 트레이너 라이브 ──
+@app.route('/pt/live')
+def pt_live():
+    trainer_id = request.args.get('id', '1')
+    return render_template('pt_live.html', trainer_id=trainer_id)
+
 # ── 그룹 목록/검색 ──
 @app.route('/group')
 def group():
@@ -113,10 +129,46 @@ def group_chat():
     chat_type = request.args.get('type', 'all')
     return render_template('group_chat.html', group_id=group_id, chat_type=chat_type)
 
+@app.route('/notification')
+def notification():
+    return render_template('notification.html')
+
 # ── MY 페이지 ──
 @app.route('/mypage')
 def mypage():
     return render_template('mypage.html')
+
+@app.route('/mypage/detail')
+def mypage_detail():
+    return render_template('mypage_profile_detail.html')
+
+@app.route('/mypage/friend')
+def mypage_friend():
+    return render_template('mypage_friends.html')
+
+@app.route('/mypage/friendrequest')
+def mypage_friendrequest():
+    return render_template('mypage_friend_request.html')
+
+# ── MY 프로필 상세 (게시물) ──
+@app.route('/mypage/profile/detail')
+def mypage_profile_detail():
+    return render_template('mypage_profile_detail.html')
+
+# ── MY 친구 ──
+@app.route('/mypage/friends')
+def mypage_friends():
+    return render_template('mypage_friends.html')
+
+# ── MY 친구 요청 ──
+@app.route('/mypage/friend-request')
+def mypage_friend_request():
+    return render_template('mypage_friend_request.html')
+
+@app.route('/trainer_home')
+def trainer_home():
+    trainer_id = request.args.get('id')
+    return render_template('trainer_home.html', trainer_id=trainer_id)
 
 if __name__ == '__main__':
     app.run(debug=True)
