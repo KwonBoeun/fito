@@ -9,35 +9,56 @@
 <body>
     <div class="app-wrap">
 
+    <!-- 헤더 -->
     <header class="trainer-header">
         <div class="hdr-left" onclick="history.back()">
-            <svg viewBox="0 0 24 24">
+        <svg viewBox="0 0 24 24">
             <polyline points="15 18 9 12 15 6"/>
-            </svg>
+        </svg>
         </div>
-
-        <div class="hdr-title">김트레 트레이너</div>
-
-        <div class="hdr-right">
-        </div>
+        <div class="hdr-title" id="chatTitle">김트레 트레이너</div>
+        <div class="hdr-right"></div>
     </header>
 
+    <!-- 탭 -->
     <div class="chat-tabs">
-        <div class="tab active" onclick="switchChat('private', this)">1:1 채팅</div>
-        <div class="tab" onclick="switchChat('group', this)">그룹 채팅</div>
+        <div class="tab active" onclick="switchChat('private')">1:1 채팅</div>
+        <div class="tab" onclick="switchChat('group')">그룹 채팅</div>
     </div>
 
-    <!-- 핵심 -->
+    <!-- 🔥 핵심 영역 -->
     <div class="chat-main">
+
+        <!-- 채팅 -->
         <div class="chat-container" id="chatContainer"></div>
 
-        <div class="chat-input">
-        <input type="text" id="msgInput" placeholder="메시지 입력">
-        <button onclick="sendMessage()">전송</button>
+        <!-- 🔥 카톡 확장 패널 -->
+        <div class="chat-extra" id="chatExtra">
+        <div class="extra-grid">
+            <div class="extra-item">앨범</div>
+            <div class="extra-item">카메라</div>
+            <div class="extra-item">음성</div>
+            <div class="extra-item">일정</div>
+            <div class="extra-item">그룹 초대</div>
+            <div class="extra-item">식단 공유</div>
         </div>
+        </div>
+
+        <!-- 입력창 -->
+        <div class="chat-input">
+        <div class="chat-plus" onclick="toggleExtra()">+</div>
+
+      <input type="file" id="fileInput" style="display:none" />
+
+      <input type="text" id="msgInput" placeholder="메시지 입력">
+
+      <button onclick="sendMessage()">전송</button>
     </div>
 
-    </div>
+  </div>
+
+</div>                              
+
 <script src="{{ url_for('static', filename='js/trainer_chat.js') }}"></script>
 </body>
 </html>
