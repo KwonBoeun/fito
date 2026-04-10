@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>트레이너 채팅</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/trainer_chat.css') }}">
+</head>
+<body>
+    <div class="app-wrap">
+
+    <header class="trainer-header">
+        <div class="hdr-left" onclick="history.back()">
+            <svg viewBox="0 0 24 24">
+            <polyline points="15 18 9 12 15 6"/>
+            </svg>
+        </div>
+
+        <div class="hdr-title">김트레 트레이너</div>
+
+        <div class="hdr-right">
+        </div>
+    </header>
+
+    <div class="chat-tabs">
+        <div class="tab active" onclick="switchChat('private', this)">1:1 채팅</div>
+        <div class="tab" onclick="switchChat('group', this)">그룹 채팅</div>
+    </div>
+
+    <!-- 핵심 -->
+    <div class="chat-main">
+        <div class="chat-container" id="chatContainer"></div>
+
+        <div class="chat-input">
+        <input type="text" id="msgInput" placeholder="메시지 입력">
+        <button onclick="sendMessage()">전송</button>
+        </div>
+    </div>
+
+    </div>
+<script src="{{ url_for('static', filename='js/trainer_chat.js') }}"></script>
+</body>
+</html>

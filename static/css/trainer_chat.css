@@ -1,0 +1,263 @@
+body{
+  margin:0;
+  background:#f4f4f4;
+  display:flex;
+  justify-content:center;
+}
+
+.app-wrap{
+  width:100%;
+  max-width:390px;
+  height:100vh;
+  background:#fff;
+
+  display:flex;
+  flex-direction:column; 
+}
+
+/* 헤더 */
+body{
+  margin:0;
+  background:#f4f4f4;
+  display:flex;
+  justify-content:center;
+}
+
+.app-wrap{
+  width:100%;
+  max-width:390px;
+  height:100vh;
+  background:#fff;
+
+  display:flex;
+  flex-direction:column; 
+}
+
+/* 헤더 */
+.trainer-header{
+  height:52px;
+  border-bottom:1px solid #e5e5e5;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  position:sticky;
+  top:0;
+  background:#fff;
+}
+
+.hdr-title{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  font-weight:700;
+  font-size:17px;
+}
+
+.hdr-left, .hdr-right{
+  width:24px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.hdr-left svg,
+.hdr-right svg{
+  width:22px;
+  height:22px;
+  stroke:#000;
+  fill:none;
+  stroke-width:2;
+}
+
+.chat-main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+/* 탭 */
+.chat-tabs {
+  display: flex;
+  background: #fff;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.tab.active {
+  border-bottom: 2px solid black;
+  font-weight: bold;
+}
+
+/* 채팅 영역 */
+.chat-container{
+  flex:1;              
+  overflow-y:auto;
+  padding:12px;
+  background:#f2f2f2;
+}
+
+/* 메시지 */
+.message {
+  margin: 8px 0;
+  display: flex;
+}
+
+.message.me {
+  justify-content: flex-end;
+}
+
+.msg {
+  padding: 10px 14px;
+  border-radius: 18px;
+  max-width: 70%;
+}
+
+.message.me .msg {
+  background: #4CAF50;
+  color: white;
+}
+
+.message.other .msg {
+  background: white;
+}
+
+/* 입력 */
+.chat-input{
+  display:flex;
+  gap:8px;
+  padding:10px;
+  border-top:1px solid #eee;
+  background:#fff;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+}
+
+.chat-input button {
+  margin-left: 8px;
+}
+
+.message.other::before{
+  content:'김';
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:#ddd;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  margin-right:6px;
+}
+
+.chat-main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+/* 탭 */
+.chat-tabs{
+  display:flex;
+  border-bottom:1px solid #e5e5e5;
+  background:#fff;
+}
+
+.tab{
+  flex:1;
+  text-align:center;
+  padding:12px 0;
+  font-size:14px;
+  color:#999;
+}
+
+.tab.active{
+  color:#000;
+  font-weight:700;
+  border-bottom:2px solid #000;
+}
+
+/* 채팅 영역 */
+.chat-container{
+  flex:1;              
+  overflow-y:auto;
+  padding:12px;
+  background:#f2f2f2;
+}
+
+/* 메시지 */
+.message {
+  margin: 8px 0;
+  display: flex;
+}
+
+.message.me {
+  justify-content: flex-end;
+}
+
+.msg {
+  padding: 10px 14px;
+  border-radius: 18px;
+  max-width: 70%;
+}
+
+.message.me .msg {
+  background: #4CAF50;
+  color: white;
+}
+
+.message.other .msg {
+  background: white;
+}
+
+/* 입력 */
+.chat-input{
+  display:flex;
+  gap:8px;
+  padding:10px;
+  border-top:1px solid #eee;
+  background:#fff;
+}
+
+.chat-input input{
+  height:38px;
+  border-radius:999px;
+  border:1.5px solid #e5e5e5;
+  padding:0 14px;
+  font-size:14px;
+}
+
+.chat-input button{
+  padding:0 14px;
+  border-radius:999px;
+  border:none;
+  background:#000;
+  color:#fff;
+  font-size:13px;
+  font-weight:600;
+}
+
+.message.other::before{
+  content:'김';
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:#ddd;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  margin-right:6px;
+}

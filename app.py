@@ -170,5 +170,9 @@ def trainer_home():
     trainer_id = request.args.get('id')
     return render_template('trainer_home.html', trainer_id=trainer_id)
 
+@app.route('/trainer/chat')
+def trainer_chat():
+    return render_template('trainer_chat.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

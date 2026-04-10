@@ -102,22 +102,20 @@ function renderSubscribeBanner() {
       ? `<div class="subscribe-slide-live-bar">
            <div class="live-bar-item">${t.liveElapsed} 경과</div>
            <div class="live-bar-divider"></div>
-           <div class="live-bar-item live-bar-join" onclick="openLiveModal(${t.id}, '${t.name}')">참여하기</div>
+           <div class="live-bar-item live-bar-join" onclick="event.stopPropagation(); openLiveModal(${t.id}, '${t.name}')">참여하기</div>
            <div class="live-bar-divider"></div>
            <div class="live-bar-item">${t.liveParticipants}인 참여중</div>
          </div>`
       : `<div class="subscribe-slide-sub-bar">트레이너 홈 방문하기 &rsaquo;</div>`;
 
     return `
-      <div class="subscribe-slide">
+      <div class="subscribe-slide" onclick="goTrainerHome(${t.id})">
         <div class="subscribe-slide-top">
           ${statusBadge}
-          <span class="subscribe-trainer-name"
-                onclick="${t.isLive ? `joinLiveDirect(${t.id})` : `goTrainerHome(${t.id})`}">
+          <span class="subscribe-trainer-name">
             ${t.name}
           </span>
-          <svg class="subscribe-home-icon" viewBox="0 0 24 24"
-              onclick="goTrainerHome(${t.id})">
+          <svg class="subscribe-home-icon" viewBox="0 0 24 24">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
             <polyline points="9 22 9 12 15 12 15 22"/>
           </svg>
@@ -348,4 +346,3 @@ document.addEventListener('DOMContentLoaded', () => {
 function goTrainerHome(trainerId) {
   window.location.href = `/trainer_home?id=${trainerId}`;
 }
-

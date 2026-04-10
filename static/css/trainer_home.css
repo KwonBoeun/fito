@@ -239,3 +239,11 @@ body{
 .comment-item:hover{
   background:#fafafa;
 }
+
+.live-join {
+  cursor: pointer;
+}
+
+.live-join:hover {
+  opacity: 0.9;
+}

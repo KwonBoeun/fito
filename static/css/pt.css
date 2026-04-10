@@ -127,6 +127,11 @@ html, body {
   background: var(--white);
   border-radius: var(--r-lg);
   overflow: hidden;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.subscribe-slide:hover {
+  opacity: 0.95;
 }
 
 /* ── 상단 흰색 영역 (트레이너명) ── */
@@ -172,7 +177,6 @@ html, body {
 .live-bar-item {
   flex: 1; text-align: center;
   font-size: 13px; font-weight: 700; color: var(--white);
-  cursor: pointer;
 }
 .live-bar-divider {
   width: 1px; height: 16px;
@@ -181,6 +185,7 @@ html, body {
 }
 .live-bar-join {
   font-size: 14px; font-weight: 900;
+  cursor: pointer;
 }
 
 /* ── 구독중(비라이브) 하단 ── */
@@ -189,7 +194,6 @@ html, body {
   padding: 10px 16px;
   display: flex; align-items: center; justify-content: center;
   font-size: 13px; color: var(--gray-500); font-weight: 500;
-  cursor: pointer;
   border-top: 1px solid var(--gray-200);
 }
 
