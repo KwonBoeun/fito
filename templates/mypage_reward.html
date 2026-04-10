@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 리워드</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mypage_reward.css') }}"/>
+</head>
+<body>
+
+<header class="rw-header">
+  <a class="rw-back" onclick="finish()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="rw-header-title">리워드</span>
+</header>
+
+<div class="rw-content">
+
+  <!-- 포인트 표시 -->
+  <div class="rw-point-box">
+    <span class="rw-point-value" id="rwPoint">1530P</span>
+  </div>
+
+  <!-- 얻을 수 있는 리워드 -->
+  <div class="rw-section">
+    <div class="rw-section-header">
+      <span class="rw-section-title">얻을 수 있는 리워드</span>
+      <button class="rw-more-btn" onclick="goEarnMore()">더보기 +</button>
+    </div>
+    <div class="rw-earn-list" id="earnList">
+      <div class="rw-earn-item" onclick="alert('출석체크')">
+        <span class="rw-earn-label">출석체크 하러 가기</span>
+        <span class="rw-earn-point">10P</span>
+        <span class="rw-earn-arrow">></span>
+      </div>
+      <div class="rw-earn-item" onclick="alert('광고영상')">
+        <span class="rw-earn-label">광고영상 보기</span>
+        <span class="rw-earn-point">5P</span>
+        <span class="rw-earn-arrow">></span>
+      </div>
+      <div class="rw-earn-item" onclick="alert('광고영상2')">
+        <span class="rw-earn-label">광고영상 보기</span>
+        <span class="rw-earn-point">5P</span>
+        <span class="rw-earn-arrow">></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 리워드 내역 -->
+  <div class="rw-section">
+    <div class="rw-section-header">
+      <span class="rw-section-title">리워드 내역</span>
+      <button class="rw-more-btn" onclick="goHistoryMore()">더보기 +</button>
+    </div>
+    <div class="rw-history-list" id="historyList">
+      <div class="rw-history-item">
+        <div class="rw-history-info">
+          <span class="rw-history-label">답변 채택</span>
+          <span class="rw-history-date">2025-07-05</span>
+        </div>
+        <span class="rw-history-point plus">+10P</span>
+      </div>
+      <div class="rw-history-item">
+        <div class="rw-history-info">
+          <span class="rw-history-label">구매</span>
+          <span class="rw-history-date">2025-07-02</span>
+        </div>
+        <span class="rw-history-point minus">-15P</span>
+      </div>
+      <div class="rw-history-item">
+        <div class="rw-history-info">
+          <span class="rw-history-label">구매</span>
+          <span class="rw-history-date">2025-07-01</span>
+        </div>
+        <span class="rw-history-point minus">-15P</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 상점 -->
+  <div class="rw-section">
+    <div class="rw-section-header">
+      <span class="rw-section-title">상점</span>
+      <button class="rw-more-btn" onclick="alert('상점 더보기')">더보기 +</button>
+    </div>
+    <div class="rw-shop-grid" id="shopGrid">
+      <div class="rw-shop-item"><div class="rw-shop-thumb"></div><span class="rw-shop-name">상품명</span><span class="rw-shop-desc">간단한 설명</span></div>
+      <div class="rw-shop-item"><div class="rw-shop-thumb"></div><span class="rw-shop-name">상품명</span><span class="rw-shop-desc">간단한 설명</span></div>
+      <div class="rw-shop-item"><div class="rw-shop-thumb"></div><span class="rw-shop-name">상품명</span><span class="rw-shop-desc">간단한 설명</span></div>
+      <div class="rw-shop-item"><div class="rw-shop-thumb"></div><span class="rw-shop-name">상품명</span><span class="rw-shop-desc">간단한 설명</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── BOTTOM NAV ── -->
+<nav class="bottom-nav" id="bottom-nav"></nav>
+<script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mypage_reward.js') }}"></script>
+</body>
+</html>

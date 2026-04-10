@@ -58,6 +58,7 @@ function initProfile() {
 function goFriends()      { window.location.href = '/mypage/friends'; }
 function goFriendRequest(){ window.location.href = '/mypage/friend-request'; }
 
+
 /* ── 초기화 ── */
 document.addEventListener('DOMContentLoaded', () => {
   initProfile();
