@@ -5,6 +5,7 @@ let store, currentSort='activity';
 searchInput.addEventListener('input',()=>{
   let v=searchInput.value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9\s#]/g,'');
   if(v!==searchInput.value){searchInput.value=v;showSnackbar('특수문자는 사용할 수 없습니다.');}
+  document.getElementById('searchBackBtn').style.display=v.trim()?'flex':'none';
   renderGroups(v.trim());
 });
 
@@ -74,8 +75,7 @@ function renderGroups(query){
 function groupCardHtml(g){
   const ic=g.inactive?' inactive':'';
   const lb=g.hasLive?`<span class="gp-card-live-badge">LIVE ${g.liveViewers}명</span>`:'';
-  const ml=(store.groupMembers&&store.groupMembers[g.id]);
-  const mc=ml?ml.length:(g.members||0);
+  const mc=FITO_STORE.getMemberCount(g.id)||1; // 최소 1 (그룹장)
   const tags=(g.tags||[]).slice(0,3).map(t=>`<span class="gp-card-tag" onclick="event.stopPropagation();searchByTag('${t}')">${t}</span>`).join('');
   return `<div class="gp-card ani${ic}" onclick="goGroupMain(${g.id})">
     <div class="gp-card-img">${g.profileImg?`<img src="${g.profileImg}" style="width:100%;height:100%;object-fit:cover"/>`:''}
@@ -83,14 +83,16 @@ function groupCardHtml(g){
     <div class="gp-card-meta">멤버 ${mc}명 ${lb}</div><div class="gp-card-tags">${tags}</div></div></div>`;
 }
 function recommendCardHtml(g){
+  const mc=FITO_STORE.getMemberCount(g.id)||1;
   const tags=(g.tags||[]).slice(0,3).map(t=>`<span class="gp-card-tag" onclick="event.stopPropagation();searchByTag('${t}')">${t}</span>`).join('');
   return `<div class="gp-card ani" onclick="goGroupMain(${g.id})" style="background:var(--gray-50)">
     <div class="gp-card-img" style="background:linear-gradient(135deg,#ddd,#bbb)"></div>
     <div class="gp-card-info"><div class="gp-card-name">${g.name}</div>
-    <div class="gp-card-meta">멤버 ${g.members}명 · <span style="color:var(--orange)">추천</span></div>
+    <div class="gp-card-meta">멤버 ${mc}명 · <span style="color:var(--orange)">추천</span></div>
     <div class="gp-card-tags">${tags}</div></div></div>`;
 }
-function searchByTag(tag){searchInput.value=tag;renderGroups(tag);}
+function searchByTag(tag){searchInput.value=tag;document.getElementById('searchBackBtn').style.display='flex';renderGroups(tag);}
+function clearSearch(){searchInput.value='';document.getElementById('searchBackBtn').style.display='none';renderGroups('');}
 function goGroupMain(id){const s=FITO_STORE.get();const g=s.groups.find(g=>g.id===id)||(s.recommendGroups||[]).find(g=>g.id===id);if(!g){showSnackbar('해당 그룹이 존재하지 않습니다.');return;}location.href=`/group/main?id=${id}`;}
 function onCreateGroupClick(){document.getElementById('createConfirmModal').classList.add('open');}
 function closeCreateModal(){document.getElementById('createConfirmModal').classList.remove('open');}

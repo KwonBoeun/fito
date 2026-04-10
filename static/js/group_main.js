@@ -19,10 +19,12 @@ function renderGroupInfo(){
   if(group.joined){btn.textContent='탈퇴';btn.className='gm-join-btn leave';}else{btn.textContent='가입 신청';btn.className='gm-join-btn join';}
   if(group.bannerImg){const b=document.getElementById('groupBanner');b.style.backgroundImage=`url(${group.bannerImg})`;b.style.backgroundSize='cover';}
   if(group.profileImg){const p=document.getElementById('groupProfileImg');p.style.backgroundImage=`url(${group.profileImg})`;p.style.backgroundSize='cover';}
-  const av=document.getElementById('membersAvatars');
-  av.innerHTML=Array.from({length:Math.min(members.length,4)},()=>'<div class="gm-avatar"></div>').join('');
+  const avatars = document.getElementById('membersAvatars');
+  avatars.innerHTML=Array.from({length:Math.min(members.length,4)},()=>'<div class="gm-avatar"></div>').join('');
   document.getElementById('membersCount').textContent=`${members.length}명`;
-  document.getElementById('storageCount').textContent='12개';
+  // 저장소 카운트 (실제 데이터)
+  const storageCount = FITO_STORE.getStorageCount(gid);
+  document.getElementById('storageCount').textContent=storageCount>0?`${storageCount}개`:'없음';
   if(!group.joined){['chatSection','liveSection','newLiveWrap','storageSection'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});}
 }
 function searchByTag(tag){location.href=`/group?tag=${encodeURIComponent(tag)}`;}
@@ -133,8 +135,9 @@ function addChat(){
 /* ── 라이브 참가 (시작 전이면 대기화면으로) ── */
 function joinLive(id,status){
   if(!group.joined){showSnackbar('그룹에 가입해야 라이브에 참여할 수 있습니다.');return;}
-  // status에 따라 다른 화면
-  location.href=`${window.URL_GROUP_LIVE}?id=${id}&status=${status}`;
+  const live=lives.find(l=>l.id===id);
+  const timeParam=live&&live.startTime?`&time=${live.startTime}`:'';
+  location.href=`${window.URL_GROUP_LIVE}?id=${id}&status=${status}${timeParam}`;
 }
 let liveCreateLock=false;
 function createNewLive(){

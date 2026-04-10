@@ -26,26 +26,28 @@
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-html, body {
+html {
+  background: #000;       /* 390px 밖 영역 배경 */
+}
+body {
   font-family: 'Noto Sans KR', sans-serif;
   background: var(--white);
   color: var(--black);
   font-size: 14px;
   line-height: 1.5;
-  max-width: 390px;
-  margin: 0 auto;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  margin: 0;
 }
 
+/* ── 공통 앱 컨테이너 (모든 화면 공통) ── */
 .app-wrap {
-  width: 100%;
-  max-width: 390px;     
-  margin: 0 auto;       
   position: relative;
-  height: 100vh;
-  overflow: hidden;
-  background: #111;
+  width: 100%;
+  max-width: 390px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: var(--white);
+  overflow-x: hidden;
 }
 
 /* ── 공통 헤더 ── */
@@ -227,7 +229,8 @@ html, body {
 /* 실시간 카메라 영역 */
 .ps-camera-area {
   width: 100%;
-  height: 300px;
+  aspect-ratio: 3/4;
+  max-height: 52vh;
   background: #111;
   border-radius: var(--r-md); overflow: hidden;
   display: flex; align-items: center; justify-content: center;
@@ -517,6 +520,7 @@ html, body {
   display: flex; flex-direction: column;
   margin-top: 52px;
   height: calc(100vh - 52px);
+  max-height: calc(100vh - 52px);
   background: #111;
 }
 .rt-split-wrap.pip { position: relative; }
@@ -533,12 +537,15 @@ html, body {
 /* PIP 모드 */
 .rt-split-wrap.pip .rt-pane.user { flex: none; height: 100%; }
 .rt-pip-box {
-  position: absolute; 
+  position: absolute;
   width: 110px; height: 155px;
+  min-width: 80px; min-height: 100px;
+  max-width: 280px; max-height: 380px;
   background: #444; border-radius: var(--r-md);
   border: 2px solid rgba(255,255,255,.4);
   overflow: hidden; z-index: 10;
   touch-action: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,.5);
 }
 .rt-pane-label {
   position: absolute; top: 8px; left: 8px;
@@ -717,3 +724,30 @@ html, body {
 }
 .report-video-author { font-size: 11px; color: var(--gray-400); }
 .report-done-btn-wrap { padding: 0 20px 20px; }
+
+/* ===========================
+   실시간 분석 화면 전용
+   =========================== */
+    .rt-header {
+      position:fixed; top:0; left:50%; transform:translateX(-50%);
+      width:100%; max-width:390px; z-index:50;
+      display:flex; align-items:center; padding:12px 16px; gap:12px;
+      background:linear-gradient(rgba(0,0,0,.6),transparent);
+    }
+    .rt-header-title { color:#fff; font-size:15px; font-weight:700; }
+    .rt-back { cursor:pointer; display:flex; align-items:center; }
+    .rt-back svg { width:22px; height:22px; stroke:#fff; fill:none; stroke-width:2; }
+    /* 오버레이 토글 버튼 */
+    .rt-overlay-btn {
+      margin-left:auto;
+      background:rgba(255,255,255,.15); border:1.5px solid rgba(255,255,255,.3);
+      border-radius:999px; color:#fff; font-size:11px; font-weight:700;
+      padding:4px 12px; cursor:pointer; backdrop-filter:blur(4px);
+      border:none; font-family:inherit;
+    }
+    .rt-overlay-btn.on { background:rgba(255,255,255,.35); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ── 추가 유틸 ── */
+.ps-tab-panel { display:none; }
+.ps-tab-panel.active { display:block; }

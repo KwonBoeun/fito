@@ -5,27 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
   <title>FITO - 실시간 분석</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/analyze_posture.css') }}"/>
-  <style>
-    html, body { background:#111 !important; max-width:100%; overflow:hidden; }
-    .rt-header {
-      position:fixed; top:0; left:50%; transform:translateX(-50%);
-      width:100%; max-width:390px; z-index:50;
-      display:flex; align-items:center; padding:12px 16px; gap:12px;
-      background:linear-gradient(rgba(0,0,0,.6),transparent);
-    }
-    .rt-header-title { color:#fff; font-size:15px; font-weight:700; }
-    .rt-back { cursor:pointer; display:flex; align-items:center; }
-    .rt-back svg { width:22px; height:22px; stroke:#fff; fill:none; stroke-width:2; }
-    /* 오버레이 토글 버튼 */
-    .rt-overlay-btn {
-      margin-left:auto;
-      background:rgba(255,255,255,.15); border:1.5px solid rgba(255,255,255,.3);
-      border-radius:999px; color:#fff; font-size:11px; font-weight:700;
-      padding:4px 12px; cursor:pointer; backdrop-filter:blur(4px);
-      border:none; font-family:inherit;
-    }
-    .rt-overlay-btn.on { background:rgba(255,255,255,.35); }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/analyze_posture_realtime_only.css') }}"/>
+
 </head>
 <body>
 <div class="app-wrap">
