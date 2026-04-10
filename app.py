@@ -6,8 +6,6 @@ app = Flask(__name__)
 def main():
     return render_template('main.html')
 
-<<<<<<< HEAD
-=======
 # ── 상세 페이지 ──
 @app.route('/live/<int:content_id>')
 def live_detail(content_id):
@@ -29,7 +27,6 @@ def community_detail(content_id):
 def question_detail(content_id):
     return render_template('question_detail.html', content_id=content_id)
 
->>>>>>> main
 # ── 분석 메인 ──
 @app.route('/analyze')
 def analyze():
