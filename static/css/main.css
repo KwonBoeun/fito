@@ -23,9 +23,15 @@
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{
-  font-family:'Noto Sans KR',sans-serif;
-  background:var(--white);color:var(--black);font-size:14px;line-height:1.4;
-  max-width:390px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--white);
+  color: var(--black);
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 390px;
+  margin: 0 auto;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ── PULL TO REFRESH ── */
@@ -50,7 +56,7 @@ html,body{
 .hdr-left{display:flex;align-items:center;gap:12px}
 .hdr-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .hdr-icon svg{width:22px;height:22px}
-.hdr-logo{font-size:20px;font-weight:900;letter-spacing:.5px;position:absolute;left:50%;transform:translateX(-50%)}
+.hdr-logo{font-size:16px;font-weight:700;letter-spacing:-0.2px;position:absolute;left:50%;transform:translateX(-50%)}
 .hdr-right{display:flex;align-items:center;gap:8px}
 .search-bar{display:flex;align-items:center;background:var(--gray-100);border-radius:var(--r-full);padding:6px 12px;gap:6px;cursor:pointer}
 .search-bar span{font-size:13px;color:var(--gray-400);white-space:nowrap}
