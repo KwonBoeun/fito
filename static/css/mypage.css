@@ -34,7 +34,7 @@ html, body {
   height: 52px;
   display: flex; align-items: center; justify-content: center;
 }
-.my-header-title { font-size: 16px; font-weight: 700; }
+.my-header-title { font-size: 20px; font-weight: 700; }
 
 /* ── 프로필/마이페이지 토글 ── */
 .my-tab-toggle {
