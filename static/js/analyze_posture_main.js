@@ -11,8 +11,11 @@ const state = {
     refType: null,
     refUploaded: false,
     refLink: '',
-    segments: [{ start: '00:00', end: '00:00' }],
+    segments: [{ startSec: 0, endSec: 0 }],
     duration: '00:00',
+    videoUrl: null,
+    videoFile: null,
+    thumbnailDataUrl: null,
   },
   rt: {
     analysisType: null,
@@ -236,109 +239,363 @@ function renderRefPreview(prefix, url) {
   if (ytEmbed) sessionStorage.setItem('fito_ref_embed', ytEmbed);
 }
 
-/* ══════════════════════════════
-   영상 업로드 모달
-   ══════════════════════════════ */
+/* ══════════════════════════════════════
+   영상 업로드 모달 — 비디오 편집툴 방식
+   ══════════════════════════════════════ */
+
+const SEG_COLORS = ['#3b82f6', '#f59e0b', '#10b981'];  // 파랑, 주황, 초록
+
+let modalVideoEl    = null;
+let modalVideoDur   = 0;
+let playAnimFrame   = null;
+let activeSegIdx    = 0;       // 현재 선택된 구간 인덱스
+let tlDragState     = null;    // { segIdx, type: 'body'|'left'|'right', startX, startLeft, startWidth }
 let currentModalTarget = 'user';
 
 function openUploadModal() {
   currentModalTarget = 'user';
-  document.querySelector('.upload-modal-title').textContent = '분석 영상 업로드';
+  document.getElementById('uploadModalTitle').textContent = '분석 영상 업로드';
   document.getElementById('uploadModal').classList.add('open');
-  renderSegments();
+  modalVideoEl = document.getElementById('uploadVideoEl');
+  attachVideoEvents();
 }
 
 function closeUploadModal() {
   document.getElementById('uploadModal').classList.remove('open');
+  // 재생 멈춤
+  if (modalVideoEl) modalVideoEl.pause();
+  cancelAnimationFrame(playAnimFrame);
 }
 
-function renderSegments() {
-  const list = document.getElementById('segmentList');
-  const segs = state.upload.segments;
-  list.innerHTML = segs.map((seg, i) => `
-    <div class="upload-segment">
-      <span class="upload-segment-label">구간 ${i+1}</span>
-      <div class="upload-time-input"><span>${seg.start}</span></div>
-      <span class="upload-segment-sep">~</span>
-      <div class="upload-time-input"><span>${seg.end}</span></div>
-      <div class="upload-segment-spacer"></div>
-      ${(i < 2 && segs.length < 3)
-        ? `<button class="upload-seg-add-btn" onclick="addSegment()">+</button>`
-        : `<button class="upload-seg-add-btn" disabled style="background:#e5e5e5;color:#ccc">+</button>`}
-      ${i > 0
-        ? `<button class="upload-seg-del-btn" onclick="delSegment(${i})">-</button>`
-        : `<button class="upload-seg-del-btn" disabled>-</button>`}
-    </div>
-  `).join('');
+/* ── 비디오 이벤트 연결 ── */
+function attachVideoEvents() {
+  if (!modalVideoEl || modalVideoEl._evAttached) return;
+  modalVideoEl._evAttached = true;
+  modalVideoEl.addEventListener('loadedmetadata', onVideoLoaded);
+  modalVideoEl.addEventListener('timeupdate', onTimeUpdate);
+  modalVideoEl.addEventListener('ended', () => setPlayIcon(false));
 }
 
-function addSegment() {
-  if (state.upload.segments.length >= 3) return;
-  state.upload.segments.push({ start: '00:00', end: state.upload.duration });
-  renderSegments();
+function onVideoLoaded() {
+  modalVideoDur = modalVideoEl.duration;
+  const dur = Math.floor(modalVideoDur);
+  const m = String(Math.floor(dur / 60)).padStart(2, '0');
+  const s = String(dur % 60).padStart(2, '0');
+  state.upload.duration = m + ':' + s;
+
+  // 기본 구간 1 초기화 (전체)
+  if (state.upload.segments.length === 0) {
+    state.upload.segments = [{ startSec: 0, endSec: Math.min(dur, 180) }];
+  } else {
+    state.upload.segments[0].startSec = 0;
+    state.upload.segments[0].endSec   = Math.min(dur, 180);
+  }
+
+  document.getElementById('playerControls').classList.add('visible');
+  document.getElementById('timelineOuter').classList.add('visible');
+  document.getElementById('uploadVideoPlaceholder').style.display = 'none';
+
+  renderSegmentList();
+  renderTlBlocks();
+  extractThumbnail();
 }
 
-function delSegment(idx) {
-  state.upload.segments.splice(idx, 1);
-  renderSegments();
+function onTimeUpdate() {
+  if (!modalVideoDur) return;
+  const cur = modalVideoEl.currentTime;
+  const pct = (cur / modalVideoDur) * 100;
+  document.getElementById('seekBar').value = pct;
+  document.getElementById('tlPlayhead').style.left = pct + '%';
+  document.getElementById('timeDisp').textContent = fmtSec(cur) + ' / ' + fmtSec(modalVideoDur);
+}
+
+function fmtSec(s) {
+  s = Math.floor(s);
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+
+/* ── 파일 선택 ── */
+function handleVideoWrapClick() {
+  document.getElementById('fileInput').click();
 }
 
 function handleFileSelect(e) {
   const file = e.target.files[0];
   if (!file) return;
+  if (file.size > 500 * 1024 * 1024) { showSnackbar('용량을 초과했습니다.'); return; }
 
-  if (!file.type.includes('mp4')) {
-    showSnackbar(`지원하지 않는 형식입니다. mp4 파일을 업로드해 주세요.`);
-    return;
-  }
-  if (file.size > 500 * 1024 * 1024) {
-    showSnackbar('용량을 초과했습니다. 다시 시도해 주세요.');
-    return;
-  }
-
-  const label = document.getElementById('uploadModalLabel');
-  label.textContent = `✓ ${file.name}`;
-  label.style.color = '#2d9e5e';
-  document.getElementById('timelineWrap').style.display = 'block';
-
-  const url   = URL.createObjectURL(file);
-  const video = document.createElement('video');
-  video.src   = url;
-  video.onloadedmetadata = () => {
-    const dur = Math.floor(video.duration);
-    const m = String(Math.floor(dur / 60)).padStart(2, '0');
-    const s = String(dur % 60).padStart(2, '0');
-    state.upload.duration             = `${m}:${s}`;
-    state.upload.segments[0].end      = dur > 180 ? '03:00' : `${m}:${s}`;
-    renderSegments();
-  };
+  const url = URL.createObjectURL(file);
+  modalVideoEl = document.getElementById('uploadVideoEl');
+  modalVideoEl._evAttached = false;
+  attachVideoEvents();
+  modalVideoEl.src = url;
+  modalVideoEl.load();
+  state.upload.videoFile = file;
+  state.upload.videoUrl  = url;
 }
 
+/* ── 재생 컨트롤 ── */
+function togglePlay() {
+  if (!modalVideoEl || !modalVideoEl.src) return;
+  if (modalVideoEl.paused) { modalVideoEl.play(); setPlayIcon(true); }
+  else                     { modalVideoEl.pause(); setPlayIcon(false); }
+}
+function setPlayIcon(playing) {
+  document.getElementById('playIcon').innerHTML = playing
+    ? '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
+    : '<polygon points="5 3 19 12 5 21 5 3"/>';
+}
+function onSeekInput(val) {
+  if (!modalVideoDur) return;
+  modalVideoEl.currentTime = (val / 100) * modalVideoDur;
+}
+function onSeekChange(val) { onSeekInput(val); }
+
+/* ── 타임라인 바 클릭 → 시크 ── */
+function onTlBarClick(e) {
+  if (tlDragState) return; // 드래그 중이면 무시
+  const bar = document.getElementById('tlBar');
+  const pct = (e.clientX - bar.getBoundingClientRect().left) / bar.offsetWidth;
+  if (modalVideoDur) modalVideoEl.currentTime = pct * modalVideoDur;
+}
+
+/* ══════════════════════
+   구간 블록 렌더
+   ══════════════════════ */
+function renderTlBlocks() {
+  const bar  = document.getElementById('tlBar');
+  // 기존 블록 제거 (플레이헤드 제외)
+  bar.querySelectorAll('.upload-seg-block').forEach(b => b.remove());
+
+  state.upload.segments.forEach(function(seg, i) {
+    if (!modalVideoDur) return;
+    const left  = (seg.startSec / modalVideoDur) * 100;
+    const width = ((seg.endSec - seg.startSec) / modalVideoDur) * 100;
+    const color = SEG_COLORS[i];
+
+    const block = document.createElement('div');
+    block.className = 'upload-seg-block' + (i === activeSegIdx ? ' active-seg' : '');
+    block.dataset.segIdx = i;
+    block.style.left  = left + '%';
+    block.style.width = Math.max(width, 2) + '%';
+
+    block.innerHTML =
+      '<div class="upload-seg-block-inner" style="background:' + color + '"></div>' +
+      '<div class="upload-seg-label-inside">구간 ' + (i+1) + '</div>' +
+      '<div class="upload-seg-handle left"  data-seg="' + i + '" data-type="left"></div>' +
+      '<div class="upload-seg-handle right" data-seg="' + i + '" data-type="right"></div>';
+
+    // 블록 전체 드래그 (이동)
+    block.addEventListener('mousedown',  function(e) { startTlDrag(e, i, 'body'); });
+    block.addEventListener('touchstart', function(e) { startTlDrag(e, i, 'body'); }, { passive: false });
+
+    // 핸들 드래그
+    block.querySelectorAll('.upload-seg-handle').forEach(function(h) {
+      h.addEventListener('mousedown',  function(e) { e.stopPropagation(); startTlDrag(e, i, h.dataset.type); });
+      h.addEventListener('touchstart', function(e) { e.stopPropagation(); startTlDrag(e, i, h.dataset.type); }, { passive: false });
+    });
+
+    // 블록 클릭 → 활성 구간 선택
+    block.addEventListener('click', function(e) {
+      if (tlDragState) return;
+      setActiveSeg(i);
+    });
+
+    bar.appendChild(block);
+  });
+}
+
+function setActiveSeg(idx) {
+  activeSegIdx = idx;
+  renderTlBlocks();
+  renderSegmentList();
+}
+
+/* ══════════════════════
+   타임라인 드래그 (이동 / 리사이즈)
+   ══════════════════════ */
+function startTlDrag(e, segIdx, type) {
+  e.preventDefault();
+  const p   = e.touches ? e.touches[0] : e;
+  const bar = document.getElementById('tlBar');
+  const seg = state.upload.segments[segIdx];
+
+  tlDragState = {
+    segIdx,
+    type,
+    startX:     p.clientX,
+    barW:       bar.offsetWidth,
+    startStart: seg.startSec,
+    startEnd:   seg.endSec,
+    barLeft:    bar.getBoundingClientRect().left
+  };
+  setActiveSeg(segIdx);
+
+  document.addEventListener('mousemove', onTlDragMove);
+  document.addEventListener('touchmove', onTlDragMove, { passive: false });
+  document.addEventListener('mouseup',   onTlDragEnd);
+  document.addEventListener('touchend',  onTlDragEnd);
+}
+
+function onTlDragMove(e) {
+  if (!tlDragState) return;
+  e.preventDefault();
+  const p   = e.touches ? e.touches[0] : e;
+  const dx  = p.clientX - tlDragState.startX;
+  const dSec = (dx / tlDragState.barW) * modalVideoDur;
+  const seg  = state.upload.segments[tlDragState.segIdx];
+  const MIN_SEG = 1; // 최소 1초
+
+  if (tlDragState.type === 'left') {
+    seg.startSec = Math.max(0, Math.min(tlDragState.startStart + dSec, seg.endSec - MIN_SEG));
+  } else if (tlDragState.type === 'right') {
+    seg.endSec = Math.min(modalVideoDur, Math.max(tlDragState.startEnd + dSec, seg.startSec + MIN_SEG));
+  } else {
+    // body 이동
+    const dur = tlDragState.startEnd - tlDragState.startStart;
+    let ns = tlDragState.startStart + dSec;
+    ns = Math.max(0, Math.min(ns, modalVideoDur - dur));
+    seg.startSec = ns;
+    seg.endSec   = ns + dur;
+  }
+
+  renderTlBlocks();
+  renderSegmentList();
+}
+
+function onTlDragEnd() {
+  tlDragState = null;
+  document.removeEventListener('mousemove', onTlDragMove);
+  document.removeEventListener('touchmove', onTlDragMove);
+  document.removeEventListener('mouseup',   onTlDragEnd);
+  document.removeEventListener('touchend',  onTlDragEnd);
+}
+
+/* ══════════════════════
+   구간 목록 렌더
+   ══════════════════════ */
+function renderSegmentList() {
+  const list = document.getElementById('segmentList');
+  list.innerHTML = state.upload.segments.map(function(seg, i) {
+    const color = SEG_COLORS[i];
+    const isActive = i === activeSegIdx;
+    return '<div class="upload-segment' + (isActive ? ' active-seg-row' : '') + '" onclick="setActiveSeg(' + i + ')">' +
+      '<div class="upload-seg-color-dot" style="background:' + color + '"></div>' +
+      '<span class="upload-segment-label">구간 ' + (i+1) + '</span>' +
+      '<span class="upload-seg-times">' + fmtSec(seg.startSec) + ' ~ ' + fmtSec(seg.endSec) + '</span>' +
+      '<div class="upload-seg-action-btns">' +
+        '<button class="upload-seg-mark-btn start" onclick="event.stopPropagation();markStart(' + i + ')">시작↓</button>' +
+        '<button class="upload-seg-mark-btn end"   onclick="event.stopPropagation();markEnd('   + i + ')">끝↓</button>' +
+        '<button class="upload-seg-del-btn" ' + (i === 0 ? 'disabled' : 'onclick="event.stopPropagation();delSegment(' + i + ')"') + '>×</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  // 추가 버튼 상태
+  document.getElementById('tlAddBtn').disabled = state.upload.segments.length >= 3;
+}
+
+/* ── 현재 재생 시간으로 구간 마킹 ── */
+function markStart(idx) {
+  const t = modalVideoEl ? modalVideoEl.currentTime : 0;
+  const seg = state.upload.segments[idx];
+  seg.startSec = Math.min(t, seg.endSec - 1);
+  renderTlBlocks();
+  renderSegmentList();
+}
+function markEnd(idx) {
+  const t = modalVideoEl ? modalVideoEl.currentTime : modalVideoDur;
+  const seg = state.upload.segments[idx];
+  seg.endSec = Math.max(t, seg.startSec + 1);
+  renderTlBlocks();
+  renderSegmentList();
+}
+
+/* ── 구간 추가 / 삭제 ── */
+function addSegment() {
+  if (state.upload.segments.length >= 3) return;
+  const mid   = modalVideoDur / 2;
+  const start = Math.max(0, mid - 5);
+  const end   = Math.min(modalVideoDur, mid + 5);
+  state.upload.segments.push({ startSec: start, endSec: end });
+  activeSegIdx = state.upload.segments.length - 1;
+  renderTlBlocks();
+  renderSegmentList();
+}
+function delSegment(idx) {
+  if (idx === 0) return;
+  state.upload.segments.splice(idx, 1);
+  if (activeSegIdx >= state.upload.segments.length) activeSegIdx = state.upload.segments.length - 1;
+  renderTlBlocks();
+  renderSegmentList();
+}
+
+/* ══════════════════════
+   첫 프레임 썸네일 추출
+   ══════════════════════ */
+function extractThumbnail() {
+  const video = document.getElementById('uploadVideoEl');
+  // 0.1초 시점에서 캡처
+  video.currentTime = 0.1;
+  video.addEventListener('seeked', function capFrame() {
+    video.removeEventListener('seeked', capFrame);
+    const canvas = document.createElement('canvas');
+    canvas.width  = video.videoWidth  || 320;
+    canvas.height = video.videoHeight || 180;
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    state.upload.thumbnailDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+    video.currentTime = 0;
+  }, { once: true });
+}
+
+/* ══════════════════════
+   완료 버튼
+   ══════════════════════ */
 function confirmUpload() {
-  const label = document.getElementById('uploadModalLabel');
-  if (!label.style.color.includes('2d9e5e')) {
-    closeUploadModal();
+  if (!state.upload.videoUrl) {
+    showSnackbar('영상을 먼저 선택해 주세요.');
     return;
   }
 
-  if (currentModalTarget === 'user') {
-    state.upload.videoUploaded = true;
-    document.getElementById('uploadPlaceholder').style.display = 'none';
-    document.getElementById('uploadThumb').classList.add('show');
-    document.getElementById('uploadDuration').textContent = state.upload.duration;
-  } else {
-    const tab    = state.activeTab === 0 ? 'upload' : 'rt';
-    const prefix = tab;
-    state[tab === 'upload' ? 'upload' : 'rt'].refUploaded = true;
-    const statusEl = document.getElementById(`${prefix}-ref-status`);
-    statusEl.textContent = '참고 영상 업로드 완료 ✓';
-    statusEl.classList.add('uploaded');
-  }
+  // 분석 선택 화면에 썸네일 표시
+  applyThumbnailToMainScreen();
+
+  state.upload.videoUploaded = true;
   closeUploadModal();
   document.getElementById('fileInput').value = '';
-  label.textContent = '영상 업로드';
-  label.style.color = '';
-  document.getElementById('timelineWrap').style.display = 'none';
+}
+
+function applyThumbnailToMainScreen() {
+  const area        = document.getElementById('uploadVideoArea');
+  const placeholder = document.getElementById('uploadPlaceholder');
+  const thumb       = document.getElementById('uploadThumb');
+
+  if (state.upload.thumbnailDataUrl) {
+    // 캔버스 썸네일 이미지로 표시
+    let img = area.querySelector('.upload-thumb-img');
+    if (!img) {
+      img = document.createElement('img');
+      img.className = 'upload-thumb-img';
+      img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit';
+      area.appendChild(img);
+    }
+    img.src = state.upload.thumbnailDataUrl;
+  }
+
+  // 기존 placeholder 숨기기
+  if (placeholder) placeholder.style.display = 'none';
+
+  // 구간 정보 배지 표시
+  if (thumb) {
+    thumb.classList.add('show');
+    const durEl = document.getElementById('uploadDuration');
+    if (durEl) {
+      const totalSec = state.upload.segments.reduce(function(acc, s) {
+        return acc + (s.endSec - s.startSec);
+      }, 0);
+      durEl.textContent = fmtSec(totalSec) + ' (구간 ' + state.upload.segments.length + '개)';
+    }
+  }
 }
 
 /* ══════════════════════════════

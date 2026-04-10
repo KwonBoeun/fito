@@ -312,80 +312,174 @@ body {
 .ps-start-wrap { padding: 0 20px 20px; }
 
 /* ── 영상 업로드 모달 ── */
+/* ══ 업로드 모달 (중앙 모달) ══ */
 .upload-modal {
   position: fixed; inset: 0; z-index: 400;
-  background: rgba(0,0,0,.5);
-  display: none; align-items: flex-end; justify-content: center;
+  background: rgba(0,0,0,.6);
+  display: none; align-items: center; justify-content: center;
+  padding: 16px;
 }
 .upload-modal.open { display: flex; }
+
 .upload-sheet {
   background: var(--white);
-  border-radius: 20px 20px 0 0;
-  width: 100%; max-width: 390px;
-  padding: 20px 20px 36px;
-  max-height: 80vh; overflow-y: auto;
+  border-radius: 18px;
+  width: 100%; max-width: 370px;
+  max-height: 92vh; overflow-y: auto;
+  padding: 20px 16px 16px;
+  animation: modalPop .22s ease;
 }
-.upload-handle { width: 36px; height: 4px; background: var(--gray-200); border-radius: 2px; margin: 0 auto 16px; }
-.upload-modal-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
-.upload-video-area {
+@keyframes modalPop {
+  from { transform: scale(.94); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.upload-modal-title {
+  font-size: 16px; font-weight: 700; margin-bottom: 14px; text-align: center;
+}
+
+/* ── 영상 플레이어 영역 ── */
+.upload-video-wrap {
   width: 100%; aspect-ratio: 16/9;
-  background: var(--gray-100); border-radius: var(--r-md);
-  border: 2px dashed var(--gray-300);
+  background: #111; border-radius: 10px;
+  overflow: hidden; position: relative; margin-bottom: 10px;
+  cursor: pointer;
+}
+.upload-video-wrap video {
+  width: 100%; height: 100%; object-fit: contain; display: block;
+}
+.upload-video-placeholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; color: var(--gray-400);
+}
+.upload-video-placeholder svg {
+  width: 36px; height: 36px; stroke: var(--gray-300); fill: none; stroke-width: 1.5;
+}
+.upload-video-placeholder span { font-size: 13px; font-weight: 600; }
+
+/* 재생 컨트롤 */
+.upload-player-controls {
+  display: none; /* 영상 업로드 후 표시 */
+  align-items: center; gap: 8px;
+  padding: 6px 0 10px;
+}
+.upload-player-controls.visible { display: flex; }
+.upload-play-btn {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  background: var(--black); border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; margin-bottom: 16px; overflow: hidden; position: relative;
 }
-.upload-video-label { font-size: 13px; color: var(--gray-400); font-weight: 500; }
-/* 타임라인 */
-.upload-timeline-wrap { margin-bottom: 16px; }
-.upload-timeline-label { font-size: 12px; font-weight: 700; color: var(--gray-500); margin-bottom: 8px; }
-.upload-timeline-bar {
-  width: 100%; height: 36px; background: var(--gray-100);
+.upload-play-btn svg { width: 14px; height: 14px; fill: #fff; stroke: none; }
+.upload-time-disp {
+  font-size: 12px; font-weight: 600; color: var(--gray-500);
+  white-space: nowrap; min-width: 80px;
+}
+
+/* ── 타임라인 (편집툴 스타일) ── */
+.upload-timeline-outer {
+  display: none; /* 영상 업로드 후 표시 */
+  flex-direction: column; gap: 6px; margin-bottom: 12px;
+}
+.upload-timeline-outer.visible { display: flex; }
+
+.upload-tl-label {
+  font-size: 11px; font-weight: 700; color: var(--gray-400);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.upload-tl-add-btn {
+  font-size: 11px; font-weight: 700; color: var(--black);
+  background: var(--gray-100); border: none; border-radius: 999px;
+  padding: 2px 10px; cursor: pointer; font-family: inherit;
+}
+.upload-tl-add-btn:disabled { color: var(--gray-300); cursor: not-allowed; }
+
+/* 타임라인 바 컨테이너 */
+.upload-tl-bar {
+  width: 100%; height: 48px; background: #1a1a1a;
   border-radius: 8px; position: relative; overflow: hidden;
+  cursor: pointer;
 }
-.upload-timeline-fill {
-  position: absolute; top: 0; bottom: 0; left: 20%; right: 25%;
-  background: rgba(0,0,0,.15); border-radius: 6px;
+/* 플레이헤드 */
+.upload-tl-playhead {
+  position: absolute; top: 0; bottom: 0; width: 2px;
+  background: #fff; z-index: 20; pointer-events: none;
+  left: 0;
 }
-.upload-timeline-handle {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 14px; height: 24px; background: var(--black);
-  border-radius: 4px; cursor: ew-resize;
+.upload-tl-playhead::after {
+  content: '';
+  position: absolute; top: -4px; left: 50%;
+  transform: translateX(-50%);
+  width: 10px; height: 10px; border-radius: 50%; background: #fff;
 }
-.upload-timeline-handle.left  { left: calc(20% - 7px); }
-.upload-timeline-handle.right { left: calc(75% - 7px); }
-/* 구간 */
-.upload-segments { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+/* 구간 블록 */
+.upload-seg-block {
+  position: absolute; top: 6px; bottom: 6px;
+  border-radius: 5px; min-width: 18px;
+  display: flex; align-items: center; overflow: visible;
+  cursor: grab; user-select: none;
+}
+.upload-seg-block.active-seg { outline: 2px solid #fff; outline-offset: 1px; }
+.upload-seg-block-inner {
+  position: absolute; inset: 0; border-radius: 5px; opacity: .8;
+}
+/* 좌우 드래그 핸들 */
+.upload-seg-handle {
+  position: absolute; top: 0; bottom: 0; width: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: ew-resize; z-index: 5;
+}
+.upload-seg-handle.left  { left: 0; border-radius: 5px 0 0 5px; }
+.upload-seg-handle.right { right: 0; border-radius: 0 5px 5px 0; }
+.upload-seg-handle::after {
+  content: ''; width: 2px; height: 14px;
+  background: rgba(255,255,255,.8); border-radius: 2px;
+}
+.upload-seg-label-inside {
+  flex: 1; text-align: center; font-size: 10px; font-weight: 700;
+  color: #fff; pointer-events: none; white-space: nowrap;
+  overflow: hidden; padding: 0 12px;
+}
+
+/* 구간 목록 */
+.upload-segments {
+  display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;
+}
 .upload-segment {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--gray-50); border-radius: var(--r-md); padding: 10px 12px;
+  display: flex; align-items: center; gap: 6px;
+  background: var(--gray-50); border-radius: 8px; padding: 8px 10px;
+  cursor: pointer; transition: background .1s;
+}
+.upload-segment.active-seg-row { background: var(--gray-100); }
+.upload-seg-color-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
 }
 .upload-segment-label { font-size: 12px; font-weight: 700; color: var(--gray-500); flex-shrink: 0; }
-.upload-time-input {
-  display: flex; align-items: center; gap: 4px;
-  background: var(--white); border: 1.5px solid var(--gray-200);
-  border-radius: var(--r-sm); padding: 5px 8px;
-  font-size: 13px; font-weight: 600; cursor: pointer;
+.upload-seg-times {
+  font-size: 12px; font-weight: 600; color: var(--black); flex: 1;
 }
-.upload-segment-sep { font-size: 13px; color: var(--gray-400); }
-.upload-segment-spacer { flex: 1; }
-.upload-seg-add-btn, .upload-seg-del-btn {
-  width: 28px; height: 28px; border-radius: 50%;
+.upload-seg-action-btns { display: flex; gap: 4px; }
+.upload-seg-mark-btn {
+  font-size: 10px; font-weight: 700; padding: 4px 8px;
+  border-radius: 999px; border: none; cursor: pointer; font-family: inherit;
+}
+.upload-seg-mark-btn.start { background: #e8f7ef; color: var(--green); }
+.upload-seg-mark-btn.end   { background: #fdecea; color: var(--red); }
+.upload-seg-del-btn {
+  width: 24px; height: 24px; border-radius: 50%; border: none;
+  background: var(--gray-200); color: var(--gray-500);
+  font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px; font-weight: 700; cursor: pointer; border: none; font-family: inherit;
-  flex-shrink: 0;
 }
-.upload-seg-add-btn { background: var(--black); color: var(--white); }
-.upload-seg-del-btn { background: var(--gray-200); color: var(--gray-600); }
-.upload-seg-add-btn:disabled, .upload-seg-del-btn:disabled {
-  background: var(--gray-100); color: var(--gray-300); cursor: not-allowed;
-}
-.upload-modal-btns { display: flex; gap: 8px; }
+.upload-seg-del-btn:disabled { background: var(--gray-100); color: var(--gray-300); cursor: not-allowed; }
+
+.upload-modal-btns { display: flex; gap: 8px; margin-top: 4px; }
 .upload-modal-btn {
-  flex: 1; padding: 13px; border-radius: var(--r-md);
+  flex: 1; padding: 12px; border-radius: 10px;
   font-size: 14px; font-weight: 600; cursor: pointer;
   border: none; font-family: inherit;
 }
-.upload-modal-btn.cancel { background: var(--gray-100); color: var(--black); }
+.upload-modal-btn.cancel  { background: var(--gray-100); color: var(--black); }
 .upload-modal-btn.confirm { background: var(--black); color: var(--white); }
 
 /* 정보 팝업 */
@@ -480,12 +574,19 @@ body {
 .rt-type-option-label { font-size: 11px; font-weight: 600; color: var(--gray-700); }
 .rt-type-radio {
   position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
-  width: 16px; height: 16px; border-radius: 50%;
+  width: 18px; height: 18px; border-radius: 50%;
   border: 2px solid var(--gray-300); background: var(--white);
   display: flex; align-items: center; justify-content: center;
+  z-index: 10;                          /* 이미지 위에 표시 */
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+.rt-type-option.selected .rt-type-radio {
+  border-color: var(--black);
 }
 .rt-type-option.selected .rt-type-radio::after {
-  content: ''; width: 8px; height: 8px;
+  content: '';
+  display: block;                        /* 명시적 display */
+  width: 9px; height: 9px;
   border-radius: 50%; background: var(--black);
 }
 .rt-type-btns { display: flex; gap: 8px; }
