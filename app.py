@@ -6,6 +6,10 @@ app = Flask(__name__)
 def main():
     return render_template('main.html')
 
+@app.route('/upload/live')
+def upload_live():
+    return render_template('upload_live.html')
+
 # ── 상세 페이지 ──
 @app.route('/live/<int:content_id>')
 def live_detail(content_id):

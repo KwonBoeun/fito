@@ -1,0 +1,351 @@
+/* ===========================
+   FITO - Live Upload CSS
+   =========================== */
+:root {
+  --black:#000; --white:#fff;
+  --gray-100:#f2f2f2; --gray-200:#e5e5e5;
+  --gray-300:#ccc;   --gray-400:#999;   --gray-500:#666;
+  --live-red:#e8161c;
+  --r-sm:6px; --r-md:10px; --r-full:999px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{
+  height:100%;overflow:hidden;background:#111;
+  font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;
+  font-size:14px;max-width:390px;margin:0 auto;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── 전체 래퍼 ── */
+.live-wrap{
+  position:relative;width:100%;height:100vh;
+  overflow:hidden;background:#111;
+}
+
+/* ── 카메라 비디오 ── */
+.live-video{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;z-index:1;
+  transform:scaleX(-1); /* 기본 미러링 */
+}
+.live-video.mirrored{transform:scaleX(-1)}
+.live-video.normal{transform:scaleX(1)}
+
+/* 카메라 미허용 대체 */
+.live-video-fallback{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(160deg,#2a2a2a 0%,#111 100%);
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;color:rgba(255,255,255,.4);
+}
+.live-video-fallback.show{display:flex}
+.live-video-fallback svg{width:48px;height:48px;stroke:rgba(255,255,255,.3);fill:none;stroke-width:1.5}
+.live-video-fallback p{font-size:13px}
+
+/* 상단 그라데이션 오버레이 */
+.live-wrap::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:200px;z-index:2;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(0,0,0,.65) 0%,transparent 100%);
+}
+/* 하단 그라데이션 */
+.live-wrap::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:220px;z-index:2;pointer-events:none;
+  background:linear-gradient(to top,rgba(0,0,0,.75) 0%,transparent 100%);
+}
+
+/* ── 상단 오버레이 ── */
+.live-top{
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  padding:max(16px,env(safe-area-inset-top)) 14px 0;
+  display:flex;flex-direction:column;gap:6px;
+}
+
+/* 제목 행 */
+.live-title-row{
+  display:flex;align-items:center;gap:8px;
+}
+.live-title-input{
+  flex:1;background:rgba(255,255,255,.12);
+  border:none;border-radius:var(--r-full);
+  padding:9px 14px;color:#fff;font-size:15px;font-weight:600;
+  font-family:inherit;outline:none;
+  backdrop-filter:blur(6px);
+}
+.live-title-input::placeholder{color:rgba(255,255,255,.55)}
+
+.live-icon-btn{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.15);backdrop-filter:blur(6px);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.live-icon-btn svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
+.live-icon-btn.close-btn{background:rgba(255,255,255,.2)}
+
+/* 설명 행 */
+.live-desc-row{}
+.live-desc-input{
+  width:100%;background:transparent;border:none;
+  padding:2px 4px;color:rgba(255,255,255,.6);
+  font-size:13px;font-family:inherit;outline:none;
+}
+.live-desc-input::placeholder{color:rgba(255,255,255,.4)}
+
+/* 상태 바 (방송 중) */
+.live-status-bar{
+  display:none;align-items:center;gap:7px;flex-wrap:wrap;
+  padding-top:2px;
+}
+.live-status-bar.show{display:flex}
+
+.live-badge-wrap{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(0,0,0,.5);border-radius:var(--r-sm);
+  padding:4px 9px;
+}
+.live-dot-badge{
+  background:var(--live-red);color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.5px;
+  padding:1px 6px;border-radius:4px;
+}
+.live-timer{color:#fff;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+
+.rec-btn{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(0,0,0,.5);border:none;border-radius:var(--r-sm);
+  padding:5px 10px;color:#fff;font-size:12px;font-weight:600;
+  cursor:pointer;font-family:inherit;
+}
+.rec-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--gray-400);flex-shrink:0;
+}
+.rec-dot.active{background:var(--live-red);animation:rec-blink 1s infinite}
+@keyframes rec-blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.end-btn{
+  background:var(--live-red);color:#fff;border:none;
+  border-radius:var(--r-sm);padding:5px 12px;
+  font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;
+}
+.end-btn:active{opacity:.8}
+
+/* 시청자 수 (방송 중) */
+.viewer-count-row{
+  display:none;align-items:center;gap:5px;
+  font-size:13px;color:rgba(255,255,255,.9);font-weight:600;
+}
+.viewer-count-row.show{display:flex}
+.viewer-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#4ade80;flex-shrink:0;
+}
+
+/* ── 미리보기 힌트 (방송 전) ── */
+.live-preview-hint{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  z-index:5;color:rgba(255,255,255,.35);
+  font-size:14px;pointer-events:none;
+}
+.live-preview-hint.hidden{display:none}
+
+/* ── 우측 컨트롤 ── */
+.live-controls{
+  position:absolute;right:14px;
+  top:50%;transform:translateY(-50%);
+  z-index:10;
+  display:flex;flex-direction:column;gap:16px;align-items:center;
+}
+
+.ctrl-btn{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(4px);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.ctrl-btn:active{background:rgba(0,0,0,.65)}
+.ctrl-btn.active{background:rgba(232,22,28,.5)}
+.ctrl-btn svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.8}
+.ctrl-btn.muted{background:rgba(232,22,28,.45)}
+
+/* ── 하단: 방송 전 ── */
+.live-bottom-pre{
+  position:absolute;bottom:0;left:0;right:0;z-index:10;
+  padding:0 20px max(20px,env(safe-area-inset-bottom)) 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;
+}
+
+.rec-toggle-btn{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(0,0,0,.35);backdrop-filter:blur(4px);
+  border:1.5px solid rgba(255,255,255,.25);border-radius:var(--r-full);
+  padding:8px 14px;color:#fff;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:inherit;
+}
+.rec-toggle-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--gray-400);flex-shrink:0;
+}
+.rec-toggle-dot.active{background:var(--live-red);animation:rec-blink 1s infinite}
+
+/* 라이브 시작 버튼 */
+.start-live-btn{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:none;border:none;cursor:pointer;
+  flex-shrink:0;
+}
+.start-live-icon{
+  width:68px;height:68px;border-radius:50%;
+  background:rgba(232,22,28,.9);
+  box-shadow:0 0 0 5px rgba(232,22,28,.25),0 0 0 10px rgba(232,22,28,.12);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s;
+}
+.start-live-btn:active .start-live-icon{transform:scale(.93)}
+.start-live-icon svg{width:30px;height:30px}
+.start-live-btn span{color:#fff;font-size:12px;font-weight:700}
+
+/* ── 하단: 방송 중 시청자 ── */
+.live-bottom-live{
+  position:absolute;bottom:0;left:0;right:0;z-index:10;
+  padding:0 16px max(16px,env(safe-area-inset-bottom));
+  display:none;
+}
+.live-bottom-live.show{display:block}
+
+.viewer-list{
+  display:flex;flex-direction:column;gap:6px;
+  max-height:180px;overflow:hidden;
+}
+
+.viewer-item{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;
+  background:rgba(0,0,0,.35);backdrop-filter:blur(4px);
+  border-radius:var(--r-full);
+  animation:fadeInUp .25s ease;
+}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.viewer-avatar{
+  width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(135deg,#4F8EF7,#A78BFA);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:#fff;font-weight:700;flex-shrink:0;
+}
+.viewer-name{color:#fff;font-size:12px;font-weight:600}
+.viewer-msg{color:rgba(255,255,255,.75);font-size:12px;flex:1;
+  overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+
+/* ── 필터 / 배경 패널 ── */
+.live-panel{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
+  width:100%;max-width:390px;z-index:300;
+  background:var(--white);border-radius:20px 20px 0 0;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  max-height:55vh;display:flex;flex-direction:column;
+}
+.live-panel.open{transform:translateX(-50%) translateY(0)}
+
+.panel-dim{
+  position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:390px;
+  background:rgba(0,0,0,.4);z-index:290;
+  display:none;
+}
+.panel-dim.show{display:block}
+
+.panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px 10px;border-bottom:1px solid var(--gray-100);
+  flex-shrink:0;
+}
+.panel-title{font-size:15px;font-weight:700}
+.panel-confirm{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--black);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.panel-confirm svg{width:14px;height:14px;stroke:#fff}
+
+.panel-tabs{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 14px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;
+}
+.panel-tabs::-webkit-scrollbar{display:none}
+.panel-tab{
+  flex-shrink:0;padding:5px 12px;border-radius:var(--r-full);
+  font-size:12px;font-weight:600;cursor:pointer;
+  background:var(--gray-100);color:var(--gray-500);
+  transition:all .15s;
+}
+.panel-tab.active{background:var(--black);color:#fff}
+
+.panel-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+  padding:6px 14px 20px;overflow-y:auto;
+}
+.panel-thumb{
+  aspect-ratio:1/1;border-radius:10px;cursor:pointer;
+  background:linear-gradient(135deg,#16a34a,#4ade80);
+  position:relative;overflow:hidden;transition:transform .15s;
+  border:2.5px solid transparent;
+}
+.panel-thumb:active{transform:scale(.94)}
+.panel-thumb.selected{border-color:var(--black)}
+.panel-thumb.selected::after{
+  content:'✓';position:absolute;bottom:4px;right:6px;
+  font-size:12px;font-weight:700;color:#fff;
+}
+
+/* ── 방송 종료 오버레이 ── */
+.end-overlay{
+  position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:390px;z-index:600;
+  display:none;align-items:center;justify-content:center;
+}
+.end-overlay.show{display:flex}
+.end-bg{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(45deg,#ccc 25%,transparent 25%),
+    linear-gradient(-45deg,#ccc 25%,transparent 25%),
+    linear-gradient(45deg,transparent 75%,#ccc 75%),
+    linear-gradient(-45deg,transparent 75%,#ccc 75%);
+  background-size:20px 20px;
+  background-position:0 0,0 10px,10px -10px,-10px 0;
+  background-color:#e5e5e5;
+}
+.end-dialog{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+  border-radius:16px;padding:28px 32px;
+  box-shadow:0 8px 32px rgba(0,0,0,.18);
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  min-width:220px;
+}
+.end-msg{font-size:16px;font-weight:700;color:var(--black);text-align:center}
+.end-close-btn{
+  padding:10px 32px;border-radius:var(--r-md);
+  background:var(--gray-200);color:var(--black);
+  font-size:14px;font-weight:600;border:none;cursor:pointer;
+  font-family:inherit;
+}
+.end-close-btn:active{background:var(--gray-300)}
+
+/* ── 카메라 OFF 오버레이 ── */
+.cam-off-overlay{
+  position:absolute;inset:0;z-index:3;
+  background:#000;
+  display:none;
+}
+.cam-off-overlay.show{display:block}
+
+/* ── 컨트롤 버튼 OFF 상태 ── */
+.ctrl-btn.off{background:rgba(232,22,28,.5)}
+.ctrl-btn.off svg{stroke:#fff}

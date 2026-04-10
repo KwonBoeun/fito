@@ -309,3 +309,67 @@ html,body{
 /* ── ANIMATIONS ── */
 @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .ani{animation:fadeInUp .3s ease both}
+/* ── 업로드 타입 선택 모달 ── */
+.upload-modal-ov{
+  position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:390px;
+  background:rgba(0,0,0,.5);z-index:500;
+  display:none;align-items:center;justify-content:center;
+}
+.upload-modal-ov.open{display:flex}
+
+.upload-modal{
+  background:var(--white);border-radius:20px;
+  width:calc(100% - 48px);padding:24px 20px 16px;
+  box-shadow:0 12px 40px rgba(0,0,0,.18);
+  transform:scale(0.92) translateY(12px);opacity:0;
+  transition:transform .22s cubic-bezier(.4,0,.2,1), opacity .22s ease;
+}
+.upload-modal.show{transform:scale(1) translateY(0);opacity:1}
+
+.upload-modal-title{
+  font-size:17px;font-weight:700;text-align:center;
+  margin-bottom:20px;
+}
+
+.upload-type-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:12px;margin-bottom:16px;
+}
+
+.upload-type-item{
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  padding:14px 8px;border-radius:14px;
+  background:var(--gray-50);border:1.5px solid var(--gray-100);
+  cursor:pointer;text-decoration:none;
+  transition:all .15s;
+  color:var(--black);
+}
+.upload-type-item:active{transform:scale(.94);background:var(--gray-100)}
+.upload-type-item.soon{opacity:.55}
+.upload-type-item span{font-size:12px;font-weight:600}
+
+.upload-type-icon{
+  width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.upload-type-icon svg{width:22px;height:22px}
+
+.upload-type-icon.live{background:#fff0f0;stroke:#e8161c}
+.upload-type-icon.live svg{stroke:#e8161c}
+.upload-type-icon.vod{background:#f0f4ff}
+.upload-type-icon.vod svg{stroke:#4b668b}
+.upload-type-icon.fits{background:#fff8e1}
+.upload-type-icon.fits svg{stroke:#f59e0b}
+.upload-type-icon.community{background:#f0fff4}
+.upload-type-icon.community svg{stroke:#16a34a}
+.upload-type-icon.question{background:#fdf4ff}
+.upload-type-icon.question svg{stroke:#9333ea}
+
+.upload-modal-cancel{
+  width:100%;padding:13px;border-radius:var(--r-md);
+  background:var(--gray-100);color:var(--gray-500);
+  border:none;font-size:15px;font-weight:600;cursor:pointer;
+  font-family:inherit;
+}
+.upload-modal-cancel:active{background:var(--gray-200)}
