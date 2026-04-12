@@ -10,22 +10,39 @@
   .gp-sort-btn.active{background:var(--black);color:var(--white);border-color:var(--black)}</style>
 </head>
 <body>
-<header class="gp-header"><span class="gp-header-title">그룹</span></header>
-<div class="gp-search-bar">
+<header class="gp-header">
   <div id="searchBackBtn" style="display:none;cursor:pointer;padding:4px;flex-shrink:0" onclick="clearSearch()">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
   </div>
-  <div class="gp-search-wrap">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input id="groupSearchInput" type="text" placeholder="그룹 검색" maxlength="50" autocomplete="off"/>
+  <span class="gp-header-title">그룹</span>
+  <div class="gp-header-search">
+    <span>그룹 검색</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
   </div>
-</div>
-<!-- 정렬 바 (검색 시 표시) -->
-<div class="gp-sort-bar" id="sortBar">
-  <button class="gp-sort-btn active" data-sort="activity" onclick="setSort('activity')">활동량순</button>
-  <button class="gp-sort-btn" data-sort="popular" onclick="setSort('popular')">인기순</button>
-  <button class="gp-sort-btn" data-sort="latest" onclick="setSort('latest')">최신순</button>
-  <button class="gp-sort-btn" data-sort="members" onclick="setSort('members')">가입자순</button>
+</header>
+
+<!-- 검색 오버레이 (클릭 시 열림) -->
+<div class="gp-search-overlay" id="searchOverlay">
+  <div class="gp-search-overlay-header">
+    <div style="cursor:pointer;padding:4px;flex-shrink:0" onclick="closeSearchOverlay()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div class="gp-search-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="groupSearchInput" type="text" placeholder="그룹 검색" maxlength="50" autocomplete="off"/>
+      <div class="gp-search-clear" id="searchClearBtn" style="display:none" onclick="clearSearch()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+  </div>
+  <!-- 정렬 바 (검색 시 표시) -->
+  <div class="gp-sort-bar" id="sortBar" style="display:none">
+    <button class="gp-sort-btn active" data-sort="activity" onclick="setSort('activity')">활동량순</button>
+    <button class="gp-sort-btn" data-sort="popular" onclick="setSort('popular')">인기순</button>
+    <button class="gp-sort-btn" data-sort="latest" onclick="setSort('latest')">최신순</button>
+    <button class="gp-sort-btn" data-sort="members" onclick="setSort('members')">가입자순</button>
+  </div>
+  <div class="gp-search-results" id="searchResultsList"></div>
 </div>
 <div class="gp-content">
   <div class="gp-recommend-banner ani" id="recommendBanner" style="display:none;cursor:pointer">
@@ -42,15 +59,9 @@
   <div class="modal-btns"><button class="modal-btn outline" onclick="closeCreateModal()">아니요</button><button class="modal-btn solid" onclick="goCreateGroup()">예</button></div>
 </div></div>
 <div class="snackbar" id="snackbar"></div>
-<!-- ── BOTTOM NAV ── -->
 <nav class="bottom-nav" id="bottom-nav"></nav>
 <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
 <script src="{{ url_for('static', filename='js/group_store.js') }}"></script>
 <script src="{{ url_for('static', filename='js/group.js') }}"></script>
-<script>
-// URL에 tag 파라미터가 있으면 자동 검색
-const urlTag=new URLSearchParams(location.search).get('tag');
-if(urlTag){document.getElementById('groupSearchInput').value=urlTag;renderGroups(urlTag);}
-</script>
 </body>
 </html>
