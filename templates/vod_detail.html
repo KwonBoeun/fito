@@ -24,7 +24,9 @@
 
 <!-- ── VOD 플레이어 ── -->
 <div class="vod-player-wrap" id="player-wrap">
-  <div class="vod-player-bg"></div>
+  <div class="vod-player-bg" id="vod-player-bg"></div>
+  <!-- 실제 영상 (유저 업로드 VOD 전용) -->
+  <video id="real-video" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none;z-index:1"></video>
 
   <!-- 컨트롤 오버레이 -->
   <div class="vod-controls" id="vod-controls">

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - FITS 업로드</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/upload_fits.css') }}"/>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<header class="fup-header">
+  <button class="fup-back" onclick="history.back()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="fup-header-title">FITS 영상 편집</span>
+  <button class="fup-done-btn" id="done-btn" disabled>완료</button>
+</header>
+
+<!-- ── 파일 선택 화면 ── -->
+<div class="fup-pick-screen" id="pick-screen">
+  <div class="fup-pick-area">
+    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <p class="fup-pick-title">세로 영상을 선택해주세요</p>
+    <p class="fup-pick-sub">9:16 비율 권장 · mp4, mov, webm · 최대 500MB</p>
+    <button class="fup-pick-btn" id="pick-btn">라이브러리에서 선택</button>
+    <input type="file" id="file-input" accept="video/*" style="display:none"/>
+  </div>
+</div>
+
+<!-- ── 편집 화면 ── -->
+<div class="fup-editor" id="editor" style="display:none">
+
+  <!-- 메인 레이아웃: 좌측 프리뷰 + 우측 컨트롤 -->
+  <div class="fup-main">
+
+    <!-- 9:16 프리뷰 -->
+    <div class="fup-preview-wrap" id="preview-wrap">
+      <video class="fup-video" id="preview-video" playsinline></video>
+      <!-- 재생/정지 오버레이 -->
+      <div class="fup-play-overlay" id="play-overlay">
+        <div class="fup-play-circle">
+          <svg id="play-ico" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <svg id="pause-ico" viewBox="0 0 24 24" fill="white" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </div>
+      </div>
+      <!-- 텍스트 레이어 -->
+      <div class="fup-text-layer" id="text-layer"></div>
+      <!-- 음악 배지 -->
+      <div class="fup-music-badge" id="music-badge" style="display:none">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <span id="music-badge-name">BGM</span>
+      </div>
+      <!-- 재생 시간 -->
+      <div class="fup-time-badge">
+        <span id="cur-time">0:00</span> / <span id="total-time">0:00</span>
+      </div>
+    </div>
+
+  </div><!-- /fup-main -->
+
+  <!-- 타임라인 -->
+  <div class="fup-timeline-wrap" id="timeline-wrap">
+    <div class="fup-ruler" id="ruler"></div>
+    <div class="fup-playhead" id="playhead"></div>
+
+    <!-- 미디어 클립 트랙 -->
+    <div class="fup-track-row">
+      <div class="fup-track-icon">
+        <svg viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+      </div>
+      <div class="fup-track-body" id="media-track">
+        <div class="fup-clip" id="main-clip">
+          <span id="clip-label">FITS</span>
+          <div class="trim-handle trim-left"  id="trim-left"></div>
+          <div class="trim-handle trim-right" id="trim-right"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 텍스트 트랙 -->
+    <div class="fup-track-row" id="text-track-row" style="display:none">
+      <div class="fup-track-icon">
+        <svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+      </div>
+      <div class="fup-track-body" id="text-track-body"></div>
+    </div>
+
+    <!-- 음악 트랙 -->
+    <div class="fup-track-row" id="music-track-row" style="display:none">
+      <div class="fup-track-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </div>
+      <div class="fup-track-body" id="music-track-body"></div>
+    </div>
+  </div>
+
+  <!-- 툴바 (3개) -->
+  <div class="fup-toolbar">
+    <button class="fup-tool" data-tool="cut">
+      <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+      <span>자르기</span>
+    </button>
+    <button class="fup-tool" data-tool="text">
+      <svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+      <span>텍스트</span>
+    </button>
+    <button class="fup-tool" data-tool="music">
+      <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <span>배경음악</span>
+    </button>
+  </div>
+
+  <!-- 패널: 자르기 -->
+  <div class="fup-panel" id="panel-cut">
+    <button class="fpanel-btn" id="cut-here-btn">
+      <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/></svg>
+      현재 위치에서 자르기
+    </button>
+    <button class="fpanel-btn danger" id="cut-undo-btn">
+      <svg viewBox="0 0 24 24"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+      마지막 자르기 취소
+    </button>
+  </div>
+
+  <!-- 패널: 텍스트 -->
+  <div class="fup-panel" id="panel-text">
+    <div class="ftext-input-row">
+      <input type="text" id="text-input" placeholder="텍스트를 입력하세요" maxlength="30"/>
+      <button class="fpanel-btn accent" id="text-add-btn">추가</button>
+    </div>
+    <div class="ftext-style-row">
+      <button class="fstyle-btn active" data-size="sm">작게</button>
+      <button class="fstyle-btn" data-size="md">보통</button>
+      <button class="fstyle-btn" data-size="lg">크게</button>
+      <div class="fcolor-dots" id="color-dots"></div>
+    </div>
+    <div class="ftext-item-list" id="text-item-list"></div>
+  </div>
+
+  <!-- 패널: 배경음악 -->
+  <div class="fup-panel" id="panel-music">
+    <div class="fmusic-list" id="music-list"></div>
+  </div>
+
+</div><!-- /editor -->
+
+<!-- ── 업로드 정보 시트 ── -->
+<div class="fup-info-sheet" id="info-sheet" style="display:none">
+  <div class="finfo-inner">
+    <h2>업로드 정보</h2>
+    <div class="finfo-field">
+      <label>제목 <span class="freq">*</span></label>
+      <input type="text" id="info-title" placeholder="FITS 제목을 입력하세요" maxlength="40"/>
+    </div>
+    <div class="finfo-field">
+      <label>해시태그</label>
+      <input type="text" id="info-tags" placeholder="#운동 #홈트 (띄어쓰기로 구분)"/>
+    </div>
+    <div class="finfo-btns">
+      <button class="finfo-cancel" id="info-cancel">취소</button>
+      <button class="finfo-upload" id="info-upload">업로드</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 업로드 진행 ── -->
+<div class="fup-uploading" id="uploading-ov" style="display:none">
+  <div class="fuploading-box">
+    <div class="fuploading-spinner"></div>
+    <p id="uploading-label">업로드 중...</p>
+    <div class="fuploading-bar-wrap"><div class="fuploading-bar" id="uploading-bar"></div></div>
+    <span id="uploading-pct">0%</span>
+  </div>
+</div>
+
+<!-- ── 완료 ── -->
+<div class="fup-done-ov" id="done-ov" style="display:none">
+  <div class="fdone-box">
+    <div class="fdone-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <p class="fdone-title">업로드 완료!</p>
+    <p class="fdone-sub">메인화면에서 확인하세요</p>
+    <button class="fdone-home" onclick="location.href='/'">홈으로 이동</button>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/upload_fits.js') }}"></script>
+</body>
+</html>

@@ -69,6 +69,14 @@ function setPlaying(val) {
   document.getElementById('play-icon').innerHTML   = val ? PAUSE_PATH : PLAY_PATH;
   document.getElementById('center-icon').innerHTML = val ? PAUSE_PATH : PLAY_PATH;
 
+  /* 실제 영상이 연결된 경우 */
+  if (playState._realVideo) {
+    if (val) playState._realVideo.play().catch(() => {});
+    else     playState._realVideo.pause();
+    clearInterval(playState.timer);
+    return;
+  }
+
   clearInterval(playState.timer);
   if (val) {
     playState.timer = setInterval(() => {
@@ -93,6 +101,34 @@ function initPlayer(vod) {
   playState.total  = vod.dur;
   playState.cur    = getPos(vod.id);
   updateSeekUI();
+
+  const wrap = document.getElementById('player-wrap');
+
+  /* ── 유저 업로드 VOD: 실제 영상 재생 ── */
+  if (vod.userUrl) {
+    const realVideo = document.getElementById('real-video');
+    const bg        = document.getElementById('vod-player-bg');
+    realVideo.src   = vod.userUrl;
+    realVideo.style.display = '';
+    bg.style.display = 'none';
+
+    realVideo.addEventListener('loadedmetadata', () => {
+      playState.total = Math.floor(realVideo.duration);
+      realVideo.currentTime = playState.cur;
+      updateSeekUI();
+    });
+    realVideo.addEventListener('timeupdate', () => {
+      playState.cur = Math.floor(realVideo.currentTime);
+      if (!playState.seeking) updateSeekUI();
+      savePos(vod.id, playState.cur);
+    });
+    realVideo.addEventListener('ended', () => {
+      setPlaying(false);
+    });
+
+    /* 재생 제어를 실제 비디오에 연결 */
+    playState._realVideo = realVideo;
+  }
 
   const wrap = document.getElementById('player-wrap');
 
@@ -209,7 +245,59 @@ function initPlayer(vod) {
 
 function init() {
   const id  = parseInt(window.location.pathname.split('/').pop()) || 1;
-  const vod = VOD_DATA.find(d => d.id === id) || VOD_DATA[0];
+
+  /* 유저 업로드 VOD도 검색 */
+  let vod = VOD_DATA.find(d => d.id === id);
+  if (!vod) {
+    try {
+      const userVods = JSON.parse(localStorage.getItem('fito_user_vods') || '[]');
+      const maxMock  = VOD_DATA.reduce((m,d) => Math.max(m,d.id), 0);
+      userVods.forEach((v,i) => {
+        if (!vod && maxMock + i + 1 === id) {
+          vod = { id, title: v.title||'내 VOD', author: v.author||'나',
+                  views:0, tags: v.tags||[], h:0, dur:0,
+                  userUrl: v.videoUrl, isUserUploaded:true };
+        }
+      });
+    } catch(e) {}
+    if (!vod) vod = VOD_DATA[0];
+  }
+
+  /* 유저 업로드 영상이면 real-video 요소에 src 연결 */
+  if (vod.isUserUploaded && vod.userUrl) {
+    const realVideo = document.getElementById('real-video');
+    const bg        = document.getElementById('vod-player-bg');
+    realVideo.src   = vod.userUrl;
+    realVideo.style.display = '';
+    if (bg) bg.style.display = 'none';
+    playState.total = 0;
+
+    /* 실제 재생/정지 연결 */
+    realVideo.addEventListener('loadedmetadata', () => {
+      playState.total = Math.floor(realVideo.duration);
+      updateSeekUI();
+    });
+    realVideo.addEventListener('timeupdate', () => {
+      playState.cur = Math.floor(realVideo.currentTime);
+      if (!playState.total) playState.total = Math.floor(realVideo.duration) || 0;
+      updateSeekUI();
+      savePos(vod.id, playState.cur);
+    });
+    /* seekbar와 real-video 연동 */
+    const seekInput = document.getElementById('seek-input');
+    if (seekInput) {
+      seekInput.addEventListener('input', () => {
+        if (playState.total) realVideo.currentTime = playState.total * seekInput.value / 100;
+      });
+    }
+    /* 중앙/하단 재생버튼과 연동 */
+    const origSetPlaying = setPlaying;
+    window.setPlaying = function(val) {
+      origSetPlaying(val);
+      if (val) realVideo.play().catch(()=>{});
+      else     realVideo.pause();
+    };
+  }
 
   document.title = `FITO - ${vod.title}`;
   document.getElementById('vod-title').textContent  = vod.title;

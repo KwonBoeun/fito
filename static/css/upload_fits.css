@@ -1,0 +1,389 @@
+/* ===========================
+   FITO - FITS Upload CSS
+   =========================== */
+:root{
+  --black:#000;--white:#fff;
+  --gray-50:#f9f9f9;--gray-100:#f2f2f2;--gray-200:#e5e5e5;
+  --gray-300:#ccc;--gray-400:#999;--gray-500:#666;
+  --accent:#f59e0b;--live-red:#e8161c;
+  --r-sm:6px;--r-md:10px;--r-full:999px;
+  --header-h:52px;--toolbar-h:68px;--panel-h:130px;--timeline-h:100px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{
+  height:100%;overflow:hidden;background:#111;
+  font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;
+  font-size:14px;max-width:390px;margin:0 auto;-webkit-font-smoothing:antialiased;
+}
+
+/* ── 헤더 ── */
+.fup-header{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;height:var(--header-h);
+  padding:0 16px;background:#111;
+  border-bottom:1px solid #222;gap:10px;
+}
+.fup-back{
+  width:36px;height:36px;border:none;background:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.fup-back svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2}
+.fup-header-title{flex:1;font-size:16px;font-weight:700;text-align:center;color:#fff}
+.fup-done-btn{
+  padding:6px 14px;border-radius:var(--r-full);
+  background:var(--accent);color:#000;
+  font-size:13px;font-weight:700;border:none;cursor:pointer;
+  font-family:inherit;opacity:.35;transition:opacity .2s;
+}
+.fup-done-btn:not([disabled]){opacity:1}
+
+/* ── 파일 선택 화면 ── */
+.fup-pick-screen{
+  height:calc(100vh - var(--header-h));
+  display:flex;align-items:center;justify-content:center;
+  background:#111;
+}
+.fup-pick-area{
+  display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 24px;
+}
+.fup-pick-area svg{width:52px;height:52px;stroke:#444;fill:none;stroke-width:1.5}
+.fup-pick-title{font-size:17px;font-weight:700;color:#fff}
+.fup-pick-sub{font-size:13px;color:#666}
+.fup-pick-btn{
+  margin-top:6px;padding:12px 28px;border-radius:var(--r-full);
+  background:var(--accent);color:#000;
+  font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;
+}
+.fup-pick-btn:active{opacity:.8}
+
+/* ── 편집 화면 ── */
+.fup-editor{
+  height:calc(100vh - var(--header-h));
+  display:flex;flex-direction:column;overflow:hidden;background:#111;
+}
+
+/* ── 메인 레이아웃 ── */
+.fup-main{
+  flex:1;min-height:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:10px;background:#000;
+}
+
+/* ── 9:16 프리뷰 ── */
+.fup-preview-wrap{
+  /* 최대 높이 기준으로 9:16 유지 */
+  aspect-ratio:9/16;
+  height:100%;max-height:100%;
+  position:relative;background:#1a1a1a;border-radius:12px;overflow:hidden;
+}
+.fup-video{
+  width:100%;height:100%;object-fit:cover;display:block;
+  border-radius:12px;
+}
+.fup-play-overlay{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.fup-play-circle{
+  width:56px;height:56px;border-radius:50%;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .2s;
+}
+.fup-play-overlay.playing .fup-play-circle{opacity:0;pointer-events:none}
+.fup-play-overlay.playing:hover .fup-play-circle{opacity:1}
+.fup-play-circle svg{width:22px;height:22px}
+
+.fup-text-layer{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;
+}
+.fup-text-item{
+  position:absolute;color:#fff;font-weight:700;
+  text-shadow:0 1px 4px rgba(0,0,0,.8);
+  cursor:move;user-select:none;pointer-events:all;
+  white-space:nowrap;
+}
+.fup-text-item.sm{font-size:13px}
+.fup-text-item.md{font-size:19px}
+.fup-text-item.lg{font-size:26px}
+
+.fup-music-badge{
+  position:absolute;bottom:8px;left:8px;
+  display:flex;align-items:center;gap:4px;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  border-radius:var(--r-full);padding:3px 9px;
+  color:#fff;font-size:10px;font-weight:600;
+}
+.fup-music-badge svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:2}
+
+.fup-time-badge{
+  position:absolute;bottom:8px;right:8px;
+  background:rgba(0,0,0,.55);color:#fff;
+  font-size:11px;font-weight:600;
+  padding:2px 7px;border-radius:var(--r-full);
+}
+
+/* ── 타임라인 ── */
+.fup-timeline-wrap{
+  height:var(--timeline-h);flex-shrink:0;
+  background:#1a1a1a;border-top:1px solid #333;
+  position:relative;overflow-x:auto;overflow-y:hidden;
+  scrollbar-width:none;
+}
+.fup-timeline-wrap::-webkit-scrollbar{display:none}
+.fup-ruler{
+  height:16px;border-bottom:1px solid #333;position:relative;
+}
+.fup-ruler-tick{
+  position:absolute;top:0;bottom:0;
+  border-left:1px solid #444;
+  font-size:9px;color:#666;
+  padding-left:3px;line-height:16px;
+}
+.fup-playhead{
+  position:absolute;top:0;bottom:0;width:2px;
+  background:var(--accent);z-index:20;pointer-events:none;left:0;
+}
+.fup-track-row{
+  display:flex;align-items:center;height:32px;padding:0 4px;gap:4px;
+}
+.fup-track-icon{
+  width:22px;height:22px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.fup-track-icon svg{width:12px;height:12px;stroke:#555;fill:none;stroke-width:1.8}
+.fup-track-body{
+  flex:1;height:24px;position:relative;overflow:hidden;border-radius:4px;
+}
+.fup-clip{
+  position:absolute;top:0;bottom:0;
+  background:#f59e0b;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:#000;
+  cursor:pointer;user-select:none;overflow:hidden;
+}
+.trim-handle{
+  position:absolute;top:0;bottom:0;width:10px;
+  background:rgba(0,0,0,.3);cursor:col-resize;
+  display:flex;align-items:center;justify-content:center;
+}
+.trim-handle::after{
+  content:'';width:2px;height:12px;
+  background:rgba(0,0,0,.6);border-radius:1px;
+}
+.trim-left{left:0;border-radius:4px 0 0 4px}
+.trim-right{right:0;border-radius:0 4px 4px 0}
+.cut-marker{
+  position:absolute;top:0;bottom:0;width:2px;
+  background:rgba(255,255,255,.7);pointer-events:none;z-index:5;
+}
+.ftext-clip{
+  position:absolute;top:2px;bottom:2px;
+  background:#4F8EF7;border-radius:4px;
+  display:flex;align-items:center;padding:0 6px;
+  font-size:9px;font-weight:600;color:#fff;
+  white-space:nowrap;overflow:hidden;cursor:pointer;
+}
+.fmusic-clip{
+  position:absolute;top:2px;bottom:2px;
+  background:#16a34a;border-radius:4px;
+  display:flex;align-items:center;padding:0 6px;
+  font-size:9px;font-weight:600;color:#fff;
+  white-space:nowrap;overflow:hidden;cursor:pointer;
+}
+
+/* ── 툴바 ── */
+.fup-toolbar{
+  height:var(--toolbar-h);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-around;
+  padding:0 20px;background:#1a1a1a;
+  border-top:1px solid #333;
+}
+.fup-tool{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:5px;
+  padding:8px 20px;border:none;background:none;cursor:pointer;
+  border-radius:var(--r-md);transition:background .15s;
+}
+.fup-tool:active{background:#2a2a2a}
+.fup-tool.active{background:#222}
+.fup-tool svg{width:20px;height:20px;stroke:#ccc;fill:none;stroke-width:1.8}
+.fup-tool.active svg{stroke:var(--accent)}
+.fup-tool span{font-size:11px;font-weight:600;color:#888}
+.fup-tool.active span{color:var(--accent)}
+
+/* ── 패널 ── */
+.fup-panel{
+  display:none;
+  height:var(--panel-h);flex-shrink:0;
+  padding:12px 14px;background:#1e1e1e;
+  border-top:1px solid #333;overflow-y:auto;
+}
+.fup-panel.open{display:block}
+
+.fpanel-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:var(--r-md);
+  background:#2a2a2a;border:none;
+  font-size:13px;font-weight:600;cursor:pointer;
+  font-family:inherit;color:#fff;margin:4px;transition:background .15s;
+}
+.fpanel-btn:active{background:#333}
+.fpanel-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.fpanel-btn.danger{color:var(--live-red)}
+.fpanel-btn.accent{background:var(--accent);color:#000}
+.fpanel-btn.accent:active{opacity:.8}
+
+/* 텍스트 패널 */
+.ftext-input-row{display:flex;gap:8px;margin-bottom:10px}
+.ftext-input-row input{
+  flex:1;border:1.5px solid #333;border-radius:var(--r-md);
+  padding:8px 12px;font-size:14px;font-family:inherit;outline:none;
+  background:#2a2a2a;color:#fff;
+}
+.ftext-input-row input::placeholder{color:#555}
+.ftext-input-row input:focus{border-color:var(--accent)}
+.ftext-style-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fstyle-btn{
+  padding:4px 10px;border-radius:var(--r-full);
+  border:1.5px solid #333;background:#2a2a2a;
+  font-size:11px;font-weight:600;cursor:pointer;color:#aaa;
+}
+.fstyle-btn.active{background:var(--accent);color:#000;border-color:var(--accent)}
+.fcolor-dots{display:flex;gap:5px;margin-left:auto}
+.fcolor-dot{
+  width:20px;height:20px;border-radius:50%;
+  cursor:pointer;border:2px solid transparent;transition:border-color .15s;
+}
+.fcolor-dot.active{border-color:#fff}
+.ftext-item-list{
+  display:flex;flex-direction:column;gap:4px;margin-top:8px;
+  max-height:44px;overflow-y:auto;
+}
+.ftext-item{
+  display:flex;align-items:center;gap:8px;
+  padding:4px 10px;background:#2a2a2a;border-radius:var(--r-sm);
+  font-size:12px;color:#ddd;
+}
+.ftext-item-label{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ftext-item-del{
+  width:18px;height:18px;border-radius:50%;
+  background:#333;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:#888;flex-shrink:0;
+}
+
+/* 음악 패널 */
+.fmusic-list{display:flex;flex-direction:column;gap:6px}
+.fmusic-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:var(--r-md);
+  background:#2a2a2a;cursor:pointer;
+  border:1.5px solid transparent;transition:border-color .15s;
+}
+.fmusic-item.active{border-color:var(--accent);background:#2d2800}
+.fmusic-icon{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,#f59e0b,#ef4444);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.fmusic-icon svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2}
+.fmusic-info{flex:1;min-width:0}
+.fmusic-name{font-size:13px;font-weight:600;color:#fff;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.fmusic-dur{font-size:11px;color:#666;margin-top:1px}
+.fmusic-check{
+  width:18px;height:18px;border-radius:50%;
+  background:var(--accent);display:none;
+  align-items:center;justify-content:center;flex-shrink:0;
+}
+.fmusic-item.active .fmusic-check{display:flex}
+.fmusic-check svg{width:9px;height:9px;stroke:#000;fill:none;stroke-width:2.5}
+
+/* ── 업로드 정보 시트 ── */
+.fup-info-sheet{
+  position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,.7);
+  display:flex;align-items:flex-end;
+}
+.finfo-inner{
+  background:#1a1a1a;border-radius:20px 20px 0 0;
+  width:100%;padding:24px 20px 32px;
+}
+.finfo-inner h2{font-size:18px;font-weight:800;margin-bottom:18px;color:#fff}
+.finfo-field{margin-bottom:14px}
+.finfo-field label{
+  display:block;font-size:12px;font-weight:700;
+  color:#888;margin-bottom:5px;
+}
+.freq{color:var(--live-red)}
+.finfo-field input{
+  width:100%;border:1.5px solid #333;border-radius:var(--r-md);
+  padding:10px 12px;font-size:14px;font-family:inherit;outline:none;
+  background:#2a2a2a;color:#fff;
+}
+.finfo-field input::placeholder{color:#555}
+.finfo-field input:focus{border-color:var(--accent)}
+.finfo-btns{display:flex;gap:10px;margin-top:18px}
+.finfo-cancel{
+  flex:1;padding:13px;border-radius:var(--r-md);
+  background:#2a2a2a;color:#aaa;border:none;
+  font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;
+}
+.finfo-upload{
+  flex:2;padding:13px;border-radius:var(--r-md);
+  background:var(--accent);color:#000;border:none;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+}
+.finfo-upload:active{opacity:.8}
+
+/* ── 업로드 진행 ── */
+.fup-uploading{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(0,0,0,.7);
+  display:flex;align-items:center;justify-content:center;
+}
+.fuploading-box{
+  background:#1e1e1e;border-radius:16px;
+  padding:28px 24px;width:240px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.fuploading-spinner{
+  width:44px;height:44px;border-radius:50%;
+  border:4px solid #333;
+  border-top-color:var(--accent);
+  animation:fspin .8s linear infinite;
+}
+@keyframes fspin{to{transform:rotate(360deg)}}
+.fuploading-box p{font-size:14px;font-weight:600;color:#fff}
+.fuploading-bar-wrap{
+  width:100%;height:5px;background:#333;border-radius:3px;overflow:hidden;
+}
+.fuploading-bar{
+  height:100%;background:var(--accent);border-radius:3px;width:0;transition:width .2s;
+}
+.fuploading-box span{font-size:12px;color:#666;font-weight:600}
+
+/* ── 완료 ── */
+.fup-done-ov{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(0,0,0,.8);
+  display:flex;align-items:center;justify-content:center;
+}
+.fdone-box{
+  background:#1e1e1e;border-radius:20px;padding:36px 28px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.fdone-check{
+  width:60px;height:60px;border-radius:50%;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+}
+.fdone-check svg{width:28px;height:28px;stroke:#000;fill:none;stroke-width:2.5}
+.fdone-title{font-size:18px;font-weight:800;color:#fff}
+.fdone-sub{font-size:13px;color:#666}
+.fdone-home{
+  margin-top:6px;padding:12px 28px;border-radius:var(--r-full);
+  background:var(--accent);color:#000;border:none;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+}

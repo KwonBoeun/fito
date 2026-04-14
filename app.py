@@ -1,15 +1,50 @@
-from flask import Flask, render_template, request
+import os, uuid
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
 def main():
     return render_template('main.html')
 
 
+# ── 업로드 ──
 @app.route('/upload/live')
 def upload_live():
     return render_template('upload_live.html')
+
+@app.route('/upload/vod')
+def upload_vod():
+    return render_template('upload_vod.html')
+
+@app.route('/api/upload/vod', methods=['POST'])
+def api_upload_vod():
+    video = request.files.get('video')
+    if not video:
+        return jsonify({'error': '파일이 없습니다'}), 400
+    ext      = os.path.splitext(video.filename)[1].lower()
+    filename = f"{uuid.uuid4().hex}{ext}"
+    video.save(os.path.join(UPLOAD_FOLDER, filename))
+    return jsonify({'ok': True, 'videoUrl': f'/static/uploads/{filename}'})
+
+@app.route('/upload/fits')
+def upload_fits():
+    return render_template('upload_fits.html')
+
+@app.route('/api/upload/fits', methods=['POST'])
+def api_upload_fits():
+    video = request.files.get('video')
+    if not video:
+        return jsonify({'error': '파일이 없습니다'}), 400
+    ext      = os.path.splitext(video.filename)[1].lower()
+    filename = f"{uuid.uuid4().hex}{ext}"
+    video.save(os.path.join(UPLOAD_FOLDER, filename))
+    return jsonify({'ok': True, 'videoUrl': f'/static/uploads/{filename}'})
+
 
 # ── 상세 페이지 ──
 @app.route('/live/<int:content_id>')
@@ -150,17 +185,14 @@ def mypage_friend():
 def mypage_friendrequest():
     return render_template('mypage_friend_request.html')
 
-# ── MY 프로필 상세 (게시물) ──
 @app.route('/mypage/profile/detail')
 def mypage_profile_detail():
     return render_template('mypage_profile_detail.html')
 
-# ── MY 친구 ──
 @app.route('/mypage/friends')
 def mypage_friends():
     return render_template('mypage_friends.html')
 
-# ── MY 친구 요청 ──
 @app.route('/mypage/friend-request')
 def mypage_friend_request():
     return render_template('mypage_friend_request.html')
@@ -177,11 +209,11 @@ def trainer_chat():
 @app.route('/reward')
 def reward():
     return render_template('mypage_reward.html')
- 
+
 @app.route('/reward/earn')
 def reward_earn():
     return render_template('mypage_reward_earn.html')
- 
+
 @app.route('/reward/history')
 def reward_history():
     return render_template('mypage_reward_history.html')

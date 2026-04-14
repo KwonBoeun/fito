@@ -51,7 +51,7 @@ const LIVE_DATA = [
   { id:8, title:'새벽 팔 운동 라이브', author:'암컬킹', viewers:340, tags:['#팔운동','#상체'], h:6 },
   { id:9, title:'전신 스트레칭 모닝 루틴', author:'모닝핏', viewers:287, tags:['#스트레칭','#아침'], h:7 },
 ];
-const VOD_DATA = [
+let VOD_DATA = [
   { id:1,  title:'스쿼트 완벽 자세 가이드',     author:'피트니스TV',    views:84200, tags:['#스쿼트','#자세교정'],  h:12,  dur:754  },
   { id:2,  title:'집에서 하는 30분 홈트 루틴',  author:'홈트여왕',      views:62100, tags:['#홈트','#초보자'],      h:36,  dur:1823 },
   { id:3,  title:'뱃살 빼는 코어 운동 10선',    author:'다이어터민',    views:51000, tags:['#다이어트','#코어'],    h:5,   dur:612  },
@@ -65,8 +65,31 @@ const VOD_DATA = [
   { id:11, title:'폼롤러 전신 마사지',            author:'회복전문',      views:18000, tags:['#폼롤러','#회복'],      h:24,  dur:1089 },
   { id:12, title:'플랭크 변형 10가지',            author:'코어킹',        views:15000, tags:['#플랭크','#코어'],      h:90,  dur:867  },
 ];
-const FITS_DATA = [
-  { id:1,  title:'스쿼트 30초 챌린지', author:'핏걸_나연', views:124000, tags:['#스쿼트'], h:3 },
+/* ── 유저 업로드 VOD 병합 ── */
+(function mergeUserVods() {
+  try {
+    const raw = localStorage.getItem('fito_user_vods');
+    if (!raw) return;
+    const userVods = JSON.parse(raw);
+    if (!Array.isArray(userVods) || !userVods.length) return;
+    const maxId = VOD_DATA.reduce((m, d) => Math.max(m, d.id), 0);
+    userVods.forEach((v, i) => {
+      VOD_DATA.unshift({
+        id:      maxId + i + 1,
+        title:   v.title   || '내 VOD',
+        author:  v.author  || '나',
+        views:   v.views   || 0,
+        tags:    v.tags    || [],
+        h:       v.h       || 0,
+        dur:     v.dur     || 0,
+        userUrl: v.videoUrl || null,  // 실제 영상 경로
+        isUserUploaded: true,
+      });
+    });
+  } catch(e) { console.warn('mergeUserVods error', e); }
+})();
+
+let FITS_DATA = [  { id:1,  title:'스쿼트 30초 챌린지', author:'핏걸_나연', views:124000, tags:['#스쿼트'], h:3 },
   { id:2,  title:'플랭크 1분 도전', author:'코어킹', views:98000, tags:['#플랭크'], h:5 },
   { id:3,  title:'점프 버피 챌린지', author:'버피마스터', views:87000, tags:['#버피'], h:8 },
   { id:4,  title:'힙쓰러스트 꿀팁', author:'힙돼지', views:74000, tags:['#힙업'], h:10 },
@@ -94,6 +117,29 @@ const FITS_DATA = [
   { id:26, title:'점핑잭 50개 챌린지', author:'유산소킹', views:6500, tags:['#유산소'], h:98 },
   { id:27, title:'마운틴 클라이머 챌린지', author:'코어킹', views:6000, tags:['#코어'], h:102 },
 ];
+/* ── 유저 업로드 FITS 병합 ── */
+(function mergeUserFits() {
+  try {
+    const raw = localStorage.getItem('fito_user_fits');
+    if (!raw) return;
+    const userFits = JSON.parse(raw);
+    if (!Array.isArray(userFits) || !userFits.length) return;
+    const maxId = FITS_DATA.reduce((m, d) => Math.max(m, d.id), 0);
+    userFits.forEach((v, i) => {
+      FITS_DATA.unshift({
+        id:      maxId + i + 1,
+        title:   v.title  || '내 FITS',
+        author:  v.author || '나',
+        views:   v.views  || 0,
+        tags:    v.tags   || [],
+        h:       v.h      || 0,
+        userUrl: v.videoUrl || null,
+        isUserUploaded: true,
+      });
+    });
+  } catch(e) { console.warn('mergeUserFits error', e); }
+})();
+
 const COM_DATA = [
   { id:1,  author:'nayeonny',  content:'한동안 일정 과다로 가족바프 이후 첫 운동 기록\n시간 참 빠르다!', tags:['#오운완'], likes:212, comments:16, bookmarks:3,  h:7 },
   { id:2,  author:'fitking',   content:'오늘도 완료 💪 데드 120kg 처음 성공했어요!', tags:['#데드리프트','#PR'], likes:341, comments:28, bookmarks:12, h:3 },
