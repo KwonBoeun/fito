@@ -16,15 +16,55 @@
 html,body{font-family:'Noto Sans KR',sans-serif;background:var(--white);color:var(--black);font-size:14px;line-height:1.5;max-width:390px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
 /* ── 공통 헤더 ── */
-.gp-header{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid var(--gray-200);height:52px;display:flex;align-items:center;padding:0 16px;gap:12px}
-.gp-back{display:flex;align-items:center;cursor:pointer;padding:4px;text-decoration:none;color:var(--black)}
-.gp-back svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
-.gp-header-title{font-size:17px;font-weight:800;letter-spacing:-.3px;flex-shrink:0}
+.gp-header{
+   position:sticky;
+   top:0;
+   z-index:100;
+   background:var(--white);
+   border-bottom:1px solid var(--gray-200);
+   height:52px;
+   display:flex;
+   align-items:center;
+   position: relative;
+}
+.gp-back{
+   display:flex;
+   align-items:center;
+   justify-content:flex-start;
+   width:60px; /* 좌우 균형 맞추기 핵심 */
+   padding-left:16px;
+   cursor:pointer;
+   text-decoration:none;
+   color:var(--black);
+}
+.gp-back svg{
+   width:22px;
+   height:22px;
+   stroke:currentColor;
+   fill:none;
+   stroke-width:2
+}
+.gp-header-title{
+   position: absolute;          /* 핵심 */
+   left: 50%;
+   transform: translateX(-50%); /* 정확한 중앙 */
+   font-size: 20px;
+   font-weight: 700;
+   letter-spacing: -.2px;
+   white-space: nowrap;
+}
 .gp-header-search{margin-left:auto;display:flex;align-items:center;gap:6px;background:var(--gray-100);border-radius:var(--r-full);padding:7px 14px;cursor:pointer;transition:background .15s}
 .gp-header-search:active{background:var(--gray-200)}
 .gp-header-search span{font-size:13px;color:var(--gray-400);white-space:nowrap}
 .gp-header-search svg{width:16px;height:16px;stroke:var(--gray-400);fill:none;flex-shrink:0}
-.gp-header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.gp-header-right{
+   display:flex;
+   align-items:center;
+   justify-content:flex-end;
+   width:60px; /* 좌우 동일 */
+   padding-right:16px;
+   gap:8px;
+}
 
 /* ── 콘텐츠 ── */
 .gp-content{padding-bottom:calc(var(--nav-h) + 20px)}
