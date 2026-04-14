@@ -2,63 +2,174 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>트레이너 채팅</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/trainer_chat.css') }}">
 </head>
 <body>
-    <div class="app-wrap">
-
-    <!-- 헤더 -->
+  <div class="app-wrap">
     <header class="trainer-header">
-        <div class="hdr-left" onclick="history.back()">
-        <svg viewBox="0 0 24 24">
-            <polyline points="15 18 9 12 15 6"/>
+      <button class="hdr-btn" type="button" aria-label="뒤로가기" onclick="history.back()">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"/>
         </svg>
-        </div>
-        <div class="hdr-title" id="chatTitle">김트레 트레이너</div>
-        <div class="hdr-right"></div>
+      </button>
+      <div class="hdr-title" id="chatTitle">김트레 트레이너</div>
+      <div class="hdr-spacer" aria-hidden="true"></div>
     </header>
 
-    <!-- 탭 -->
-    <div class="chat-tabs">
-        <div class="tab active" onclick="switchChat('private')">1:1 채팅</div>
-        <div class="tab" onclick="switchChat('group')">그룹 채팅</div>
+    <nav class="chat-tabs" aria-label="채팅 종류">
+      <button class="tab active" type="button" data-chat="private">1:1 채팅</button>
+      <button class="tab" type="button" data-chat="group">구독자 그룹 채팅</button>
+    </nav>
+
+    <main class="chat-main">
+      <section class="chat-container" id="chatContainer" aria-live="polite"></section>
+
+      <form class="chat-input" id="messageForm">
+        <button class="chat-plus" type="button" id="extraToggle" aria-label="추가 기능 열기">+</button>
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+        <input type="text" id="msgInput" placeholder="메시지 입력" autocomplete="off" maxlength="300">
+        <button class="send-btn" type="submit" id="sendButton" disabled>전송</button>
+      </form>
+
+      <section class="chat-extra" id="chatExtra" aria-label="추가 기능">
+        <button class="extra-item" type="button" data-action="image">
+          <span class="extra-icon">사진</span>
+          <span>사진</span>
+        </button>
+        <button class="extra-item" type="button" data-action="camera">
+          <span class="extra-icon">촬영</span>
+          <span>카메라</span>
+        </button>
+        <button class="extra-item" type="button" data-action="voice">
+          <span class="extra-icon">음성</span>
+          <span>음성</span>
+        </button>
+        <button class="extra-item" type="button" data-action="schedule">
+          <span class="extra-icon">일정</span>
+          <span>일정</span>
+        </button>
+        <button class="extra-item" type="button" data-action="invite">
+          <span class="extra-icon">초대</span>
+          <span>그룹 초대</span>
+        </button>
+        <button class="extra-item" type="button" data-action="meal">
+          <span class="extra-icon">식단</span>
+          <span>식단 공유</span>
+        </button>
+      </section>
+    </main>
+
+    <div class="camera-review" id="cameraReview" aria-hidden="true">
+      <div class="camera-review-panel" role="dialog" aria-modal="true" aria-label="촬영 사진 확인">
+        <button class="camera-close" type="button" id="cameraClose" aria-label="카메라 닫기">×</button>
+        <div class="camera-review-title" id="cameraTitle">카메라</div>
+        <div class="camera-stage">
+          <video class="camera-stream" id="cameraStream" autoplay muted playsinline></video>
+          <div class="camera-status" id="cameraStatus">카메라를 여는 중...</div>
+        </div>
+        <canvas id="cameraCanvas" hidden></canvas>
+        <img class="camera-review-img" id="cameraPreview" alt="촬영한 사진 미리보기">
+        <div class="camera-review-actions">
+          <button class="camera-review-btn retry" type="button" id="cameraRetry">다시시도</button>
+          <button class="camera-review-btn capture" type="button" id="cameraCapture">촬영</button>
+          <button class="camera-review-btn send" type="button" id="cameraSend">전송</button>
+        </div>
+      </div>
     </div>
 
-    <!-- 🔥 핵심 영역 -->
-    <div class="chat-main">
-
-        <!-- 채팅 -->
-        <div class="chat-container" id="chatContainer"></div>
-
-        <!-- 🔥 카톡 확장 패널 -->
-        <div class="chat-extra" id="chatExtra">
-        <div class="extra-grid">
-            <div class="extra-item">앨범</div>
-            <div class="extra-item">카메라</div>
-            <div class="extra-item">음성</div>
-            <div class="extra-item">일정</div>
-            <div class="extra-item">그룹 초대</div>
-            <div class="extra-item">식단 공유</div>
+    <div class="voice-review" id="voiceReview" aria-hidden="true">
+      <div class="voice-review-panel" role="dialog" aria-modal="true" aria-label="음성 녹음">
+        <button class="voice-close" type="button" id="voiceClose" aria-label="음성 녹음 닫기">×</button>
+        <div class="voice-title" id="voiceTitle">음성 녹음 중</div>
+        <div class="voice-timer" id="voiceTimer">00:00</div>
+        <div class="voice-status" id="voiceStatus">말하면 자동으로 녹음됩니다.</div>
+        <audio class="voice-player" id="voicePlayer" controls></audio>
+        <div class="voice-actions">
+          <button class="voice-btn retry" type="button" id="voiceRetry">다시녹음</button>
+          <button class="voice-btn stop" type="button" id="voiceStop">정지</button>
+          <button class="voice-btn send" type="button" id="voiceSend">전송</button>
         </div>
-        </div>
-
-        <!-- 입력창 -->
-        <div class="chat-input">
-        <div class="chat-plus" onclick="toggleExtra()">+</div>
-
-      <input type="file" id="fileInput" style="display:none" />
-
-      <input type="text" id="msgInput" placeholder="메시지 입력">
-
-      <button onclick="sendMessage()">전송</button>
+      </div>
     </div>
 
+    <section class="schedule-modal" id="scheduleModal" aria-hidden="true">
+      <header class="schedule-header">
+        <button class="schedule-back" type="button" id="scheduleClose" aria-label="일정 닫기">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <div class="schedule-header-title">일정 만들기</div>
+        <div class="schedule-header-spacer" aria-hidden="true"></div>
+      </header>
+
+      <div class="schedule-body">
+        <div class="schedule-hero">
+          <div>
+            <div class="schedule-kicker">TRAINER LIVE</div>
+            <div class="schedule-room-name">정기 트레이너 라이브</div>
+          </div>
+          <button class="schedule-more" type="button" aria-label="더보기">•••</button>
+        </div>
+
+        <section class="schedule-card schedule-info">
+          <div class="schedule-info-row">
+            <div class="schedule-info-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+            </div>
+            <div class="schedule-info-main">
+              <span class="schedule-chip">트레이너</span>
+              <strong>김트레 트레이너</strong>
+            </div>
+          </div>
+          <button class="schedule-info-row schedule-time-row" type="button" id="scheduleTimeButton">
+            <div class="schedule-info-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>
+            </div>
+            <div class="schedule-info-main">
+              <strong id="scheduleTimeText">6월 15일 (수) 18:00</strong>
+              <span class="schedule-change-label">변경</span>
+            </div>
+            <input class="schedule-time-input" id="scheduleTimeInput" type="datetime-local" value="2026-06-15T18:00">
+          </button>
+        </section>
+
+        <section class="schedule-card">
+          <div class="schedule-note-top">
+            <span>메모</span>
+            <button type="button">자세히 보기</button>
+          </div>
+          <div class="schedule-note">
+            이번주 정기 트레이너 라이브를 진행하겠습니다. 참석 여부는 20일 자정까지 일정 추가로 알려주세요. 참여 인원은 트레이너 제외 최대 4명입니다.
+          </div>
+        </section>
+
+        <section class="schedule-card">
+          <div class="schedule-progress-title">
+            <span>일정 추가 현황</span>
+            <strong>3/4</strong>
+          </div>
+          <div class="schedule-progress-track"><div class="schedule-progress-fill"></div></div>
+
+          <div class="schedule-member-box">
+            <div class="schedule-member accepted"><div class="member-face">세</div><span>06 세건</span></div>
+            <div class="schedule-member accepted"><div class="member-face">민</div><span>04 민규</span></div>
+            <div class="schedule-member accepted"><div class="member-face">건</div><span>05 건희</span></div>
+            <div class="schedule-member"><div class="member-face">효</div><span>99 효은</span></div>
+          </div>
+        </section>
+
+        <div class="schedule-actions">
+          <button class="schedule-action accept" type="button" id="scheduleAccept">일정 추가 수락</button>
+          <button class="schedule-action reject" type="button" id="scheduleReject">일정 추가 거절</button>
+        </div>
+      </div>
+    </section>
   </div>
 
-</div>                              
-
-<script src="{{ url_for('static', filename='js/trainer_chat.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/trainer_chat.js') }}"></script>
 </body>
 </html>
