@@ -78,7 +78,30 @@ window.toggleReplyQ = function(btn) {
 function init() {
   const path = window.location.pathname;
   const id = parseInt(path.split('/').pop()) || 1;
-  const post = Q_DATA.find(d => d.id === id) || Q_DATA[0];
+
+  /* id >= 20001 이면 유저 업로드 질문 → localStorage 탐색 */
+  let post = null;
+  if (id >= 20001) {
+    try {
+      const stored = JSON.parse(localStorage.getItem('fito_user_question') || '[]');
+      const idx    = id - 20001;
+      const v      = stored[idx];
+      if (v) {
+        post = {
+          id,
+          author:   '나',
+          title:    v.title  || '내 질문',
+          body:     v.body   || '',
+          tags:     v.tags   || [],
+          likes:    0, comments: 0, bookmarks: 0, h: 0,
+          hasImg:   v.hasImg || false,
+          isUserUploaded: true,
+          _storageIdx: idx,
+        };
+      }
+    } catch(e) {}
+  }
+  if (!post) post = Q_DATA.find(d => d.id === id) || Q_DATA[0];
 
   document.title = `FITO - ${post.title}`;
   document.getElementById('q-author').textContent = post.author;
@@ -133,6 +156,24 @@ function init() {
     document.getElementById('more-popup').classList.add('open'));
   document.getElementById('more-bg').addEventListener('click', () =>
     document.getElementById('more-popup').classList.remove('open'));
+
+  /* 내 질문이면 삭제 메뉴 추가 */
+  if (post.isUserUploaded) {
+    const moreBox = document.querySelector('.more-popup-box');
+    const delItem = document.createElement('div');
+    delItem.className = 'more-popup-item danger';
+    delItem.textContent = '삭제하기';
+    delItem.addEventListener('click', () => {
+      if (!confirm('질문을 삭제할까요?')) return;
+      try {
+        const stored = JSON.parse(localStorage.getItem('fito_user_question') || '[]');
+        stored.splice(post._storageIdx, 1);
+        localStorage.setItem('fito_user_question', JSON.stringify(stored));
+      } catch(e) {}
+      location.href = '/';
+    });
+    moreBox.appendChild(delItem);
+  }
 
   /* 구독 토글 */
   const subBtn = document.getElementById('sub-btn');

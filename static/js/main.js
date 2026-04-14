@@ -209,10 +209,9 @@ let Q_DATA = [
     if (!raw) return;
     const items = JSON.parse(raw);
     if (!Array.isArray(items) || !items.length) return;
-    const maxId = COM_DATA.reduce((m, d) => Math.max(m, d.id), 0);
     items.forEach((v, i) => {
       COM_DATA.unshift({
-        id:       maxId + i + 1,
+        id:       10001 + i,          // 유저 커뮤니티: 10001+ 고정 범위
         author:   v.author   || '나',
         content:  v.content  || '',
         tags:     v.tags     || [],
@@ -233,10 +232,9 @@ let Q_DATA = [
     if (!raw) return;
     const items = JSON.parse(raw);
     if (!Array.isArray(items) || !items.length) return;
-    const maxId = Q_DATA.reduce((m, d) => Math.max(m, d.id), 0);
     items.forEach((v, i) => {
       Q_DATA.unshift({
-        id:       maxId + i + 1,
+        id:       20001 + i,          // 유저 질문: 20001+ 고정 범위
         title:    v.title    || '내 질문',
         body:     v.body     || '',
         tags:     v.tags     || [],

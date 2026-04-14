@@ -347,6 +347,25 @@ function init() {
     document.getElementById('more-popup').classList.add('open'));
   document.getElementById('more-bg').addEventListener('click', () =>
     document.getElementById('more-popup').classList.remove('open'));
+
+  /* 내 VOD이면 삭제 메뉴 추가 */
+  if (vod.isUserUploaded) {
+    const moreBox = document.getElementById('more-popup-box');
+    const delItem = document.createElement('div');
+    delItem.className = 'more-popup-item danger';
+    delItem.textContent = '삭제하기';
+    delItem.addEventListener('click', () => {
+      if (!confirm('VOD를 삭제할까요?')) return;
+      try {
+        const stored = JSON.parse(localStorage.getItem('fito_user_vods') || '[]');
+        const maxMock = VOD_DATA.filter(d => !d.isUserUploaded).reduce((m, d) => Math.max(m, d.id), 0);
+        const idx = vod.id - maxMock - 1;
+        if (idx >= 0) { stored.splice(idx, 1); localStorage.setItem('fito_user_vods', JSON.stringify(stored)); }
+      } catch(e) {}
+      location.href = '/';
+    });
+    moreBox.appendChild(delItem);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

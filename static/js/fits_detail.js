@@ -1,6 +1,6 @@
 /* ── FITO FITS Detail JS (TikTok-style) ── */
 
-const FITS_DATA = [
+let FITS_DATA = [
   { id:1,  title:'스쿼트 30초 챌린지', author:'핏걸_나연', views:124000, likes:8200, comments:341, tags:['#스쿼트'], dur:32  },
   { id:2,  title:'플랭크 1분 도전',    author:'코어킹',    views:98000,  likes:6100, comments:280, tags:['#플랭크'], dur:62  },
   { id:3,  title:'점프 버피 챌린지',   author:'버피마스터',views:87000,  likes:5400, comments:215, tags:['#버피'],   dur:45  },
@@ -12,6 +12,32 @@ const FITS_DATA = [
   { id:9,  title:'점프스쿼트 30개',   author:'점프퀸',    views:38000,  likes:2400, comments:98,  tags:['#점프'],   dur:38  },
   { id:10, title:'케틀벨 스윙 꿀팁',  author:'케틀벨러',  views:35000,  likes:2100, comments:87,  tags:['#케틀벨'], dur:53  },
 ];
+
+/* ── 유저 업로드 FITS 병합 ── */
+(function mergeUserFits() {
+  try {
+    const raw = localStorage.getItem('fito_user_fits');
+    if (!raw) return;
+    const userFits = JSON.parse(raw);
+    if (!Array.isArray(userFits) || !userFits.length) return;
+    const maxMock = FITS_DATA.reduce((m, d) => Math.max(m, d.id), 0);
+    userFits.forEach((v, i) => {
+      FITS_DATA.unshift({
+        id:      maxMock + i + 1,
+        title:   v.title   || '내 FITS',
+        author:  '나',
+        views:   0,
+        likes:   0,
+        comments:0,
+        tags:    v.tags    || [],
+        dur:     0,
+        userUrl: v.videoUrl || null,
+        isUserUploaded: true,
+        _storageIdx: i,
+      });
+    });
+  } catch(e) { console.warn('mergeUserFits(detail) error', e); }
+})();
 
 const MOCK_COMMENTS = [
   '대박 따라했는데 진짜 힘드네요 ㅋㅋ',
@@ -100,7 +126,13 @@ function buildSlide(fits) {
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <span class="fits-label-title">FITS</span>
-      <div style="width:32px"></div>
+      ${fits.isUserUploaded
+        ? `<button class="fits-del-btn" data-fitid="${fits.id}" data-storageidx="${fits._storageIdx}"
+             style="background:none;border:none;cursor:pointer;padding:4px 6px;
+                    color:rgba(255,255,255,.85);font-size:12px;font-weight:700;
+                    border:1px solid rgba(255,255,255,.4);border-radius:6px">삭제</button>`
+        : `<div style="width:36px"></div>`
+      }
     </div>
     <!-- 일시정지 아이콘 -->
     <div class="fits-pause-icon" id="fpause-${fits.id}">
@@ -276,6 +308,22 @@ function init() {
     const slideId = parseInt(slide.dataset.id);
 
     slide.addEventListener('click', e => {
+      /* 0순위: 삭제 버튼 */
+      const delBtn = e.target.closest('.fits-del-btn');
+      if (delBtn) {
+        if (!confirm('FITS를 삭제할까요?')) return;
+        try {
+          const stored = JSON.parse(localStorage.getItem('fito_user_fits') || '[]');
+          const storageIdx = parseInt(delBtn.dataset.storageidx);
+          if (!isNaN(storageIdx)) {
+            stored.splice(storageIdx, 1);
+            localStorage.setItem('fito_user_fits', JSON.stringify(stored));
+          }
+        } catch(e2) {}
+        location.href = '/';
+        return;
+      }
+
       /* 1순위: 댓글·좋아요 버튼 (data-action) */
       const actionBtn = e.target.closest('[data-action]');
       if (actionBtn) {
