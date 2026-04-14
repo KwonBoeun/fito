@@ -59,7 +59,7 @@ function updateSeekUI() {
   document.getElementById('seek-input').value        = pct;
   document.getElementById('vod-time').textContent   =
     `${fmtDur(playState.cur)} / ${fmtDur(playState.total)}`;
-  savePos(playState.vodId, Math.floor(playState.cur));
+  if (playState.vodId !== null) savePos(playState.vodId, Math.floor(playState.cur));
 }
 
 function setPlaying(val) {
@@ -110,7 +110,7 @@ function initPlayer(vod) {
     const bg        = document.getElementById('vod-player-bg');
     realVideo.src   = vod.userUrl;
     realVideo.style.display = '';
-    bg.style.display = 'none';
+    if (bg) bg.style.display = 'none';
 
     realVideo.addEventListener('loadedmetadata', () => {
       playState.total = Math.floor(realVideo.duration);
@@ -129,8 +129,6 @@ function initPlayer(vod) {
     /* 재생 제어를 실제 비디오에 연결 */
     playState._realVideo = realVideo;
   }
-
-  const wrap = document.getElementById('player-wrap');
 
   /* 탭 → 컨트롤 토글 */
   wrap.addEventListener('click', e => {
@@ -261,42 +259,6 @@ function init() {
       });
     } catch(e) {}
     if (!vod) vod = VOD_DATA[0];
-  }
-
-  /* 유저 업로드 영상이면 real-video 요소에 src 연결 */
-  if (vod.isUserUploaded && vod.userUrl) {
-    const realVideo = document.getElementById('real-video');
-    const bg        = document.getElementById('vod-player-bg');
-    realVideo.src   = vod.userUrl;
-    realVideo.style.display = '';
-    if (bg) bg.style.display = 'none';
-    playState.total = 0;
-
-    /* 실제 재생/정지 연결 */
-    realVideo.addEventListener('loadedmetadata', () => {
-      playState.total = Math.floor(realVideo.duration);
-      updateSeekUI();
-    });
-    realVideo.addEventListener('timeupdate', () => {
-      playState.cur = Math.floor(realVideo.currentTime);
-      if (!playState.total) playState.total = Math.floor(realVideo.duration) || 0;
-      updateSeekUI();
-      savePos(vod.id, playState.cur);
-    });
-    /* seekbar와 real-video 연동 */
-    const seekInput = document.getElementById('seek-input');
-    if (seekInput) {
-      seekInput.addEventListener('input', () => {
-        if (playState.total) realVideo.currentTime = playState.total * seekInput.value / 100;
-      });
-    }
-    /* 중앙/하단 재생버튼과 연동 */
-    const origSetPlaying = setPlaying;
-    window.setPlaying = function(val) {
-      origSetPlaying(val);
-      if (val) realVideo.play().catch(()=>{});
-      else     realVideo.pause();
-    };
   }
 
   document.title = `FITO - ${vod.title}`;

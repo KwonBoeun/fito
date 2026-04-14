@@ -45,6 +45,14 @@ def api_upload_fits():
     video.save(os.path.join(UPLOAD_FOLDER, filename))
     return jsonify({'ok': True, 'videoUrl': f'/static/uploads/{filename}'})
 
+@app.route('/upload/community')
+def upload_community():
+    return render_template('upload_community.html')
+
+@app.route('/upload/question')
+def upload_question():
+    return render_template('upload_question.html')
+
 
 # ── 상세 페이지 ──
 @app.route('/live/<int:content_id>')

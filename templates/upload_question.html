@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FITO - 질문 업로드</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/upload_post.css') }}"/>
+</head>
+<body>
+
+<header class="upost-header">
+  <button class="upost-back" onclick="history.back()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="upost-header-title">질문 작성</span>
+  <div style="width:36px"></div>
+</header>
+
+<main class="upost-body" id="upost-body">
+
+  <!-- 제목 -->
+  <input type="text" class="upost-title-input" id="title-input"
+         placeholder="제목을 입력하세요..." maxlength="60"/>
+
+  <!-- 내용 -->
+  <textarea class="upost-content" id="content-input"
+            placeholder="내용을 입력하세요..." rows="5" maxlength="1000"></textarea>
+  <div class="upost-char-count"><span id="char-count">0</span>/1000</div>
+
+  <div class="upost-divider"></div>
+
+  <!-- 사진 업로드 -->
+  <div class="upost-img-section">
+    <div class="upost-img-scroll" id="img-scroll">
+      <div class="upost-img-add" id="img-add-btn">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+    </div>
+    <input type="file" id="img-input" accept="image/*" multiple style="display:none"/>
+    <p class="upost-img-hint" id="img-hint">사진 0/5</p>
+  </div>
+
+  <div class="upost-divider"></div>
+
+  <!-- 익명 게시 -->
+  <div class="upost-option-row">
+    <span class="upost-option-label">익명게시</span>
+    <div class="upost-toggle-group">
+      <button class="upost-toggle-btn" data-val="off" id="anon-off">off</button>
+      <button class="upost-toggle-btn active" data-val="on" id="anon-on">on</button>
+    </div>
+  </div>
+
+  <!-- 내 프로필 게시 (익명 OFF일 때 활성화) -->
+  <div class="upost-option-row" id="profile-row">
+    <span class="upost-option-label upost-option-label-sub">내 프로필 게시</span>
+    <div class="upost-toggle-group disabled" id="profile-toggle">
+      <button class="upost-toggle-btn" data-val="off">off</button>
+      <button class="upost-toggle-btn" data-val="on">on</button>
+    </div>
+  </div>
+
+  <!-- 리워드 추가 -->
+  <div class="upost-option-row">
+    <span class="upost-option-label">리워드 추가</span>
+    <div class="upost-reward-wrap">
+      <input type="number" id="reward-input" class="upost-reward-input"
+             min="0" max="9999" value="0" placeholder="0"/>
+      <button class="upost-reward-apply" id="reward-apply">적용</button>
+    </div>
+  </div>
+  <p class="upost-reward-hint">보유 리워드 <span id="reward-balance">120</span>p</p>
+
+  <div class="upost-divider"></div>
+
+  <!-- 태그 추가 -->
+  <div class="upost-section-row">
+    <span class="upost-section-label">태그 추가</span>
+    <button class="upost-tag-add-btn" id="tag-add-btn">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+  </div>
+  <div class="upost-tag-list" id="tag-list"></div>
+
+  <div class="upost-tag-input-wrap" id="tag-input-wrap" style="display:none">
+    <input type="text" id="tag-input" class="upost-tag-input"
+           placeholder="태그 입력 (예: 스쿼트)" maxlength="15"/>
+    <button class="upost-tag-confirm" id="tag-confirm">추가</button>
+  </div>
+
+</main>
+
+<footer class="upost-footer">
+  <button class="upost-draft-btn" id="draft-btn">임시저장</button>
+  <button class="upost-upload-btn" id="upload-btn">업로드</button>
+</footer>
+
+<!-- 완료 -->
+<div class="upost-done-ov" id="done-ov" style="display:none">
+  <div class="upost-done-box">
+    <div class="upost-done-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <p class="upost-done-title">질문이 등록됐어요!</p>
+    <p class="upost-done-sub">메인화면에서 확인하세요</p>
+    <button class="upost-done-home" onclick="location.href='/'">홈으로 이동</button>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/upload_question.js') }}"></script>
+</body>
+</html>

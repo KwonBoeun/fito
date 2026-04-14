@@ -1,0 +1,245 @@
+/* ===========================
+   FITO - Community / Question Upload CSS
+   =========================== */
+:root{
+  --black:#000;--white:#fff;
+  --gray-50:#f9f9f9;--gray-100:#f2f2f2;--gray-200:#e5e5e5;
+  --gray-300:#ccc;--gray-400:#999;--gray-500:#666;
+  --live-red:#e8161c;--accent:#1a73e8;
+  --r-sm:6px;--r-md:10px;--r-full:999px;
+  --header-h:52px;--footer-h:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{
+  height:100%;background:var(--white);
+  font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;
+  font-size:14px;max-width:390px;margin:0 auto;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+
+/* ── 헤더 ── */
+.upost-header{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;height:var(--header-h);
+  padding:0 16px;background:var(--white);
+  border-bottom:1px solid var(--gray-200);gap:10px;
+}
+.upost-back{
+  width:36px;height:36px;border:none;background:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.upost-back svg{width:22px;height:22px;stroke:var(--black);fill:none;stroke-width:2}
+.upost-header-title{flex:1;font-size:16px;font-weight:700;text-align:center}
+
+/* ── 본문 스크롤 영역 ── */
+.upost-body{
+  height:calc(100vh - var(--header-h) - var(--footer-h));
+  overflow-y:auto;padding-bottom:8px;
+}
+
+/* ── 사진 업로드 ── */
+.upost-img-section{padding:14px 16px 8px}
+.upost-img-scroll{
+  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;
+}
+.upost-img-scroll::-webkit-scrollbar{display:none}
+
+.upost-img-add{
+  width:72px;height:72px;border-radius:var(--r-md);
+  border:1.5px dashed var(--gray-300);background:var(--gray-50);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;cursor:pointer;transition:border-color .15s;
+}
+.upost-img-add:active{border-color:var(--black)}
+.upost-img-add svg{width:22px;height:22px;stroke:var(--gray-400);fill:none;stroke-width:2}
+
+.upost-img-thumb-wrap{
+  position:relative;flex-shrink:0;
+}
+.upost-img-thumb{
+  width:72px;height:72px;border-radius:var(--r-md);
+  object-fit:cover;display:block;border:1px solid var(--gray-200);
+}
+.upost-img-del{
+  position:absolute;top:-6px;right:-6px;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--black);color:#fff;
+  border:none;cursor:pointer;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;line-height:1;
+}
+
+.upost-img-hint{
+  font-size:11px;color:var(--gray-400);margin-top:6px;
+}
+
+/* ── 제목 입력 (질문 전용) ── */
+.upost-title-input{
+  width:100%;border:none;outline:none;
+  font-size:18px;font-weight:700;color:var(--black);
+  font-family:inherit;padding:16px 16px 8px;
+  background:transparent;
+}
+.upost-title-input::placeholder{color:var(--gray-300)}
+
+/* ── 내용 입력 ── */
+.upost-content{
+  width:100%;border:none;outline:none;resize:none;
+  font-size:14px;color:var(--black);line-height:1.7;
+  font-family:inherit;padding:8px 16px;background:transparent;
+}
+.upost-content::placeholder{color:var(--gray-400)}
+.upost-char-count{
+  text-align:right;padding:0 16px 8px;
+  font-size:11px;color:var(--gray-400);
+}
+
+/* ── 구분선 ── */
+.upost-divider{height:8px;background:var(--gray-100);margin:4px 0}
+
+/* ── 섹션 행 (태그 추가 헤더) ── */
+.upost-section-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px 8px;
+}
+.upost-section-label{font-size:14px;font-weight:700}
+.upost-tag-add-btn{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--gray-200);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.upost-tag-add-btn svg{width:14px;height:14px;stroke:var(--gray-600);fill:none;stroke-width:2.5}
+.upost-tag-add-btn:active{background:var(--gray-300)}
+
+/* ── 태그 목록 ── */
+.upost-tag-list{
+  display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px;
+  min-height:32px;
+}
+.upost-tag-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--gray-100);border-radius:var(--r-full);
+  padding:4px 10px;font-size:12px;font-weight:600;
+  color:var(--accent);
+}
+.upost-tag-chip-del{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--gray-300);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--gray-500);line-height:1;flex-shrink:0;
+}
+
+/* ── 태그 입력 영역 ── */
+.upost-tag-input-wrap{
+  display:flex;gap:8px;padding:4px 16px 12px;align-items:center;
+}
+.upost-tag-input{
+  flex:1;border:1.5px solid var(--gray-200);border-radius:var(--r-full);
+  padding:7px 14px;font-size:13px;font-family:inherit;outline:none;
+}
+.upost-tag-input:focus{border-color:var(--accent)}
+.upost-tag-confirm{
+  padding:7px 14px;border-radius:var(--r-full);
+  background:var(--black);color:#fff;
+  font-size:12px;font-weight:700;border:none;cursor:pointer;
+  font-family:inherit;white-space:nowrap;
+}
+
+/* ── 옵션 행 (익명·프로필·리워드 — 질문 전용) ── */
+.upost-option-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:1px solid var(--gray-100);
+}
+.upost-option-label{font-size:14px;font-weight:600}
+.upost-option-label-sub{font-size:13px;color:var(--gray-500)}
+
+/* 토글 그룹 */
+.upost-toggle-group{
+  display:flex;border:1.5px solid var(--gray-300);border-radius:var(--r-sm);
+  overflow:hidden;
+}
+.upost-toggle-group.disabled{opacity:.4;pointer-events:none}
+.upost-toggle-btn{
+  padding:5px 14px;border:none;background:var(--white);
+  font-size:12px;font-weight:600;cursor:pointer;
+  font-family:inherit;color:var(--gray-500);
+  transition:background .15s;
+}
+.upost-toggle-btn + .upost-toggle-btn{border-left:1px solid var(--gray-300)}
+.upost-toggle-btn.active{background:var(--gray-200);color:var(--black)}
+
+/* 리워드 */
+.upost-reward-wrap{
+  display:flex;align-items:center;gap:6px;
+}
+.upost-reward-input{
+  width:60px;border:1.5px solid var(--gray-200);border-radius:var(--r-sm);
+  padding:5px 8px;font-size:13px;font-family:inherit;text-align:center;
+  outline:none;
+}
+.upost-reward-input:focus{border-color:var(--accent)}
+.upost-reward-apply{
+  padding:5px 12px;border-radius:var(--r-sm);
+  background:var(--gray-200);color:var(--black);
+  font-size:12px;font-weight:700;border:none;cursor:pointer;
+  font-family:inherit;
+}
+.upost-reward-apply:active{background:var(--gray-300)}
+.upost-reward-hint{
+  font-size:11px;color:var(--gray-400);
+  text-align:right;padding:4px 16px 8px;
+}
+
+/* ── 하단 푸터 ── */
+.upost-footer{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:390px;height:var(--footer-h);
+  background:var(--white);border-top:1px solid var(--gray-200);
+  display:flex;align-items:center;padding:0 16px;gap:10px;z-index:100;
+}
+.upost-draft-btn{
+  flex:1;padding:12px;border-radius:var(--r-md);
+  background:var(--gray-100);color:var(--gray-500);
+  font-size:14px;font-weight:600;border:none;cursor:pointer;
+  font-family:inherit;
+}
+.upost-draft-btn:active{background:var(--gray-200)}
+.upost-upload-btn{
+  flex:2;padding:12px;border-radius:var(--r-md);
+  background:var(--live-red);color:#fff;
+  font-size:14px;font-weight:700;border:none;cursor:pointer;
+  font-family:inherit;transition:opacity .15s;
+}
+.upost-upload-btn:disabled{opacity:.4;cursor:default}
+.upost-upload-btn:not(:disabled):active{opacity:.85}
+
+/* ── 완료 오버레이 ── */
+.upost-done-ov{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center;
+}
+.upost-done-box{
+  background:var(--white);border-radius:20px;padding:36px 28px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  min-width:240px;
+}
+.upost-done-check{
+  width:60px;height:60px;border-radius:50%;background:var(--black);
+  display:flex;align-items:center;justify-content:center;
+}
+.upost-done-check svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2.5}
+.upost-done-title{font-size:18px;font-weight:800}
+.upost-done-sub{font-size:13px;color:var(--gray-400)}
+.upost-done-home{
+  margin-top:6px;padding:12px 28px;border-radius:var(--r-full);
+  background:var(--black);color:#fff;border:none;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+}
+/* ── 유효성 오류 진동 애니메이션 ── */
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%,60%{transform:translateX(-6px)}
+  40%,80%{transform:translateX(6px)}
+}
+.shake{animation:shake .4s ease}
