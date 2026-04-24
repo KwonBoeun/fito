@@ -1,8 +1,11 @@
 import os, uuid
 from flask import Flask, render_template, request, jsonify
 
+from src.db import check_db_connection, get_database_url
+
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB
+app.config['DATABASE_URL'] = get_database_url()
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -226,5 +229,14 @@ def reward_earn():
 def reward_history():
     return render_template('mypage_reward_history.html')
 
+
+@app.route('/health/db')
+def health_db():
+    ok, message = check_db_connection(app.config['DATABASE_URL'])
+    status_code = 200 if ok else 500
+    return jsonify({'ok': ok, 'message': message}), status_code
+
 if __name__ == '__main__':
+    ok, message = check_db_connection(app.config['DATABASE_URL'])
+    print(f"[DB] {message}")
     app.run(debug=True)
