@@ -260,3 +260,48 @@ html,body{font-family:'Noto Sans KR',sans-serif;background:var(--white);color:va
 /* ── 애니메이션 ── */
 @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .ani{animation:fadeInUp .3s ease both}
+
+/* 순서 편집 모드 시 리스트 스타일 */
+.workout-list.edit-mode .workout-item {
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 유지 */
+    padding: 12px 16px;
+    background: #fff;
+    border-bottom: 1px solid #f1f1f1;
+    cursor: default;
+}
+
+/* 기존 정보 영역이 밀리지 않도록 너비 조정 */
+.workout-list.edit-mode .workout-info {
+    flex: 1; /* 핸들 제외 남은 공간 모두 차지 */
+}
+
+/* 드래그 핸들 디자인 */
+.order-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin-right: 12px;
+    color: #ccc;
+    font-size: 18px;
+    cursor: grab;
+    user-select: none;
+}
+
+.order-handle:active {
+    cursor: grabbing;
+}
+
+/* 드래그 중인 아이템 (잔상) 디자인 */
+.sortable-ghost {
+    opacity: 0.3;
+    background: #f0fdf4 !important;
+    border: 1px dashed #2d9e5e !important;
+}
+
+/* 편집 모드일 때 기존 '수정' 버튼이나 세트 정보 위치 고정 */
+.workout-list.edit-mode .workout-manage {
+    display: none; /* 편집 중엔 수정 버튼 숨김 */
+}

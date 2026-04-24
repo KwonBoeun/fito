@@ -6,18 +6,34 @@
   <title>FITO - 나의 운동 분석</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/analyze_record.css') }}"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* 드롭다운 및 모달 관련 필수 스타일 보강 */
+    .more-dropdown { display: none; position: absolute; top: 30px; right: 0; background: #fff; border: 1px solid #eee; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; min-width: 120px; }
+    .more-dropdown.open { display: block; }
+    .autocomplete-items { position: absolute; border: 1px solid #d4d4d4; z-index: 1100; top: 100%; left: 0; right: 0; background: #fff; max-height: 150px; overflow-y: auto; border-radius: 0 0 8px 8px; }
+    .autocomplete-items div { padding: 10px; cursor: pointer; border-bottom: 1px solid #f1f1f1; font-size: 14px; }
+    .autocomplete-items div:hover { background-color: #f9f9f9; }
+    .edit-mode .order-handle { cursor: grab; margin-right: 10px; color: #ccc; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
+
 <body>
 <header class="rc-header">
-  <a href="{{ url_for('analyze_record') }}" class="rc-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
+  <a href="javascript:history.back()" class="rc-back">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
   <span class="rc-header-title">나의 운동 분석</span>
   <div class="rc-header-right">
     <div style="position:relative">
-      <div class="more-btn" onclick="toggleMore()"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></div>
+      <div class="more-btn" onclick="toggleMore(event)">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+          <circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>
+        </svg>
+      </div>
       <div class="more-dropdown" id="moreDropdown">
-        <div class="more-dd-item" onclick="closeMore()">기록 추가</div>
-        <div class="more-dd-item" onclick="closeMore()">기록 수정</div>
-        <div class="more-dd-item" onclick="closeMore()">순서 편집</div>
+        <div class="more-dd-item" onclick="openAddModal()">기록 추가</div>
+        <div class="more-dd-item" onclick="startEditOrder()">순서 편집</div>
         <div class="more-dd-item danger" onclick="showResetModal()">기록 초기화</div>
       </div>
     </div>
@@ -25,46 +41,79 @@
 </header>
 
 <div class="rc-content">
-  <!-- 나의 정보 -->
-  <div class="rc-stat-bar rc-no-cursor">
+  <div class="rc-stat-bar">
     <div class="rc-date" id="rcDate">2025.00.00 (금)</div>
     <div class="rc-stats">
       <div class="rc-stat-item"><span class="rc-stat-label">나의 키</span><span class="rc-stat-value" id="sHeight">175cm</span></div>
       <div class="rc-stat-item"><span class="rc-stat-label">나의 체중</span><span class="rc-stat-value" id="sWeight">68kg</span></div>
-      <div class="rc-stat-item"><span class="rc-stat-label">운동 시간</span><span class="rc-stat-value" id="sTime">01H 20M</span></div>
-      <div class="rc-stat-item"><span class="rc-stat-label">칼로리</span><span class="rc-stat-value" id="sKcal">0420kcal</span></div>
+      <div class="rc-stat-item"><span class="rc-stat-label">운동 시간</span><span class="rc-stat-value" id="sTime">00H 00M</span></div>
+      <div class="rc-stat-item"><span class="rc-stat-label">칼로리</span><span class="rc-stat-value" id="sKcal">0000kcal</span></div>
     </div>
   </div>
 
-  <!-- 오늘 운동 분석 레이더 -->
   <section class="rc-section rc-no-cursor">
     <div style="margin-bottom:10px">
-      <div style="font-size:15px;font-weight:700">나의 오늘 운동은 <span id="topPct" style="color:#2d9e5e;font-size:19px;font-weight:900">상위 12%</span>이에요</div>
-      <div style="font-size:12px;color:#666;margin-top:4px" id="radarSummary">지구력은 최고지만, 집중도가 낮아요.</div>
+      <div style="font-size:15px;font-weight:700">나의 오늘 운동은 <span id="topPct" style="color:#2d9e5e;font-size:19px;font-weight:900">상위 --%</span>이에요</div>
+      <div style="font-size:12px;color:#666;margin-top:4px" id="radarSummary">데이터를 불러오는 중입니다.</div>
     </div>
     <div style="position:relative;width:240px;height:240px;margin:0 auto 12px">
       <canvas id="radarChart"></canvas>
     </div>
-    <!-- 항목별 수치 -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="radarScores"></div>
   </section>
 
-  <!-- 오늘 한 운동 리스트 -->
   <section class="rc-section rc-no-cursor">
     <div class="rc-section-header"><div class="rc-section-title">오늘 한 운동</div></div>
     <div class="workout-list-wrap">
-      <div class="workout-list" id="workoutList"></div>
+      <div class="workout-list" id="workoutList">
+          <div class="workout-empty">등록된 운동이 없습니다.</div>
+      </div>
     </div>
   </section>
 
-  <!-- 분석 텍스트 -->
   <section class="rc-section rc-no-cursor">
     <div class="rc-section-header"><div class="rc-section-title">분석</div></div>
-    <div class="analysis-box" id="analysisBox">데이터를 불러오는 중...</div>
+    <div class="analysis-box" id="analysisBox">기록을 추가하면 분석이 시작됩니다.</div>
   </section>
 </div>
 
-<!-- 초기화 모달 -->
+<div id="editOrderFooter" style="display:none; position:fixed; bottom:30px; left:50%; transform:translateX(-50%); width:auto; min-width:160px; max-width:200px; z-index:2000;">
+    <button class="modal-btn primary" style="width:100%; height:46px; padding:0 24px; border-radius:23px; font-size:15px; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.15); border:none;" onclick="saveOrderChange()">
+        순서 편집 완료
+    </button>
+</div>
+
+<div class="modal-wrap" id="recordModal">
+  <div class="modal-box record-modal">
+    <div class="modal-title" id="modalTitle">운동 기록 추가</div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>운동 날짜</label>
+        <input type="date" id="workDate">
+      </div>
+      <div class="form-group" style="position:relative;">
+        <label>운동명</label>
+        <input type="text" id="workName" placeholder="예: 벤치프레스" oninput="suggestWorkouts(this.value)" autocomplete="off">
+        <div id="autoCompleteList" class="autocomplete-items"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>세트</label>
+          <input type="number" id="workSet" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label id="unitLabel">횟수/시간(분)</label>
+          <input type="number" id="workVal" placeholder="0">
+        </div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn outline" onclick="closeRecordModal()">취소</button>
+      <button class="modal-btn primary" onclick="saveRecord()">저장하기</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-wrap" id="resetModal">
   <div class="modal-box">
     <div class="modal-title">기록을 초기화할까요?</div>
@@ -76,10 +125,8 @@
   </div>
 </div>
 
-<!-- Bottom Navigation -->
 <nav class="bottom-nav" id="bottom-nav"></nav>
 <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
-
 <script src="{{ url_for('static', filename='js/analyze_record_workout.js') }}"></script>
 </body>
 </html>

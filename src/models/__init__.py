@@ -1,3 +1,5 @@
-from src.models.user import User
+# src/models/__init__.py
 
-__all__ = ["User"]
+from .user import User, WorkoutLog
+
+__all__ = ["User", "WorkoutLog"]
