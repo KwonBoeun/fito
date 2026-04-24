@@ -3,10 +3,11 @@ import secrets
 
 from flask import Blueprint, jsonify, render_template, request
 
-from src.auth_store import create_user, find_user_by_username, verify_user_password
+from src.services import AuthService
 
 
 auth_bp = Blueprint("auth", __name__)
+auth_service = AuthService()
 
 _verification_codes: dict[str, str] = {}
 _verified_contacts: set[str] = set()
@@ -46,7 +47,7 @@ def _validate_signup_payload(payload: dict) -> dict[str, str]:
 
     if not re.fullmatch(r"[a-zA-Z0-9_]{4,20}", username):
         errors["username"] = "아이디는 영문, 숫자, 밑줄 조합 4~20자여야 합니다."
-    elif find_user_by_username(username):
+    elif auth_service.username_exists(username):
         errors["username"] = "이미 사용 중인 아이디입니다."
 
     if len(password) < 8:
@@ -127,7 +128,7 @@ def check_username():
     if not re.fullmatch(r"[a-zA-Z0-9_]{4,20}", username):
         return jsonify({"ok": False, "message": "아이디 형식을 확인해 주세요."}), 400
 
-    exists = find_user_by_username(username) is not None
+    exists = auth_service.username_exists(username)
     return jsonify(
         {
             "ok": not exists,
@@ -144,7 +145,7 @@ def signup_api():
     if errors:
         return jsonify({"ok": False, "errors": errors}), 400
 
-    create_user(
+    auth_service.create_user(
         {
             "name": payload["name"].strip(),
             "contact": payload["contact"].strip(),
@@ -168,11 +169,11 @@ def login_api():
     username = payload.get("username", "").strip()
     password = payload.get("password", "")
 
-    user = find_user_by_username(username)
-    if not user or not verify_user_password(user, password):
+    user = auth_service.find_user_by_username(username)
+    if not user or not auth_service.verify_password(user, password):
         return jsonify({"ok": False, "message": "아이디 또는 비밀번호가 올바르지 않습니다."}), 401
 
-    return jsonify({"ok": True, "message": f"{user['nickname']}님, 환영합니다.", "redirectUrl": "/home"})
+    return jsonify({"ok": True, "message": f"{user['nickname']}님 환영합니다.", "redirectUrl": "/home"})
 
 
 def register_auth_routes(app) -> None:

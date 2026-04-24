@@ -14,6 +14,7 @@ function getField(name) {
 }
 
 function setMessage(element, message, type = "") {
+  if (!element) return;
   element.textContent = message;
   element.className = `${element.className.split(" ")[0]}${type ? ` is-${type}` : ""}`;
 }
@@ -28,9 +29,7 @@ function renderErrors(errors = {}) {
   clearErrors();
   Object.entries(errors).forEach(([field, message]) => {
     const target = document.querySelector(`[data-error-for="${field}"]`);
-    if (target) {
-      target.textContent = message;
-    }
+    if (target) target.textContent = message;
   });
 }
 
@@ -38,8 +37,14 @@ function resetVerificationState() {
   verificationSent = false;
   verificationComplete = false;
   verifiedContact = "";
-  sendCodeButton.textContent = "인증";
-  sendCodeButton.classList.remove("is-verified");
+  if (sendCodeButton) {
+    sendCodeButton.textContent = "인증";
+    sendCodeButton.classList.remove("is-verified");
+  }
+  const contactField = getField("contact");
+  const codeField = getField("verificationCode");
+  if (contactField) contactField.readOnly = false;
+  if (codeField) codeField.readOnly = false;
 }
 
 getField("contact")?.addEventListener("input", () => {
