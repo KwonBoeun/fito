@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FITO | 회원가입</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body class="auth-body">
+  <main class="mobile-app signup-screen-flat">
+    <section class="signup-flat-body no-header">
+      <form id="signup-form" class="signup-flat-form">
+        <div class="signup-section">
+          <div class="signup-section-head">
+            <strong>기본 정보</strong>
+            <span>본인 확인에 사용됩니다</span>
+          </div>
+
+          <label class="field">
+            <span>이름</span>
+            <input type="text" name="name" placeholder="이름">
+            <small class="error-text" data-error-for="name"></small>
+          </label>
+
+          <label class="field">
+            <span>전화번호 또는 이메일</span>
+            <input type="text" name="contact" placeholder="01012345678 또는 email@example.com">
+            <small class="error-text" data-error-for="contact"></small>
+          </label>
+
+          <div class="inline-field signup-inline-field">
+            <label class="field">
+              <span>인증 번호</span>
+              <input type="text" name="verificationCode" placeholder="6자리 인증번호">
+              <small class="error-text" data-error-for="verificationCode"></small>
+            </label>
+            <button type="button" id="send-code-btn" class="secondary-btn compact-btn">인증</button>
+          </div>
+          <p id="code-help" class="helper-text"></p>
+        </div>
+
+        <div class="signup-section">
+          <div class="signup-section-head">
+            <strong>로그인 정보</strong>
+            <span>아이디와 비밀번호를 설정합니다</span>
+          </div>
+
+          <div class="inline-field signup-inline-field">
+            <label class="field">
+              <span>아이디</span>
+              <input type="text" name="username" placeholder="영문, 숫자, 밑줄 4~20자">
+              <small class="error-text" data-error-for="username"></small>
+            </label>
+            <button type="button" id="check-username-btn" class="secondary-btn compact-btn">확인</button>
+          </div>
+          <p id="username-help" class="helper-text"></p>
+
+          <label class="field">
+            <span>비밀번호</span>
+            <input type="password" name="password" placeholder="영문+숫자 포함 8자 이상">
+            <small class="error-text" data-error-for="password"></small>
+          </label>
+
+          <label class="field">
+            <span>비밀번호 확인</span>
+            <input type="password" name="passwordConfirm" placeholder="비밀번호 확인">
+            <small class="error-text" data-error-for="passwordConfirm"></small>
+          </label>
+        </div>
+
+        <div class="signup-section">
+          <div class="signup-section-head">
+            <strong>프로필</strong>
+            <span>앱에서 표시되는 정보입니다</span>
+          </div>
+
+          <label class="field">
+            <span>회원 유형 선택</span>
+            <select name="memberType">
+              <option value="">선택해 주세요</option>
+              <option value="일반 회원">일반 회원</option>
+              <option value="트레이너">트레이너</option>
+              <option value="기업 회원">기업 회원</option>
+            </select>
+            <small class="error-text" data-error-for="memberType"></small>
+          </label>
+
+          <label class="field">
+            <span>닉네임</span>
+            <input type="text" name="nickname" placeholder="닉네임">
+            <small class="error-text" data-error-for="nickname"></small>
+          </label>
+
+          <p id="signup-message" class="feedback" aria-live="polite"></p>
+        </div>
+      </form>
+    </section>
+
+    <section class="auth-bottom signup-action-bottom">
+      <a href="/" class="secondary-btn signup-prev-btn">이전</a>
+      <button form="signup-form" type="submit" class="primary-btn simple-login-btn">회원가입</button>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/auth-signup.js') }}"></script>
+</body>
+</html>

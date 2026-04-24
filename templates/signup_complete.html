@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FITO | 회원가입 완료</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body class="auth-body">
+  <main class="mobile-app complete-screen">
+    <section class="complete-wrap">
+      <div class="complete-badge">
+        <div class="complete-badge-inner">✓</div>
+      </div>
+      <div class="complete-copy">
+        <p class="step-chip ghost">가입 완료</p>
+        <h1>회원가입이 완료되었습니다.</h1>
+        <p class="screen-copy">이제 로그인하거나 바로 운동 유형 분석을 시작할 수 있습니다.</p>
+      </div>
+    </section>
+
+    <section class="auth-bottom dual">
+      <a class="secondary-btn action-link" href="/analyze">운동 유형 분석하기</a>
+      <a class="primary-btn action-link strong" href="/">로그인</a>
+    </section>
+  </main>
+</body>
+</html>

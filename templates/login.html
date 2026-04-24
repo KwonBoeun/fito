@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FITO | 로그인</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body class="auth-body">
+  <main class="mobile-app login-screen-simple">
+    <section class="login-simple-wrap">
+      <div class="simple-main-cluster">
+        <div class="simple-logo-box" aria-hidden="true">
+          <div class="simple-logo-mark">
+            <span class="logo-ring"></span>
+            <span class="logo-core">F</span>
+            <span class="logo-dot"></span>
+          </div>
+        </div>
+
+        <form id="login-form" class="simple-login-form">
+          <label class="simple-field">
+            <input type="text" name="username" placeholder="아이디" autocomplete="username">
+          </label>
+          <label class="simple-field">
+            <input type="password" name="password" placeholder="비밀번호" autocomplete="current-password">
+          </label>
+
+          <button form="login-form" type="submit" class="primary-btn simple-login-btn">로그인하기</button>
+
+          <label class="simple-check-row">
+            <input type="checkbox" name="keepLoggedIn">
+            <span>로그인 상태 유지</span>
+          </label>
+
+          <div class="simple-link-row">
+            <a href="#">아이디 / 비밀번호 찾기</a>
+            <a href="/signup">회원가입</a>
+          </div>
+
+          <p id="login-message" class="feedback login-feedback" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <div class="simple-divider" aria-hidden="true"></div>
+
+      <section class="simple-social-section" aria-label="소셜 로그인">
+        <p>SNS 계정으로 로그인하기</p>
+        <div class="simple-social-row">
+          <button type="button" class="simple-social-btn kakao" aria-label="카카오 로그인">●</button>
+          <button type="button" class="simple-social-btn naver" aria-label="네이버 로그인">N</button>
+          <button type="button" class="simple-social-btn facebook" aria-label="페이스북 로그인">f</button>
+          <button type="button" class="simple-social-btn apple" aria-label="애플 로그인"></button>
+        </div>
+      </section>
+    </section>
+
+    <section class="auth-bottom simple-bottom">
+      <a class="secondary-btn action-link simple-guest-btn" href="/home">비회원으로 시작하기</a>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/auth-login.js') }}"></script>
+</body>
+</html>
