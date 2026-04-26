@@ -14,6 +14,7 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     member_type: Mapped[str] = mapped_column(String(50), nullable=False)
     nickname: Mapped[str] = mapped_column(String(100), nullable=False)
+    profile_image_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -28,6 +29,7 @@ class User(Base):
             "username": self.username,
             "memberType": self.member_type,
             "nickname": self.nickname,
+            "profileImageUrl": self.profile_image_url,
             "createdAt": self.created_at,
         }
 

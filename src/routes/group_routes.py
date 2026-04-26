@@ -33,6 +33,59 @@ def list_groups():
     return jsonify({"ok": True, **data})
 
 
+@group_bp.get("/api/groups/<int:group_id>")
+def get_group_detail(group_id: int):
+    user_id = _current_user_id()
+    if not user_id:
+        return _unauthorized_response()
+
+    try:
+        data = _group_service().get_group_detail(user_id, group_id)
+    except ValueError as exc:
+        return jsonify({"ok": False, "message": str(exc)}), 404
+    return jsonify({"ok": True, **data})
+
+
+@group_bp.post("/api/groups/<int:group_id>/join")
+def request_join_group(group_id: int):
+    user_id = _current_user_id()
+    if not user_id:
+        return _unauthorized_response()
+
+    payload = request.get_json(silent=True) or {}
+    try:
+        group = _group_service().request_join_group(user_id, group_id, str(payload.get("greeting", "")))
+    except ValueError as exc:
+        return jsonify({"ok": False, "message": str(exc)}), 400
+    return jsonify({"ok": True, "group": group})
+
+
+@group_bp.post("/api/groups/<int:group_id>/requests/<int:membership_id>/approve")
+def approve_join_request(group_id: int, membership_id: int):
+    user_id = _current_user_id()
+    if not user_id:
+        return _unauthorized_response()
+
+    try:
+        _group_service().approve_join_request(user_id, group_id, membership_id)
+    except ValueError as exc:
+        return jsonify({"ok": False, "message": str(exc)}), 400
+    return jsonify({"ok": True})
+
+
+@group_bp.post("/api/groups/<int:group_id>/requests/<int:membership_id>/reject")
+def reject_join_request(group_id: int, membership_id: int):
+    user_id = _current_user_id()
+    if not user_id:
+        return _unauthorized_response()
+
+    try:
+        _group_service().reject_join_request(user_id, group_id, membership_id)
+    except ValueError as exc:
+        return jsonify({"ok": False, "message": str(exc)}), 400
+    return jsonify({"ok": True})
+
+
 @group_bp.get("/api/groups/search")
 def search_groups():
     user_id = _current_user_id()

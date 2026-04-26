@@ -51,6 +51,7 @@ class GroupMembership(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
     role: Mapped[str] = mapped_column(String(20), nullable=False, default="member")
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")
+    request_message: Mapped[str | None] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

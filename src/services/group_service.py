@@ -120,6 +120,106 @@ class GroupService:
                 ]
             }
 
+    def get_group_detail(self, user_id: int, group_id: int) -> dict:
+        with SessionLocal() as session:
+            member_counts = self._fetch_member_counts(session)
+            group = self._load_group(session, group_id)
+            serialized_group = self._serialize_group(group, user_id, member_counts)
+            members = self._serialize_members(group)
+            pending_requests = self._serialize_pending_requests(group, serialized_group["myRole"])
+            return {
+                "group": serialized_group,
+                "members": members,
+                "pendingRequests": pending_requests,
+            }
+
+    def request_join_group(self, user_id: int, group_id: int, greeting: str) -> dict:
+        cleaned_greeting = greeting.strip()
+        if len(cleaned_greeting) < 1 or len(cleaned_greeting) > 100:
+            raise ValueError("가입 인사는 1자 이상 100자 이하로 입력해 주세요.")
+
+        with SessionLocal() as session:
+            group = self._load_group(session, group_id)
+            if not group.is_active:
+                raise ValueError("현재 가입할 수 없는 그룹입니다.")
+
+            membership = next((item for item in group.memberships if item.user_id == user_id), None)
+            if membership and membership.status == "active":
+                raise ValueError("이미 가입한 그룹입니다.")
+            if membership and membership.status == "pending":
+                raise ValueError("이미 가입 신청을 보낸 그룹입니다.")
+
+            active_member_count = sum(1 for item in group.memberships if item.status == "active")
+            if active_member_count >= 100:
+                raise ValueError("그룹 정원이 가득 찼습니다.")
+
+            if membership:
+                membership.status = "pending"
+                membership.role = "member"
+                membership.request_message = cleaned_greeting
+            else:
+                session.add(
+                    GroupMembership(
+                        group_id=group.id,
+                        user_id=user_id,
+                        role="member",
+                        status="pending",
+                        request_message=cleaned_greeting,
+                    )
+                )
+
+            session.commit()
+            updated_group = self._load_group(session, group_id)
+            member_counts = self._fetch_member_counts(session)
+            return self._serialize_group(updated_group, user_id, member_counts)
+
+    def approve_join_request(self, approver_id: int, group_id: int, membership_id: int) -> None:
+        with SessionLocal() as session:
+            group = self._load_group(session, group_id)
+            approver = next(
+                (
+                    item
+                    for item in group.memberships
+                    if item.user_id == approver_id and item.status == "active" and item.role in {"owner", "manager"}
+                ),
+                None,
+            )
+            if not approver:
+                raise ValueError("가입 요청을 처리할 권한이 없습니다.")
+
+            target = next((item for item in group.memberships if item.id == membership_id), None)
+            if not target or target.status != "pending":
+                raise ValueError("가입 대기 중인 사용자를 찾을 수 없습니다.")
+
+            active_member_count = sum(1 for item in group.memberships if item.status == "active")
+            if active_member_count >= 100:
+                raise ValueError("그룹 정원이 가득 찼습니다.")
+
+            target.status = "active"
+            target.request_message = None
+            session.commit()
+
+    def reject_join_request(self, approver_id: int, group_id: int, membership_id: int) -> None:
+        with SessionLocal() as session:
+            group = self._load_group(session, group_id)
+            approver = next(
+                (
+                    item
+                    for item in group.memberships
+                    if item.user_id == approver_id and item.status == "active" and item.role in {"owner", "manager"}
+                ),
+                None,
+            )
+            if not approver:
+                raise ValueError("가입 요청을 처리할 권한이 없습니다.")
+
+            target = next((item for item in group.memberships if item.id == membership_id), None)
+            if not target or target.status != "pending":
+                raise ValueError("가입 대기 중인 사용자를 찾을 수 없습니다.")
+
+            session.delete(target)
+            session.commit()
+
     def _fetch_joined_groups(self, session, user_id: int, member_counts: dict[int, int]) -> list[Group]:
         statement = (
             select(Group)
@@ -191,10 +291,7 @@ class GroupService:
         return group
 
     def _serialize_group(self, group: Group, user_id: int, member_counts: dict[int, int]) -> dict:
-        membership = next(
-            (item for item in group.memberships if item.user_id == user_id and item.status == "active"),
-            None,
-        )
+        membership = next((item for item in group.memberships if item.user_id == user_id), None)
         created_at = (
             group.created_at.astimezone(timezone.utc)
             if group.created_at.tzinfo
@@ -208,7 +305,7 @@ class GroupService:
             "desc": group.description,
             "visibility": group.visibility,
             "createdAt": created_at.date().isoformat(),
-            "profileImg": group.profile_image_url or "",
+            "profileImg": group.profile_image_url or group.creator.profile_image_url or "",
             "bannerImg": group.banner_image_url or "",
             "members": member_counts.get(group.id, 0),
             "liveCnt": group.live_count,
@@ -216,10 +313,49 @@ class GroupService:
             "hasLive": group.live_count > 0,
             "liveViewers": 0,
             "inactive": self._is_inactive(group),
-            "joined": membership is not None,
-            "myRole": membership.role if membership else "none",
+            "joined": membership is not None and membership.status == "active",
+            "myRole": membership.role if membership and membership.status == "active" else "none",
+            "membershipStatus": membership.status if membership else "none",
             "inviteCode": group.invite_code,
         }
+
+    def _serialize_members(self, group: Group) -> list[dict]:
+        role_priority = {"owner": 0, "manager": 1, "member": 2}
+        memberships = sorted(
+            [item for item in group.memberships if item.status == "active"],
+            key=lambda item: (
+                role_priority.get(item.role, 9),
+                item.created_at,
+            ),
+        )
+        return [
+            {
+                "id": membership.user.id,
+                "name": membership.user.nickname,
+                "role": membership.role,
+                "profileImageUrl": membership.user.profile_image_url or "",
+            }
+            for membership in memberships
+        ]
+
+    def _serialize_pending_requests(self, group: Group, viewer_role: str) -> list[dict]:
+        if viewer_role not in {"owner", "manager"}:
+            return []
+
+        pending = sorted(
+            [item for item in group.memberships if item.status == "pending"],
+            key=lambda item: item.created_at,
+        )
+        return [
+            {
+                "membershipId": membership.id,
+                "userId": membership.user.id,
+                "name": membership.user.nickname,
+                "greeting": membership.request_message or "",
+                "profileImageUrl": membership.user.profile_image_url or "",
+            }
+            for membership in pending
+        ]
 
     def _sort_groups(self, groups: list[Group], sort: str, member_counts: dict[int, int]) -> list[Group]:
         if sort == "latest":

@@ -202,6 +202,7 @@ def me_api():
                 "username": user["username"],
                 "nickname": user["nickname"],
                 "memberType": user["memberType"],
+                "profileImageUrl": user["profileImageUrl"],
             },
         }
     )

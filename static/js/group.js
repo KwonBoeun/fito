@@ -138,12 +138,22 @@ function renderGroups() {
   }
 }
 
+function membershipBadgeHtml(group) {
+  if (group.membershipStatus === "pending") {
+    return '<span style="display:inline-flex;align-items:center;justify-content:center;padding:4px 10px;border-radius:999px;background:var(--blue);color:#fff;font-size:10px;font-weight:700;line-height:1">가입 신청중</span>';
+  }
+  if (!group.joined) {
+    return '<span style="color:var(--orange);font-size:10px;font-weight:700">추천</span>';
+  }
+  return "";
+}
+
 function searchCardHtml(group) {
   const tags = (group.tags || [])
     .slice(0, 3)
     .map((tag) => `<span class="gp-card-tag" onclick="event.stopPropagation();searchByTag('${tag}')">${tag}</span>`)
     .join("");
-  const badge = group.joined ? "" : '<span style="color:var(--orange);font-size:10px;font-weight:700">추천</span>';
+  const badge = membershipBadgeHtml(group);
 
   return `<div class="gp-card ani" onclick="goGroupMain(${group.id})" style="${group.joined ? "" : "background:var(--gray-50)"}">
     <div class="gp-card-img">${group.profileImg ? `<img src="${group.profileImg}" style="width:100%;height:100%;object-fit:cover"/>` : ""}</div>
@@ -177,12 +187,13 @@ function recommendCardHtml(group) {
     .slice(0, 3)
     .map((tag) => `<span class="gp-card-tag" onclick="event.stopPropagation();searchByTag('${tag}')">${tag}</span>`)
     .join("");
+  const badge = membershipBadgeHtml(group);
 
   return `<div class="gp-card ani" onclick="goGroupMain(${group.id})" style="background:var(--gray-50)">
     <div class="gp-card-img">${group.profileImg ? `<img src="${group.profileImg}" style="width:100%;height:100%;object-fit:cover"/>` : ""}</div>
     <div class="gp-card-info">
       <div class="gp-card-name">${group.name}</div>
-      <div class="gp-card-meta">멤버 ${group.members}명 <span style="color:var(--orange)">추천</span></div>
+      <div class="gp-card-meta">멤버 ${group.members}명 ${badge}</div>
       <div class="gp-card-tags">${tags}</div>
     </div>
   </div>`;

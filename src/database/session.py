@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from src.db import get_database_url
@@ -24,3 +24,23 @@ def init_db() -> None:
     import src.models.user  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
+    _ensure_schema_updates()
+
+
+def _ensure_schema_updates() -> None:
+    inspector = inspect(engine)
+    if "users" not in inspector.get_table_names():
+        return
+
+    user_columns = {column["name"] for column in inspector.get_columns("users")}
+    if "profile_image_url" not in user_columns:
+        with engine.begin() as connection:
+            connection.execute(text("ALTER TABLE users ADD COLUMN profile_image_url VARCHAR(255)"))
+
+    if "group_memberships" not in inspector.get_table_names():
+        return
+
+    membership_columns = {column["name"] for column in inspector.get_columns("group_memberships")}
+    if "request_message" not in membership_columns:
+        with engine.begin() as connection:
+            connection.execute(text("ALTER TABLE group_memberships ADD COLUMN request_message VARCHAR(100)"))

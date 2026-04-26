@@ -18,12 +18,29 @@
           </div>
         </div>
 
-        <form id="login-form" class="simple-login-form">
+        <form id="login-form" class="simple-login-form" method="post" autocomplete="on" novalidate>
           <label class="simple-field">
-            <input type="text" name="username" placeholder="아이디" autocomplete="username">
+            <input
+              type="text"
+              name="username"
+              placeholder="아이디"
+              autocomplete="username"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+              inputmode="text"
+            >
           </label>
           <label class="simple-field">
-            <input type="password" name="password" placeholder="비밀번호" autocomplete="current-password">
+            <input
+              type="password"
+              name="password"
+              placeholder="비밀번호"
+              autocomplete="current-password"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+            >
           </label>
 
           <button form="login-form" type="submit" class="primary-btn simple-login-btn">로그인하기</button>
