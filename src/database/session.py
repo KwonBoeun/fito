@@ -20,6 +20,7 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False
 
 
 def init_db() -> None:
+    import src.models.group  # noqa: F401
     import src.models.user  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

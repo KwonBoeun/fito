@@ -9,6 +9,11 @@ from src.database.session import SessionLocal
 from src.models import WorkoutLog
 
 class AuthService:
+    def find_user_by_id(self, user_id: int) -> dict | None:
+        with SessionLocal() as session:
+            user = UserRepository(session).find_by_id(user_id)
+            return self._user_to_auth_dict(user) if user else None
+
     def find_user_by_username(self, username: str) -> dict | None:
         with SessionLocal() as session:
             user = UserRepository(session).find_by_username(username)

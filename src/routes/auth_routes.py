@@ -1,8 +1,7 @@
 import re
 import secrets
-from datetime import datetime
 
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, jsonify, render_template, request, session
 
 from src.services import AuthService
 
@@ -54,7 +53,7 @@ def _validate_signup_payload(payload: dict) -> dict[str, str]:
     if len(password) < 8:
         errors["password"] = "비밀번호는 8자 이상이어야 합니다."
     elif not re.search(r"[A-Za-z]", password) or not re.search(r"\d", password):
-        errors["password"] = "비밀번호는 영문과 숫자를 모두 포함해야 합니다."
+        errors["password"] = "비밀번호에는 영문과 숫자가 모두 포함되어야 합니다."
 
     if password != password_confirm:
         errors["passwordConfirm"] = "비밀번호 확인이 일치하지 않습니다."
@@ -94,7 +93,7 @@ def send_verification_code():
     return jsonify(
         {
             "ok": True,
-            "message": "인증번호를 발송했습니다. 데모에서는 화면에 코드를 표시합니다.",
+            "message": "인증번호를 발송했습니다. 데모 화면에서는 코드를 함께 표시합니다.",
             "code": code,
         }
     )
@@ -169,16 +168,51 @@ def login_api():
     payload = request.get_json(silent=True) or {}
     username = payload.get("username", "").strip()
     password = payload.get("password", "")
+    keep_logged_in = bool(payload.get("keepLoggedIn"))
 
     user = auth_service.find_user_by_username(username)
     if not user or not auth_service.verify_password(user, password):
         return jsonify({"ok": False, "message": "아이디 또는 비밀번호가 올바르지 않습니다."}), 401
 
+    session.clear()
+    session["user_id"] = user["id"]
+    session["username"] = user["username"]
+    session["nickname"] = user["nickname"]
+    session.permanent = keep_logged_in
+
     return jsonify({"ok": True, "message": f"{user['nickname']}님 환영합니다.", "redirectUrl": "/home"})
+
+
+@auth_bp.get("/api/auth/me")
+def me_api():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"ok": False, "message": "로그인 상태가 아닙니다."}), 401
+
+    user = auth_service.find_user_by_id(int(user_id))
+    if not user:
+        session.clear()
+        return jsonify({"ok": False, "message": "사용자 정보를 찾을 수 없습니다."}), 404
+
+    return jsonify(
+        {
+            "ok": True,
+            "user": {
+                "id": user["id"],
+                "username": user["username"],
+                "nickname": user["nickname"],
+                "memberType": user["memberType"],
+            },
+        }
+    )
+
+
+@auth_bp.post("/api/auth/logout")
+def logout_api():
+    session.clear()
+    return jsonify({"ok": True, "redirectUrl": "/"})
 
 
 def register_auth_routes(app) -> None:
     if "auth" not in app.blueprints:
         app.register_blueprint(auth_bp)
-
-

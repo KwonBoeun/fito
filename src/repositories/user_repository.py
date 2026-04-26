@@ -8,6 +8,10 @@ class UserRepository:
     def __init__(self, session: Session):
         self.session = session
 
+    def find_by_id(self, user_id: int) -> User | None:
+        statement = select(User).where(User.id == user_id)
+        return self.session.scalar(statement)
+
     def find_by_username(self, username: str) -> User | None:
         statement = select(User).where(User.username.ilike(username.strip()))
         return self.session.scalar(statement)

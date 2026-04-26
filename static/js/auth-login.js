@@ -14,6 +14,7 @@ loginForm?.addEventListener("submit", async (event) => {
   const payload = {
     username: String(formData.get("username") || "").trim(),
     password: String(formData.get("password") || ""),
+    keepLoggedIn: formData.get("keepLoggedIn") === "on",
   };
 
   if (!payload.username || !payload.password) {
