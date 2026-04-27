@@ -117,6 +117,8 @@ window.openAddModal = function() {
     document.getElementById('workName').value = "";
     document.getElementById('workSet').value = "";
     document.getElementById('workVal').value = "";
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('workDate').value = today;
     document.getElementById('recordModal').classList.add('open');
 };
 

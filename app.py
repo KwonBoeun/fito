@@ -8,6 +8,7 @@ from src.database.session import init_db
 from src.routes.auth_routes import register_auth_routes
 from src.routes.group_routes import register_group_routes
 from src.db import check_db_connection, get_database_url
+from src.routes.workout_routes import register_workout_routes
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB
@@ -17,6 +18,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 init_db()
 register_auth_routes(app)
 register_group_routes(app)
+register_workout_routes(app)
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)

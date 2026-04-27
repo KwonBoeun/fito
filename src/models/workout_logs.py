@@ -17,8 +17,7 @@ class WorkoutLog(Base):
     duration_minutes: Mapped[int] = mapped_column(nullable=True, default=0) # 시간형 [cite: 277]
     calories_burned: Mapped[int] = mapped_column(nullable=False, default=0) # 산출 로직 적용 결과 [cite: 197]
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    order_index: Mapped[int] = mapped_column(nullable=True, default=0) # 운동 순서 제어용 필드
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    order_index: Mapped[int] = mapped_column(nullable=True, default=0)
 
     def to_dict(self) -> dict:
         return {

@@ -105,22 +105,25 @@ function renderTrainers() {
 }
 
 /* ── 기간 변경 ── */
-function onPeriodChange(p) {
-  // 기간별 데이터 달라지는 부분 (mock)
-  const data = {
-    week:  { sScore:72, wScore:35, sTitle:'나의 강점은 꾸준한 운동 빈도이에요', wTitle:'나의 취약점은 운동 집중도이에요' },
-    month: { sScore:78, wScore:30, sTitle:'나의 강점은 높은 운동량이에요',   wTitle:'나의 취약점은 낮은 목표 달성률이에요' },
-    '3month':{ sScore:80, wScore:28, sTitle:'나의 강점은 탁월한 성취도이에요', wTitle:'나의 취약점은 부위 균형도이에요' },
-  };
-  const d = data[p] || data['month'];
-  document.getElementById('strengthTitle').textContent = d.sTitle;
-  document.getElementById('weaknessTitle').textContent = d.wTitle;
-  if (strengthChart) strengthChart.destroy();
-  if (weakChart) weakChart.destroy();
-  strengthChart = renderDistribChart('strengthDistrib', 60, 15, d.sScore, '#2d9e5e');
-  weakChart     = renderDistribChart('weakDistrib',     60, 15, d.wScore, '#e05c4b');
-  document.getElementById('strengthPctLabel').textContent = `상위 ${Math.round((1 - d.sScore/100)*100)}%`;
-  document.getElementById('weakPctLabel').textContent     = `하위 ${Math.round(d.wScore)}%`;
+async function onPeriodChange(period) {
+  try {
+    const res  = await fetch(`/api/workout/strength?period=${period || 'month'}`);
+    const json = await res.json();
+    if (!json.ok) return;
+    const d = json.data;
+
+    document.getElementById('strengthTitle').textContent = d.strengthTitle;
+    document.getElementById('weaknessTitle').textContent = d.weaknessTitle;
+    document.getElementById('strengthPctLabel').textContent = d.strengthPct;
+    document.getElementById('weakPctLabel').textContent     = d.weaknessPct;
+    document.getElementById('strengthInterpret').innerHTML  = `<p>${d.strengthInterpret}</p>`;
+    document.getElementById('weaknessInterpret').innerHTML  = `<p>${d.weaknessInterpret}</p>`;
+
+    if (strengthChart) strengthChart.destroy();
+    if (weakChart)     weakChart.destroy();
+    strengthChart = renderDistribChart('strengthDistrib', 60, 15, d.sScore, '#2d9e5e');
+    weakChart     = renderDistribChart('weakDistrib',     60, 15, d.wScore, '#e05c4b');
+  } catch(e) { console.error('strength 로드 실패:', e); }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
