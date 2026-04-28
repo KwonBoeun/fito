@@ -1,6 +1,5 @@
 /* ===========================
-   FITO - 공용 캘린더 모달 JS v2
-   initCalendar(options) 호출로 초기화
+   FITO - 공용 캘린더 모달 JS v3
    =========================== */
 
 function initCalendar(opts) {
@@ -11,16 +10,34 @@ function initCalendar(opts) {
   var pickerEl     = document.getElementById(opts.monthPickerId);
   var confirmBtn   = document.getElementById(opts.confirmId);
   var cancelBtn    = document.getElementById(opts.cancelId);
-  var dayLabelsEl  = modal.querySelector('.cal-day-labels');
+  var dayLabelsEl  = modal ? modal.querySelector('.cal-day-labels') : null;
 
   var today       = new Date();
   var curYear     = today.getFullYear();
   var curMonth    = today.getMonth();
-  var selPeriod   = null;   // 현재 활성 기간 탭 ('week'|'month'|...|null)
-  var rangeStart  = null;   // Date
-  var rangeEnd    = null;   // Date
-  var pickStep    = 0;      // 직접선택: 0=시작대기 1=종료대기
+  var selPeriod   = null;
+  var rangeStart  = null;
+  var rangeEnd    = null;
+  var pickStep    = 0;
   var monthPickerOpen = false;
+  var activeDates = new Set();  // ★ 운동 기록 있는 날짜
+  var selectMode  = 'range';    // ★ 'range' | 'single'
+
+  /* ════════════════
+     ★ 활성 날짜 fetch
+     ════════════════ */
+  function fetchActiveDates(year, month, callback) {
+    fetch('/api/workout/active-dates?year=' + year + '&month=' + (month + 1))
+      .then(function(res) { return res.json(); })
+      .then(function(json) {
+        activeDates = json.ok ? new Set(json.dates) : new Set();
+        if (callback) callback();
+      })
+      .catch(function() {
+        activeDates = new Set();
+        if (callback) callback();
+      });
+  }
 
   /* ════════════════
      열기 / 닫기
@@ -29,26 +46,46 @@ function initCalendar(opts) {
     overlay.classList.add('open');
     modal.style.display = 'block';
     requestAnimationFrame(function() { modal.classList.add('open'); });
-    // 오늘 달로 이동
     curYear  = today.getFullYear();
     curMonth = today.getMonth();
+
+    // ★ 첫 탭 period/mode 읽기
+    var firstTab = modal.querySelector('.cal-period-tab');
+    if (firstTab) {
+      modal.querySelectorAll('.cal-period-tab').forEach(function(t, i) {
+        t.classList.toggle('active', i === 0);
+      });
+      selPeriod  = firstTab.dataset.period;
+      selectMode = (selPeriod === 'today') ? 'single' : 'range';
+    }
+
+    rangeStart = null;
+    rangeEnd   = null;
+    pickStep   = 0;
     renderCalendar();
   }
+
   function close() {
     modal.classList.remove('open');
     overlay.classList.remove('open');
     setTimeout(function() { modal.style.display = 'none'; }, 230);
-    // 월 선택 뷰 닫기
     exitMonthPicker();
   }
 
   overlay.addEventListener('click', close);
   cancelBtn.addEventListener('click', close);
+
   confirmBtn.addEventListener('click', function() {
-    if (!rangeStart || !rangeEnd) return; // 둘 다 선택 안 됐으면 무시
-    // 항상 이른 날짜가 start, 늦은 날짜가 end
-    var s = rangeStart <= rangeEnd ? rangeStart : rangeEnd;
-    var e = rangeStart <= rangeEnd ? rangeEnd   : rangeStart;
+    if (selPeriod && !rangeStart) {
+      // 기간 탭만 선택
+      if (opts.onConfirm) opts.onConfirm(null, null, selPeriod);
+      close();
+      return;
+    }
+    if (!rangeStart) return;
+    var s = rangeStart;
+    var e = rangeEnd || rangeStart;
+    if (s > e) { var tmp = s; s = e; e = tmp; }
     if (opts.onConfirm) opts.onConfirm(s, e, selPeriod);
     close();
   });
@@ -59,16 +96,22 @@ function initCalendar(opts) {
   var periodTabs = modal.querySelectorAll('.cal-period-tab');
   periodTabs.forEach(function(btn) {
     btn.addEventListener('click', function() {
-      // 탭 활성화
       periodTabs.forEach(function(b) { b.classList.remove('active'); });
       btn.classList.add('active');
-      selPeriod = btn.dataset.period;
-      pickStep  = 0;
-      // 오늘 기준 역방향 범위 계산
-      calcPeriodRange(selPeriod);
-      // 시작일 달로 이동
-      curYear  = rangeStart.getFullYear();
-      curMonth = rangeStart.getMonth();
+      selPeriod  = btn.dataset.period;
+      pickStep   = 0;
+      rangeStart = null;
+      rangeEnd   = null;
+
+      // ★ single 모드 판단
+      selectMode = (selPeriod === 'today') ? 'single' : 'range';
+
+      // 기간 탭이면 자동 범위 계산
+      if (selPeriod !== 'today') {
+        calcPeriodRange(selPeriod);
+        curYear  = rangeStart.getFullYear();
+        curMonth = rangeStart.getMonth();
+      }
       renderCalendar();
     });
   });
@@ -95,14 +138,8 @@ function initCalendar(opts) {
     } else if (period === 'year') {
       startD = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
     }
-    // 항상 이른 날짜가 start
-    if (startD <= endD) {
-      rangeStart = startD;
-      rangeEnd   = endD;
-    } else {
-      rangeStart = endD;
-      rangeEnd   = startD;
-    }
+    rangeStart = startD <= endD ? startD : endD;
+    rangeEnd   = startD <= endD ? endD   : startD;
   }
 
   /* ════════════════
@@ -122,26 +159,27 @@ function initCalendar(opts) {
   });
 
   /* ════════════════
-     월 제목 클릭 → 월 선택 뷰
+     월 선택 뷰 (기존 유지)
      ════════════════ */
-  titleBtn.addEventListener('click', function() {
-    monthPickerOpen = !monthPickerOpen;
-    if (monthPickerOpen) {
-      // 요일행 + 날짜 그리드 숨기기
-      if (dayLabelsEl) dayLabelsEl.style.display = 'none';
-      gridEl.style.display = 'none';
-      pickerEl.classList.add('open');
-      renderMonthPicker();
-    } else {
-      exitMonthPicker();
-    }
-  });
+  if (titleBtn) {
+    titleBtn.addEventListener('click', function() {
+      monthPickerOpen = !monthPickerOpen;
+      if (monthPickerOpen) {
+        if (dayLabelsEl) dayLabelsEl.style.display = 'none';
+        gridEl.style.display = 'none';
+        pickerEl.classList.add('open');
+        renderMonthPicker();
+      } else {
+        exitMonthPicker();
+      }
+    });
+  }
 
   function exitMonthPicker() {
     monthPickerOpen = false;
     if (dayLabelsEl) dayLabelsEl.style.display = '';
     gridEl.style.display = '';
-    pickerEl.classList.remove('open');
+    if (pickerEl) pickerEl.classList.remove('open');
   }
 
   function renderMonthPicker() {
@@ -161,36 +199,38 @@ function initCalendar(opts) {
   }
 
   /* ════════════════
-     날짜 그리드 렌더
+     날짜 그리드 렌더 (★ 활성날짜 추가)
      ════════════════ */
   function renderCalendar() {
-    titleBtn.textContent = (curMonth + 1) + '월';
+    fetchActiveDates(curYear, curMonth, function() {
+      titleBtn.textContent = (curMonth + 1) + '월';
 
-    var firstDay    = new Date(curYear, curMonth, 1).getDay();
-    var daysInMonth = new Date(curYear, curMonth + 1, 0).getDate();
-    var prevDays    = new Date(curYear, curMonth, 0).getDate();
+      var firstDay    = new Date(curYear, curMonth, 1).getDay();
+      var daysInMonth = new Date(curYear, curMonth + 1, 0).getDate();
+      var prevDays    = new Date(curYear, curMonth, 0).getDate();
 
-    gridEl.innerHTML = '';
+      gridEl.innerHTML = '';
 
-    // 이전 달 빈칸
-    for (var p = firstDay - 1; p >= 0; p--) {
-      var pm = curMonth - 1 < 0 ? 11 : curMonth - 1;
-      var py = curMonth - 1 < 0 ? curYear - 1 : curYear;
-      gridEl.appendChild(makeCell(prevDays - p, py, pm, true));
-    }
-    // 이번 달
-    for (var d = 1; d <= daysInMonth; d++) {
-      gridEl.appendChild(makeCell(d, curYear, curMonth, false));
-    }
-    // 다음 달 빈칸
-    var remain = gridEl.children.length % 7;
-    if (remain > 0) {
-      var nm = curMonth + 1 > 11 ? 0  : curMonth + 1;
-      var ny = curMonth + 1 > 11 ? curYear + 1 : curYear;
-      for (var n = 1; n <= 7 - remain; n++) {
-        gridEl.appendChild(makeCell(n, ny, nm, true));
+      // 이전 달 빈칸
+      for (var p = firstDay - 1; p >= 0; p--) {
+        var pm = curMonth - 1 < 0 ? 11 : curMonth - 1;
+        var py = curMonth - 1 < 0 ? curYear - 1 : curYear;
+        gridEl.appendChild(makeCell(prevDays - p, py, pm, true));
       }
-    }
+      // 이번 달
+      for (var d = 1; d <= daysInMonth; d++) {
+        gridEl.appendChild(makeCell(d, curYear, curMonth, false));
+      }
+      // 다음 달 빈칸
+      var remain = gridEl.children.length % 7;
+      if (remain > 0) {
+        var nm = curMonth + 1 > 11 ? 0 : curMonth + 1;
+        var ny = curMonth + 1 > 11 ? curYear + 1 : curYear;
+        for (var n = 1; n <= 7 - remain; n++) {
+          gridEl.appendChild(makeCell(n, ny, nm, true));
+        }
+      }
+    });
   }
 
   function makeCell(day, year, month, isOther) {
@@ -198,10 +238,20 @@ function initCalendar(opts) {
     var cellDate = new Date(year, month, day);
     var cd       = stripTime(cellDate);
 
+    // ★ 날짜 문자열 (활성 날짜 비교용)
+    var dateStr = year + '-' +
+      String(month + 1).padStart(2, '0') + '-' +
+      String(day).padStart(2, '0');
+
     cell.className = 'cal-cell' + (isOther ? ' other-month' : '');
     if (sameDay(cellDate, today)) cell.classList.add('today');
 
-    // 범위 하이라이트
+    // ★ 운동 기록 있는 날
+    if (!isOther && activeDates.has(dateStr)) {
+      cell.classList.add('has-record');
+    }
+
+    // 범위 하이라이트 (기존 유지)
     if (rangeStart && rangeEnd) {
       var rs = stripTime(rangeStart), re = stripTime(rangeEnd);
       if (cd >= rs && cd <= re) {
@@ -209,7 +259,7 @@ function initCalendar(opts) {
         if (cd.getTime() === rs.getTime()) cell.classList.add('range-start');
         if (cd.getTime() === re.getTime()) cell.classList.add('range-end');
         if (rs.getTime() === re.getTime()) {
-          cell.classList.remove('range-start','range-end');
+          cell.classList.remove('range-start', 'range-end');
           cell.classList.add('range-single');
         }
       }
@@ -231,36 +281,42 @@ function initCalendar(opts) {
   }
 
   /* ════════════════
-     날짜 직접 클릭
+     날짜 클릭 (★ single 모드 추가)
      ════════════════ */
   function handleDateClick(cd) {
     // 탭 비활성화
     periodTabs.forEach(function(b) { b.classList.remove('active'); });
     selPeriod = null;
 
-    if (pickStep === 0) {
-      // 시작일 선택
+    if (selectMode === 'single') {
+      // ★ 단일 날짜 선택
       rangeStart = cd;
-      rangeEnd   = null;
-      pickStep   = 1;
+      rangeEnd   = cd;
+      pickStep   = 0;
     } else {
-      // 종료일 선택
-      if (cd < rangeStart) {
-        // 시작보다 이전 → 순서 반전
-        rangeEnd   = rangeStart;
+      if (pickStep === 0) {
         rangeStart = cd;
+        rangeEnd   = null;
+        pickStep   = 1;
       } else {
-        rangeEnd = cd;
+        if (cd < rangeStart) {
+          rangeEnd   = rangeStart;
+          rangeStart = cd;
+        } else {
+          rangeEnd = cd;
+        }
+        pickStep = 0;
       }
-      pickStep = 0;
     }
   }
 
-  /* ── 유틸 ── */
+  /* ════════════════
+     유틸
+     ════════════════ */
   function sameDay(a, b) {
-    return a.getFullYear()===b.getFullYear() &&
-           a.getMonth()===b.getMonth() &&
-           a.getDate()===b.getDate();
+    return a.getFullYear() === b.getFullYear() &&
+           a.getMonth()    === b.getMonth()    &&
+           a.getDate()     === b.getDate();
   }
   function stripTime(d) {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());

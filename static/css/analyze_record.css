@@ -305,3 +305,64 @@ html,body{font-family:'Noto Sans KR',sans-serif;background:var(--white);color:va
 .workout-list.edit-mode .workout-manage {
     display: none; /* 편집 중엔 수정 버튼 숨김 */
 }
+
+/* ── 캘린더 활성 날짜 (운동 기록 있는 날) ── */
+.cal-day.has-record {
+  position: relative;
+  font-weight: 700;
+  color: #2d9e5e;
+}
+.cal-day.has-record::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #2d9e5e;
+}
+
+/* ── 선택된 날짜 ── */
+.cal-day.selected {
+  background: #000;
+  color: #fff;
+  border-radius: 50%;
+  font-weight: 700;
+}
+.cal-day.selected.has-record::after {
+  background: #fff;
+}
+
+/* ── 범위 사이 날짜 ── */
+.cal-day.in-range {
+  background: rgba(45,158,94,0.12);
+  border-radius: 0;
+  color: #000;
+}
+
+/* 운동 기록 있는 날 */
+.cal-cell.has-record span {
+  color: #2d9e5e;
+  font-weight: 700;
+}
+.cal-cell.has-record::after {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #2d9e5e;
+  margin: 1px auto 0;
+}
+
+/* 선택된 날이면서 기록 있는 날 — 점을 흰색으로 */
+.cal-cell.has-record.in-range::after,
+.cal-cell.has-record.range-single::after {
+  background: #fff;
+}
+.cal-cell.has-record.in-range span,
+.cal-cell.has-record.range-single span {
+  color: inherit;
+}

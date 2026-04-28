@@ -64,20 +64,30 @@ window.initRadarChart = function(scores = [0, 0, 0, 0, 0, 0]) {
     });
 };
 
-window.fetchTodayData = async function() {
+window.fetchTodayData = async function(period = 'today', startDate = null, endDate = null) {
     try {
-        const response = await fetch('/api/workout/today-analysis');
-        const result = await response.json();
+        let url = `/api/workout/today-analysis?period=${period}`;
+        if (startDate && endDate) {
+            const fmt = d => {
+                const y  = d.getFullYear();
+                const m  = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                return `${y}-${m}-${dd}`;
+            };
+            url += `&start=${fmt(startDate)}&end=${fmt(endDate)}`;
+        }
+        const response = await fetch(url);
+        const result   = await response.json();
         if (result.ok && result.data) {
             const d = result.data;
-            document.getElementById('sTime').textContent = d.stats?.time || "00H 00M";
-            document.getElementById('sKcal').textContent = d.stats?.kcal || "0000kcal";
-            window.initRadarChart(d.radarScores || [0, 0, 0, 0, 0, 0]);
+            document.getElementById('sTime').textContent    = d.stats?.time || "00H 00M";
+            document.getElementById('sKcal').textContent    = d.stats?.kcal || "0000kcal";
+            window.initRadarChart(d.radarScores || [0,0,0,0,0,0]);
             window.renderWorkoutList(d.workouts || []);
             document.getElementById('analysisBox').innerHTML = d.analysisSummary || "";
-            document.getElementById('topPct').textContent = d.topPercent ? `상위 ${d.topPercent}%` : "상위 --%";
+            document.getElementById('topPct').textContent   = d.topPercent ? `상위 ${d.topPercent}%` : "상위 --%";
         }
-    } catch (e) { console.error("데이터 로드 실패:", e); }
+    } catch(e) { console.error("데이터 로드 실패:", e); }
 };
 
 window.renderWorkoutList = function(workouts = []) {
