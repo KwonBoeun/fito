@@ -17,3 +17,6 @@ __all__ = [
     "QuestionReply", "QuestionLike", "QuestionBookmark", "QuestionReport",
     "Hashtag", "QuestionHashtag",
 ]
+from .weight_log import WeightLog
+
+__all__ = ["User", "WorkoutLog", "Group", "GroupTag", "GroupMembership", "WeightLog"]

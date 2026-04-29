@@ -64,19 +64,21 @@ class WorkoutService:
         return int(met * weight * (duration_mins / 60) * 1.05)
 
     # ── 오늘 분석 (운동 분석 화면) ────────────────
-    def get_today_analysis(self, user_id: int, today_date):
+    def get_today_analysis(self, user_id: int, today_date, start_date=None):
         if isinstance(today_date, str):
             today_date = datetime.strptime(today_date, "%Y-%m-%d").date()
+        if start_date is None:
+            start_date = today_date
 
         with SessionLocal() as session:
             logs = session.query(WorkoutLog).filter(
                 WorkoutLog.user_id == user_id,
-                cast(WorkoutLog.date, SADate) == today_date
+                cast(WorkoutLog.date, SADate) >= start_date,
+                cast(WorkoutLog.date, SADate) <= today_date
             ).order_by(WorkoutLog.order_index).all()
 
             if not logs:
                 return self.get_empty_analysis()
-
             total_minutes = sum(log.duration_minutes or 0 for log in logs)
             total_kcal    = sum(log.calories_burned  or 0 for log in logs)
 
@@ -177,47 +179,93 @@ class WorkoutService:
             }
 
     # ── 기록 변화 (시간/칼로리 차트) ─────────────
-    def get_history(self, user_id: int, period: str) -> dict:
-        start, end = _get_range(period)
+    def get_history(self, user_id, period, start_date=None, end_date=None) -> dict:
+        # 1. 기간 설정 (타입 보정)
+        if start_date and end_date:
+            # 외부에서 들어온 날짜가 문자열이면 date 객체로 변환
+            start = start_date if isinstance(start_date, date) else start_date
+            end = end_date if isinstance(end_date, date) else end_date
+        else:
+            start, end = _get_range(period)
+        
+        from src.models import WorkoutLog, WeightLog 
+        from sqlalchemy import cast, Date as SADate
+
         with SessionLocal() as session:
-            logs = session.query(WorkoutLog).filter(
+            # 2. 운동 및 체중 데이터 조회 (날짜 캐스팅 강화)
+            workout_logs = session.query(WorkoutLog).filter(
                 WorkoutLog.user_id == user_id,
                 cast(WorkoutLog.date, SADate) >= start,
                 cast(WorkoutLog.date, SADate) <= end
             ).all()
 
-            by_date = defaultdict(lambda: {"time": 0, "kcal": 0})
-            for log in logs:
+            weight_logs = session.query(WeightLog).filter(
+                WeightLog.user_id == user_id,
+                cast(WeightLog.date, SADate) >= start,
+                cast(WeightLog.date, SADate) <= end
+            ).all()
+
+            # 3. 데이터 병합용 딕셔너리 (초기값 보장)
+            by_date = defaultdict(lambda: {"time": 0, "kcal": 0, "weight": 0})
+
+            for log in workout_logs:
+                # DB 날짜를 확실히 date 객체로 추출
                 d = log.date.date() if hasattr(log.date, 'date') else log.date
-                by_date[d]["time"] += log.duration_minutes or 0
-                by_date[d]["kcal"] += log.calories_burned  or 0
+                by_date[d]["time"] += (log.duration_minutes or 0)
+                by_date[d]["kcal"] += (log.calories_burned or 0)
 
-            labels, times, kcals = [], [], []
+            for w_log in weight_logs:
+                wd = w_log.date.date() if hasattr(w_log.date, 'date') else w_log.date
+                # 체중은 그날의 마지막 기록 혹은 대표값 하나만 사용
+                by_date[wd]["weight"] = w_log.weight
 
+            labels, times, kcals, weights = [], [], [], []
+
+            # 4. 기간별 루프 (날짜를 하루씩 증가시키며 데이터 매칭)
+            curr = start
             if period == "week":
-                for i in range(7):
-                    d = start + timedelta(days=i)
-                    labels.append(f"{d.month:02}.{d.day:02}")
-                    times.append(by_date[d]["time"])
-                    kcals.append(by_date[d]["kcal"])
+                for _ in range(7):
+                    labels.append(curr.strftime("%m.%d"))
+                    times.append(by_date[curr]["time"])
+                    kcals.append(by_date[curr]["kcal"])
+                    weights.append(by_date[curr]["weight"])
+                    curr += timedelta(days=1)
+            
             elif period == "month":
-                for i in range(0, 30, 5):
+                # 30일치를 5일 간격으로 샘플링
+                for i in range(0, 31, 5):
                     d = start + timedelta(days=i)
-                    labels.append(f"{d.month:02}.{d.day:02}")
+                    if d > end: break
+                    labels.append(d.strftime("%m.%d"))
                     times.append(by_date[d]["time"])
                     kcals.append(by_date[d]["kcal"])
+                    weights.append(by_date[d]["weight"])
+            
             else:
-                monthly = defaultdict(lambda: {"time": 0, "kcal": 0})
+                # 월별 합산 (3개월, 6개월, 1년 등)
+                monthly = defaultdict(lambda: {"time": 0, "kcal": 0, "w_sum": 0, "w_cnt": 0})
                 for d_key, v in by_date.items():
                     mk = d_key.strftime("%Y.%m")
                     monthly[mk]["time"] += v["time"]
                     monthly[mk]["kcal"] += v["kcal"]
+                    if v["weight"] > 0:
+                        monthly[mk]["w_sum"] += v["weight"]
+                        monthly[mk]["w_cnt"] += 1
+                
                 for mk in sorted(monthly.keys()):
-                    labels.append(mk[5:])
+                    labels.append(mk[5:]) # "05" 형태
                     times.append(monthly[mk]["time"])
                     kcals.append(monthly[mk]["kcal"])
+                    avg_w = monthly[mk]["w_sum"] / monthly[mk]["w_cnt"] if monthly[mk]["w_cnt"] > 0 else 0
+                    weights.append(round(avg_w, 1))
 
-            return {"labels": labels, "time": times, "kcal": kcals}
+            # 최종 데이터 반환 (프론트엔드 키 이름 확인 필수)
+            return {
+                "labels": labels, 
+                "time": times, 
+                "kcal": kcals, 
+                "weights": weights
+            }
 
     # ── 운동 균형도 ───────────────────────────────
     def get_balance(self, user_id: int, period: str) -> dict:

@@ -159,16 +159,14 @@ var calInstance = initCalendar({
   onConfirm: function(startDate, endDate, periodType) {
     var label = document.getElementById('periodLabel');
     if (startDate && endDate) {
-      function fmt(d, otherD) {
-        return d.getFullYear() !== otherD.getFullYear()
-          ? d.getFullYear() + '.' + (d.getMonth()+1) + '.' + d.getDate()
-          : (d.getMonth()+1) + '.' + d.getDate();
-      }
+      var fmt = function(d) { return (d.getMonth()+1) + '.' + d.getDate(); };
       var s = startDate <= endDate ? startDate : endDate;
-      var e = startDate <= endDate ? endDate : startDate;
-      label.textContent = fmt(s, e) + ' ~ ' + fmt(e, s) + ' 데이터를 분석 중입니다';
+      var e = startDate <= endDate ? endDate   : startDate;
+      label.textContent = '기간: ' + fmt(s) + ' ~ ' + fmt(e);
     }
-    if (typeof onPeriodChange === 'function') onPeriodChange(periodType);
+    if (typeof onPeriodChange === 'function') {
+      onPeriodChange(periodType || 'month');
+    }
   }
 });
 document.getElementById('openCalBtn').addEventListener('click', function() {
