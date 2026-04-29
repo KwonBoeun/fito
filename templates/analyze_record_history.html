@@ -46,7 +46,7 @@
       <div style="height:150px;position:relative">
         <canvas id="weightChart"></canvas>
         <div id="weightEmpty" class="chart-empty" style="display:none">체중 기록이 없습니다.<br>
-          <button style="margin-top:8px;padding:6px 16px;background:#000;color:#fff;border:none;border-radius:999px;font-size:12px;cursor:pointer;font-family:inherit">체중 입력하기</button>
+          <button style="margin-top:8px;padding:6px 16px;background:#000;color:#fff;border:none;border-radius:999px;font-size:12px;cursor:pointer;font-family:inherit" onclick="openWeightModal()">체중 입력하기</button>
         </div>
       </div>
     </div>
@@ -126,21 +126,14 @@ var calInstance = initCalendar({
   cancelId:      'calCancelBtn',
   onConfirm: function(startDate, endDate, periodType) {
     var label = document.getElementById('selectedPeriodLabel');
-    var map = { week:'이번 주', month:'1개월', '3month':'3개월', '6month':'6개월', year:'1년' };
     if (startDate && endDate) {
-      function fmt(d, otherD) {
-        return d.getFullYear() !== otherD.getFullYear()
-          ? d.getFullYear() + '.' + (d.getMonth()+1) + '.' + d.getDate()
-          : (d.getMonth()+1) + '.' + d.getDate();
-      }
+      var fmt = function(d) { return (d.getMonth()+1) + '.' + d.getDate(); };
       var s = startDate <= endDate ? startDate : endDate;
-      var e = startDate <= endDate ? endDate : startDate;
-      label.textContent = '기간: ' + fmt(s, e) + ' ~ ' + fmt(e, s);
-    } else {
-      label.textContent = '기간: ' + (map[periodType] || periodType);
+      var e = startDate <= endDate ? endDate   : startDate;
+      label.textContent = '기간: ' + fmt(s) + ' ~ ' + fmt(e);
     }
     if (typeof updateChartsByPeriod === 'function') {
-      updateChartsByPeriod(startDate, endDate, periodType);
+      updateChartsByPeriod(startDate, endDate, periodType || 'week');
     }
   }
 });
@@ -148,5 +141,29 @@ document.getElementById('openCalBtn').addEventListener('click', function() {
   calInstance.open();
 });
 </script>
+
+<!-- 체중 입력 모달 -->
+<div class="modal-wrap" id="weightModal">
+  <div class="modal-box">
+    <div class="modal-title">체중 입력</div>
+    <div class="modal-body" style="text-align:left">
+      <div style="margin-bottom:12px">
+        <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">날짜</label>
+        <input type="date" id="weightDate"
+               style="width:100%;padding:10px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:14px;font-family:inherit">
+      </div>
+      <div>
+        <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">체중 (kg)</label>
+        <input type="number" id="weightInput" placeholder="예: 68.5" step="0.1"
+               style="width:100%;padding:10px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:14px;font-family:inherit">
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn outline" onclick="closeWeightModal()">취소</button>
+      <button class="modal-btn solid" onclick="saveWeight()">저장하기</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
