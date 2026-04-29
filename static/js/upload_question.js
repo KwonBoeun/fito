@@ -2,6 +2,9 @@
    FITO - Question Upload JS
    =========================== */
 
+/* ── 임시 로그인 유저 ID (추후 세션으로 교체) ── */
+const CURRENT_USER_ID = 1;
+
 /* ── 상태 ── */
 let images       = [];
 let tags         = [];
@@ -127,7 +130,7 @@ tagAddBtn.addEventListener('click', () => {
 
 function addTag() {
   const val = tagInput.value.trim().replace(/^#/, '');
-  if (!val || tags.includes('#' + val) || tags.length >= 10) return;
+  if (!val || tags.includes('#' + val) || tags.length >= 5) return;
   tags.push('#' + val);
   tagInput.value = '';
   renderTags();
@@ -164,8 +167,8 @@ draftBtn.addEventListener('click', () => {
   alert('임시저장 기능은 준비 중입니다.');
 });
 
-/* ── 업로드 ── */
-uploadBtn.addEventListener('click', () => {
+/* ── 업로드 (localStorage → API) ── */
+uploadBtn.addEventListener('click', async () => {
   const title   = titleInput.value.trim();
   const content = contentInput.value.trim();
 
@@ -183,17 +186,70 @@ uploadBtn.addEventListener('click', () => {
     return;
   }
 
-  const stored = JSON.parse(localStorage.getItem('fito_user_question') || '[]');
-  stored.unshift({
-    title,
-    body:       content,
-    tags,
-    hasImg:     images.length > 0,
-    isAnon,
-    isProfile:  !isAnon && isProfile,
-    reward:     rewardAmount,
-    uploadedAt: Date.now(),
-  });
-  localStorage.setItem('fito_user_question', JSON.stringify(stored));
-  doneOv.style.display = 'flex';
+  uploadBtn.disabled    = true;
+  uploadBtn.textContent = '업로드 중...';
+
+  try {
+    let res;
+
+    if (images.length > 0) {
+      /* 이미지 있으면 multipart/form-data */
+      const formData = new FormData();
+      formData.append('title',     title);
+      formData.append('body',      content);
+      formData.append('isAnon',    String(isAnon));
+      formData.append('isProfile', String(!isAnon && isProfile));
+      formData.append('reward',    String(rewardAmount));
+      tags.forEach(t => formData.append('tags', t));
+      images.forEach(img => formData.append('images', img.file));
+
+      res = await fetch('/api/questions', {
+        method:  'POST',
+        headers: { 'X-User-Id': String(CURRENT_USER_ID) },
+        body:    formData,
+      });
+    } else {
+      /* 이미지 없으면 JSON */
+      res = await fetch('/api/questions', {
+        method:  'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Id':    String(CURRENT_USER_ID),
+        },
+        body: JSON.stringify({
+          title,
+          body:      content,
+          tags,
+          isAnon,
+          isProfile: !isAnon && isProfile,
+          reward:    rewardAmount,
+        }),
+      });
+    }
+
+    const json = await res.json();
+
+    if (json.status !== 'ok') {
+      alert(json.message || '업로드 중 오류가 발생했습니다.');
+      uploadBtn.disabled    = false;
+      uploadBtn.textContent = '업로드';
+      return;
+    }
+
+    /* 성공 → 완료 오버레이 표시 */
+    doneOv.style.display = 'flex';
+
+    /* 완료 버튼을 질문 상세 페이지로 연결 */
+    const homeBtn = doneOv.querySelector('.upost-done-home');
+    if (homeBtn && json.data && json.data.id) {
+      homeBtn.textContent = '질문 보기';
+      homeBtn.onclick = () => { location.href = `/question/${json.data.id}`; };
+    }
+
+  } catch(e) {
+    console.error('[upload_question]', e);
+    alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+    uploadBtn.disabled    = false;
+    uploadBtn.textContent = '업로드';
+  }
 });

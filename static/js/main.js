@@ -248,6 +248,71 @@ let Q_DATA = [
     });
   } catch(e) { console.warn('mergeUserQuestion error', e); }
 })();
+/* ── API에서 질문 실제 수치 동기화 ── */
+async function syncQDataFromAPI() {
+  try {
+    const res  = await fetch('/api/questions/popular');
+    const json = await res.json();
+    if (json.status !== 'ok' || !json.data.length) return;
+
+    window._latestQData = json.data;
+    json.data.forEach(api => {
+      const idx = Q_DATA.findIndex(q => q.id === api.id);
+      if (idx >= 0) {
+        Q_DATA[idx].likes     = api.likes;
+        Q_DATA[idx].comments  = api.comments;
+        Q_DATA[idx].bookmarks = api.bookmarks;
+        Q_DATA[idx].h         = api.h;
+      } else if (api.id < 20001) {
+        Q_DATA.unshift({
+          id: api.id, title: api.title, body: api.body,
+          tags: api.tags, likes: api.likes, comments: api.comments,
+          bookmarks: api.bookmarks, h: api.h, hasImg: api.hasImg,
+        });
+      }
+    });
+  } catch(e) {
+    console.warn('[syncQDataFromAPI]', e);
+  }
+}
+
+/* ── 질문 탭 API 렌더 ── */
+async function renderQuestionFromAPI(containerId, type) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  try {
+    const [popRes, recRes] = await Promise.all([
+      fetch('/api/questions/popular'),
+      fetch('/api/questions/recommended'),
+    ]);
+    const popJson = await popRes.json();
+    const recJson = await recRes.json();
+
+    // 인기 캐러셀 재빌드
+    if (type === 'question' && popJson.status === 'ok' && popJson.data.length) {
+      const sorted = popJson.data;
+      const slides = [];
+      for (let i = 0; i < sorted.length; i += 2) {
+        slides.push(buildAllQSlide(sorted.slice(i, i + 2)));
+      }
+      buildAndInitCarousel('pop-car-question', slides);
+    }
+
+    // 추천 피드
+    if (recJson.status === 'ok' && recJson.data.length) {
+      const items = recJson.data;
+      el.innerHTML = items.map(d => qCardHtml(d)).join('');
+      observeAni(el);
+      return;
+    }
+  } catch(e) {
+    console.warn('[renderQuestionFromAPI]', e);
+  }
+
+  // 폴백: Q_DATA 사용
+  renderRecommendFeed(containerId, type);
+}
 
 /* ── HTML 빌더 ── */
 const tagsHtml = tags => tags.map(t => `<span class="hashtag">${t}</span>`).join('');
@@ -539,7 +604,7 @@ function renderRecommendFeed(containerId, type) {
         {t:'fits3', items:FITS_DATA.slice(3,6)},
         {t:'fits3', items:FITS_DATA.slice(6,9)},
         ...Array.from({length:2}, (_,i) => ({t:'community', d:COM_DATA[i]})),
-        ...Array.from({length:2}, (_,i) => ({t:'question',  d:Q_DATA[i]})),
+        ...Array.from({length:2}, (_,i) => ({t:'question',  d:window._latestQData && window._latestQData[i] ? window._latestQData[i] : Q_DATA[i]})),
       ];
       html = shuffle(pool).map(item => {
         if (item.t==='live')      return feedHtml('live', item.d);
@@ -620,7 +685,11 @@ function initCategoryTabs() {
     if (!initialized.has(type)) {
       initialized.add(type);
       buildAndInitCarousel(`pop-car-${type}`, buildCatPopSlides(type));
-      renderRecommendFeed(`rec-feed-${type}`, type);
+      if (type === 'question') {
+        renderQuestionFromAPI(`rec-feed-${type}`, type);
+      } else {
+        renderRecommendFeed(`rec-feed-${type}`, type);
+      }
     }
   }
   tabs.forEach((t,i) => t.addEventListener('click', () => activate(i)));
@@ -925,14 +994,29 @@ function initModals() {
 document.addEventListener('DOMContentLoaded', () => {
   initScrollHeader();
   initCategoryTabs();
+  /* ?cat=question 파라미터로 진입 시 질문 탭 자동 활성화 */
+  const catParam = new URLSearchParams(location.search).get('cat');
+  if (catParam) {
+    const tabMap = { all:0, live:1, vod:2, fits:3, community:4, question:5 };
+    const idx = tabMap[catParam];
+    if (idx !== undefined) {
+      const tabs = document.querySelectorAll('.cat-tab');
+      if (tabs[idx]) tabs[idx].click();
+    }
+  }
   initSearch();
   initModals();
   checkFlow();
+  syncQDataFromAPI();  // Q_DATA 실제 수치 동기화
   buildAndInitCarousel('pop-car-all', buildAllPopSlides());
   renderRecommendFeed('rec-feed-all', 'all');
   initPTR(done => {
     const info = window._getActiveFeedInfo ? window._getActiveFeedInfo() : { type:'all', feedId:'rec-feed-all' };
-    renderRecommendFeed(info.feedId, info.type);
+    if (info.type === 'question') {
+      renderQuestionFromAPI(info.feedId, info.type);
+    } else {
+      renderRecommendFeed(info.feedId, info.type);
+    }
     setTimeout(done, 800);
   });
 });
